@@ -1,12 +1,14 @@
-import { useState } from 'react'
-import './App.css'
-import Header from './components/common/Header'
-function App() {
+// App.js
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import TestAPI from './pages/Test/TestAPI.jsx'
 
+function App() {
   return (
-    <>
-      <Header></Header>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/test-api" element={<TestAPI />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
