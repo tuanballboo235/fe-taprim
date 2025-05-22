@@ -1,9 +1,15 @@
 /** @type {import('tailwindcss').Config} */
-export default {
-  content: [],
+module.exports = {
+  content: [
+    './src/**/*.{js,jsx,ts,tsx}',
+  ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: '#2563eb', // Màu xanh chính
+        secondary: '#dc2626', // Màu đỏ phụ (cho giỏ hàng)
+      },
+    },
   },
   plugins: [],
-}
-
+};
