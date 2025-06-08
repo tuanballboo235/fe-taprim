@@ -1,25 +1,39 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { ToastContainer } from 'react-toastify';
-import { queryClient } from './hooks/useFetch';
-import PublicRoutes from './routes/publicRoutes';
-
-import 'react-toastify/dist/ReactToastify.css';
+import { useEffect, useState } from "react";
 
 function App() {
+  const [data, setData] = useState(null);
+useEffect(() => {
+  fetch("http://103.238.235.227/api/ProductAccount/get-product-account?ProductId=1", {
+    method: "GET",
+    headers: {
+      accept: "*/*"
+    }
+  })
+    .then(async (res) => {
+      const contentType = res.headers.get("content-type");
+      console.log("✅ HTTP Status:", res.status, res.statusText);
+
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Invalid JSON response");
+      }
+
+      const data = await res.json();
+      console.log("📦 JSON Body:", data);
+
+      setData(data); // nếu mọi thứ OK
+    })
+    .catch((err) => {
+      console.error("❌ Caught error:", err.message || err);
+      setData({ error: "Request failed: " + err.message });
+    });
+}, []);
+
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          {PublicRoutes.map((route) => (
-            <Route key={route.path} path={route.path} element={<route.component />} />
-          ))}
-      
-          
-        </Routes>
-      </BrowserRouter>
-      <ToastContainer />
-    </QueryClientProvider>
+    <div style={{ padding: "2rem" }}>
+      <h1>🧪 API Test Result</h1>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+    </div>
   );
 }
 
