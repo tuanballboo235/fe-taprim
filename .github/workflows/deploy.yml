@@ -32,3 +32,4 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           source: "build/*"
           target: "/var/www/react-app"
+          debug: true  # ✅ Dòng này sẽ giúp in log chi tiết hơn
