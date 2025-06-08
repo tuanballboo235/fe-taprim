@@ -1,0 +1,26 @@
+.home-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.email-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.email-table th,
+.email-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.email-table th {
+  background-color: #f2f2f2;
+}
+
+.email-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
