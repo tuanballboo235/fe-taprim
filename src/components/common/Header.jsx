@@ -5,22 +5,26 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="bg-white shadow-md text-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="bg-white shadow-md text-gray-800 w-full">
+      <div className="w-full">
         {/* Top row */}
-        <div className="flex items-center justify-between py-4">
-          {/* Logo */}
-          <div className="text-xl font-bold text-blue-600">MyShop</div>
+        <div className="flex items-center justify-between py-4 px-4 md:px-8">
+          {/* ✅ LOGO: trái cố định */}
+          <div className="text-xl font-bold text-blue-600 flex-shrink-0">
+            MyShop
+          </div>
 
-          {/* Nav links - Desktop */}
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+          {/* ✅ NAV: giữa màn hình */}
+          <nav className="hidden md:flex flex-1 justify-center gap-6 text-sm font-medium">
             <a href="#" className="hover:text-blue-600 transition">Sản phẩm</a>
             <a href="#" className="hover:text-blue-600 transition">Lấy mail</a>
             <a href="#" className="hover:text-blue-600 transition">Tra cứu đơn</a>
+            <a href="#" className="hover:text-blue-600 transition">Liên hệ</a>
+
           </nav>
 
-          {/* Search */}
-          <div className="hidden md:flex items-center border border-gray-300 rounded overflow-hidden">
+          {/* ✅ SEARCH: sát phải */}
+          <div className="hidden md:flex items-center border border-gray-300 rounded overflow-hidden ml-4">
             <input
               type="text"
               placeholder="Tìm kiếm..."
@@ -33,20 +37,22 @@ const Header = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden text-xl text-blue-600"
+            className="md:hidden text-xl text-blue-600 ml-auto"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             {mobileOpen ? <FaTimes /> : <FaBars />}
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile menu */}
         {mobileOpen && (
-          <div className="md:hidden space-y-4 pb-4">
+          <div className="md:hidden px-4 pb-4 space-y-4">
             <nav className="flex flex-col gap-2">
-              <a href="#" className="hover:text-blue-600 transition">Sản phẩm</a>
+              <a href="#" className="hover:text-blue-600 transition">Mua hàng</a>
               <a href="#" className="hover:text-blue-600 transition">Lấy mail</a>
-              <a href="#" className="hover:text-blue-600 transition">Tra cứu đơn</a>
+              <a href="#" className="hover:text-blue-600 transition">Tra cứu đơn</a>     
+              <a href="#" className="hover:text-blue-600 transition">Liên hệ</a>
+
             </nav>
             <div className="flex items-center border border-gray-300 rounded overflow-hidden">
               <input
