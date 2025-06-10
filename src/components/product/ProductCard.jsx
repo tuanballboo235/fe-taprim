@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 function ProductCard({
   image,
@@ -6,13 +6,12 @@ function ProductCard({
   price,
   salePrice,
   isSale = false,
-  rating,
   onViewDetail,
   onCheckout,
 }) {
-  const hasDiscount = salePrice !== undefined && salePrice < price
+  const hasDiscount = salePrice !== undefined && salePrice < price;
 
-   return (
+  return (
     <div className="relative bg-white shadow rounded-lg overflow-hidden border hover:shadow-lg transition-all duration-200">
       {/* Sale badge */}
       {isSale && (
@@ -22,36 +21,40 @@ function ProductCard({
       )}
 
       {/* Image */}
-      <img
-        src={image}
-        alt={title}
-        className="w-full h-52 object-cover"
-      />
+      <img src={image} alt={title} className="w-full h-[180px] object-cover" />
 
       {/* Content */}
       <div className="p-4 flex flex-col gap-2">
         {/* Title */}
-        <h3 className="text-sm font-semibold text-gray-800 leading-snug line-clamp-2 min-h-[48px]">
+        <h3 className="text-sm font-semibold text-gray-800 leading-snug line-clamp-2 min-h-[40px]">
           {title}
         </h3>
 
-        {/* Rating */}
+        {/* Rating 
         {rating && (
           <div className="flex items-center gap-1 text-yellow-500 text-sm">
-            {'★'.repeat(Math.floor(rating))}
+            {"★".repeat(Math.floor(rating))}
             <span className="text-gray-500 ml-1 text-xs">({rating})</span>
           </div>
         )}
+        */}
 
+   
         {/* Price */}
         <div className="flex gap-2 items-center">
           {hasDiscount ? (
             <>
-              <span className="text-sm line-through text-gray-400">{price.toLocaleString()} ₫</span>
-              <span className="text-sm font-bold text-red-500">{salePrice.toLocaleString()} ₫</span>
+              <span className="text-sm line-through text-gray-400">
+                {price.toLocaleString()} ₫
+              </span>
+              <span className="text-sm font-bold text-red-500">
+                {salePrice.toLocaleString()} ₫
+              </span>
             </>
           ) : (
-            <span className="text-sm font-bold text-gray-800">{price.toLocaleString()} ₫</span>
+            <span className="text-sm font-bold text-gray-800">
+              {price.toLocaleString()} ₫
+            </span>
           )}
         </div>
 
@@ -72,6 +75,6 @@ function ProductCard({
         </div>
       </div>
     </div>
-  )
+  );
 }
-export default ProductCard
+export default ProductCard;
