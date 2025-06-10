@@ -1,5 +1,6 @@
-import { useState } from "react";
 import { FaSearch, FaBars, FaTimes } from "react-icons/fa";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -10,16 +11,16 @@ const Header = () => {
         {/* Top row */}
         <div className="flex items-center justify-between py-4 px-4 md:px-8">
           {/* ✅ LOGO: trái cố định */}
-          <div className="text-xl font-bold text-blue-600 flex-shrink-0">
-            MyShop
-          </div>
+          <Link to="/home" className="text-xl font-bold text-blue-600 flex-shrink-0">
+          Link RIM
+          </Link>
 
           {/* ✅ NAV: giữa màn hình */}
           <nav className="hidden md:flex flex-1 justify-center gap-6 text-sm font-medium">
-            <a href="#" className="hover:text-blue-600 transition">Sản phẩm</a>
-            <a href="#" className="hover:text-blue-600 transition">Lấy mail</a>
-            <a href="#" className="hover:text-blue-600 transition">Tra cứu đơn</a>
-            <a href="#" className="hover:text-blue-600 transition">Liên hệ</a>
+            <Link to="/product" className="hover:text-blue-600 transition">Sản phẩm</Link>
+            <Link to="/netflix" className="hover:text-blue-600 transition">Lấy mail</Link>
+            <Link to="#" className="hover:text-blue-600 transition">Tra cứu đơn</Link>
+            <Link to="#" className="hover:text-blue-600 transition">Liên hệ</Link>
 
           </nav>
 
