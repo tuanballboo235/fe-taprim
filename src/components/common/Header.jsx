@@ -17,8 +17,10 @@ const Header = () => {
 
           {/* ✅ NAV: giữa màn hình */}
           <nav className="hidden md:flex flex-1 justify-center gap-6 text-sm font-medium">
-            <Link to="/product" className="hover:text-blue-600 transition">Sản phẩm</Link>
-            <Link to="/netflix" className="hover:text-blue-600 transition">Lấy mail</Link>
+            <Link to="/product" className="hover:text-blue-600 transition">Sản Phẩm</Link>
+            <Link to="/netflix-mail" className="hover:text-blue-600 transition">Lấy Mail Netflix</Link>
+            <Link to="/chatgpt-code" className="hover:text-blue-600 transition">Lấy Code Chatgpt</Link>
+
             <Link to="#" className="hover:text-blue-600 transition">Tra cứu đơn</Link>
             <Link to="#" className="hover:text-blue-600 transition">Liên hệ</Link>
 
