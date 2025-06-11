@@ -51,11 +51,12 @@ const Header = () => {
         {mobileOpen && (
           <div className="md:hidden px-4 pb-4 space-y-4">
             <nav className="flex flex-col gap-2">
-              <a href="#" className="hover:text-blue-600 transition">Mua hàng</a>
-              <a href="#" className="hover:text-blue-600 transition">Lấy mail</a>
-              <a href="#" className="hover:text-blue-600 transition">Tra cứu đơn</a>     
-              <a href="#" className="hover:text-blue-600 transition">Liên hệ</a>
+    <Link to="/product" className="hover:text-blue-600 transition">Sản Phẩm</Link>
+            <Link to="/netflix-mail" className="hover:text-blue-600 transition">Lấy Mail Netflix</Link>
+            <Link to="/chatgpt-code" className="hover:text-blue-600 transition">Lấy Code Chatgpt</Link>
 
+            <Link to="#" className="hover:text-blue-600 transition">Tra cứu đơn</Link>
+            <Link to="#" className="hover:text-blue-600 transition">Liên hệ</Link>
             </nav>
             <div className="flex items-center border border-gray-300 rounded overflow-hidden">
               <input
