@@ -26,17 +26,20 @@ const TempMail = () => {
   }, [])
 
 return (
-  <div className="bg-black text-white px-6 py-8 min-h-screen w-full">
-    <h2 className="text-2xl font-bold mb-6">Lấy thông tin Netflix Family</h2>
+  <div className="bg-black text-white px-4 py-6 w-full">
+    <div className="max-w-6xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6">Lấy thông tin Netflix Family</h2>
 
-    {loading && <p className="text-gray-500 mt-2">Đang tải dữ liệu...</p>}
-    {error && <p className="text-red-500 mt-2">{error}</p>}
+      {loading && <p className="text-gray-500 mt-2">Đang tải dữ liệu...</p>}
+      {error && <p className="text-red-500 mt-2">{error}</p>}
 
-    {!loading && !error && Array.isArray(netflixTemporaryMail?.data) && (
-      <EmailList emails={netflixTemporaryMail.data} />
-    )}
+      {!loading && !error && Array.isArray(netflixTemporaryMail?.data) && (
+        <EmailList emails={netflixTemporaryMail.data} />
+      )}
+    </div>
   </div>
 )
+
 
 }
 
