@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import getNetflixUpdateFamily from '../../services/api/tempMail'
+import {getNetflixUpdateFamily} from '../../services/api/tempMail'
 import EmailList from '../../components/tempmail/EmailList'
 
 const TempMail = () => {
