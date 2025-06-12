@@ -4,6 +4,7 @@ import getAllProducts  from '../../services/api/productService'
 
 const ProductList = () => {
   const [products, setProducts] = useState([])
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,7 +27,7 @@ const ProductList = () => {
         {products.map((product) => (
           <ProductCard
             key={product.productId}
-            image={product.image}
+            image={`${apiUrl}${product.image}`}
             title={product.productName}
             price={product.price}
             salePrice={'500000'}
