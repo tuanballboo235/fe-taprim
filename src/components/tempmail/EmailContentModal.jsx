@@ -9,9 +9,9 @@ const EmailContentModal = ({ email, onClose }) => {
       onClick={onClose} // 👈 click nền sẽ đóng
     >
       <div
-        className="bg-white text-black p-6 rounded-lg max-w-3xl w-full relative shadow-lg overflow-y-auto max-h-[90vh]"
-        onClick={(e) => e.stopPropagation()} // 👈 ngăn click bên trong bị "bubble"
-      >
+  className="bg-white text-black p-4 sm:p-6 rounded-lg w-[95vw] max-w-3xl relative shadow-lg overflow-y-auto max-h-[90vh]"
+  onClick={(e) => e.stopPropagation()}
+>
        <button
   className="absolute top-3 right-4 text-gray-500 hover:text-red-500 text-3xl font-bold transition-transform transform hover:scale-125"
   onClick={onClose}
