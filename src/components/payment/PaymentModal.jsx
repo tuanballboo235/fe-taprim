@@ -56,7 +56,7 @@ const PaymentModal = ({ amount, fee = 0, total, qrImageUrl }) => {
           </ol>
 
           {/* Lưu ý màu đỏ */}
-          <p className="text-red-600 text-sm font-medium">
+          <p className="text-red-600 text-sm font-medium"> 
             ⚠ Trong trường hợp đợi quá 1 phút nhưng không thành công, hãy liên
             hệ Zalo: <strong>0344665098</strong> và gửi bill chuyển khoản để
             được hỗ trợ.
