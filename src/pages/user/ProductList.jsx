@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import ProductCard from "../../components/product/ProductCard";
 import getAllProducts  from '../../services/api/productService'
-import Carousel from '../../components/caroselBanner/Carousel';
+import PaymentModal from '../../components/payment/PaymentModal';
 const ProductList = () => {
   const [products, setProducts] = useState([])
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -18,11 +18,7 @@ const ProductList = () => {
 
     fetchData()
   }, [])
-const images = [
-  '../../assets/images/483967539_2068210710352289_1535954025462080168_n.jpg',
-  '../../assets/images/483967539_2068210710352289_1535954025462080168_n.jpg',
-  '../../assets/images/s.jpg',
-];
+
   return (
         <>
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -43,10 +39,10 @@ const images = [
         ))}
       </div>
     </div>
-    <div className="max-w-5xl mx-auto mt-6">
+    {/* <div className="max-w-5xl mx-auto mt-6">
       <Carousel images={images} autoSlide={true} autoSlideInterval={4000} />
-    </div>
-
+    </div> */}
+<PaymentModal></PaymentModal>
     </>
   )
 };
