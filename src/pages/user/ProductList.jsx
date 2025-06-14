@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import ProductCard from "../../components/product/ProductCard";
 import getAllProducts  from '../../services/api/productService'
-import PaymentModal from '../../components/payment/PaymentModal';
+import ProductDetails from '../../components/product/ProductDetail';
 const ProductList = () => {
   const [products, setProducts] = useState([])
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -33,8 +33,7 @@ const ProductList = () => {
             price={product.price}
             salePrice={'500000'}
             isSale={product.isSale}
-            onViewDetail={() => alert(`Xem chi tiết: ${product.title}`)}
-            onCheckout={() => alert(`Thanh toán: ${product.title}`)}
+           
           />
         ))}
       </div>
@@ -42,7 +41,7 @@ const ProductList = () => {
     {/* <div className="max-w-5xl mx-auto mt-6">
       <Carousel images={images} autoSlide={true} autoSlideInterval={4000} />
     </div> */}
-<PaymentModal></PaymentModal>
+<ProductDetails />
     </>
   )
 };

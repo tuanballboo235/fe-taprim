@@ -1,5 +1,5 @@
-import React from "react";
-
+import React,{ useState } from "react";
+import PaymentModal from "../payment/PaymentModal";
 function ProductCard({
   image,
   title,
@@ -10,8 +10,11 @@ function ProductCard({
   onCheckout,
 }) {
   const hasDiscount = salePrice !== undefined && salePrice < price;
+  const [showPayment, setShowPayment] = useState(false);
 
   return (
+    <>
+  
     <div className="relative bg-white shadow rounded-lg overflow-hidden border hover:shadow-lg transition-all duration-200">
       {/* Sale badge */}
       {isSale && (
@@ -39,7 +42,6 @@ function ProductCard({
         )}
         */}
 
-   
         {/* Price */}
         <div className="flex gap-2 items-center">
           {hasDiscount ? (
@@ -67,14 +69,37 @@ function ProductCard({
             Xem chi tiết
           </button>
           <button
-            onClick={onCheckout}
+            onClick={() => {
+              setShowPayment(true);
+              if (onCheckout) onCheckout();
+            }}
             className="flex-1 bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-md transition"
           >
-            Thanh toán
+            Thanh toán ngay
           </button>
         </div>
       </div>
     </div>
+    {showPayment && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="relative bg-white p-6 rounded-xl max-w-2xl w-full">
+      <button
+        onClick={() => setShowPayment(false)}
+        className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
+      >
+        ×
+      </button>
+      <PaymentModal
+        amount={hasDiscount ? salePrice : price}
+        fee={3000}
+        total={(hasDiscount ? salePrice : price) + 3000}
+        qrImageUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTOFQu7p46XsbV39CIHYl3swUPQfDc7HGoP6FrVBIK9rPnaAw68GgDZrbVqAtA-HfGcz4&usqp=CAU"
+      />
+    </div>
+  </div>
+)}
+
+      </>
   );
 }
 export default ProductCard;

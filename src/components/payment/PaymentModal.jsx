@@ -7,8 +7,8 @@ const PaymentModal = ({ amount, fee = 0, total, qrImageUrl }) => {
       <div className="flex justify-between text-gray-800 text-sm font-medium border-b pb-2">
         <p>
           Số tiền:{" "}
-          <span className="font-semibold text-black">
-            {Number(amount).toLocaleString("vi-VN")}đ
+          <span className="font-semibold text-black"> 
+            {Number(amount).toLocaleString("vi-VN")}
           </span>
         </p>
         <p>
