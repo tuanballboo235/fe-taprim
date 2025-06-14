@@ -68,7 +68,7 @@ function ProductCard({
           >
             Xem chi tiết
           </button>
-          <button
+          <button 
             onClick={() => {
               setShowPayment(true);
               if (onCheckout) onCheckout();
