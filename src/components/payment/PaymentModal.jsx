@@ -1,63 +1,108 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createQrPayment } from "../../services/api/paymentService";
-const PaymentModal = ({ productId, productName, amount, fee, total }) => {
+import { updateOrder } from "../../services/api/orderService";
+import { getPaymentFilter } from "../../services/api/paymentService";
+
+// Config constants
+const DEFAULT_COUNTDOWN = 10; // seconds
+const CHECK_INTERVAL = 10000; // ms
+const DISCOUNTS = {
+  GIAM10: 0.1,
+};
+
+const PaymentModal = ({ productId, productName, amount, fee, total,onClose  }) => {
   const [email, setEmail] = useState("");
   const [coupon, setCoupon] = useState("");
+  const [discount, setDiscount] = useState(0);
   const [finalTotal, setFinalTotal] = useState(total);
   const [showPaymentInfo, setShowPaymentInfo] = useState(false);
   const [qrImage, setQrImage] = useState(null);
-  const clientNote = "Thanh toán sản phẩm TAPRIM";
-  const handleApplyCoupon = () => {
-    let discount = 0;
+  const [transactionCode, setTransactionCode] = useState("");
+  const [countdown, setCountdown] = useState(DEFAULT_COUNTDOWN);
 
-    // Giả sử nếu coupon là "GIAM10" thì giảm 10%
-    if (coupon.trim().toUpperCase() === "GIAM10") {
-      discount = amount * 0.1;
-    }
-
-    const updatedTotal = amount + fee - discount;
-    setFinalTotal(updatedTotal);
+  // Tính lại tổng tiền
+  const calculateTotal = (couponCode = coupon) => {
+    const normalized = couponCode.trim().toUpperCase();
+    const discountRate = DISCOUNTS[normalized] || 0;
+    const discountAmount = amount * discountRate;
+    setDiscount(discountAmount);
+    setFinalTotal(amount + fee - discountAmount);
   };
-const handleProceedPayment = async () => {
-  if (!email || !email.includes("@")) {
-    alert("Vui lòng nhập email hợp lệ để tiếp tục.");
-    return;
-  }
+  useEffect(() => {
+  if (!transactionCode || !showPaymentInfo) return;
 
-  // ✅ In ra dữ liệu trước khi gọi API
-  console.log("📦 Gửi thông tin tạo QR:", {
-    productId,
-    finalTotal,
-    email,
-    clientNote
-  });
+  const countdownInterval = setInterval(() => {
+    setCountdown((prev) => {
+      if (prev <= 1) {
+        clearInterval(countdownInterval);
+        clearInterval(pollingInterval);
+        console.warn("⏰ Hết thời gian thanh toán.");
+        if (onClose) onClose(); // 👈 Thêm dòng này
+        return 0;
+      }
+      return prev - 1;
+    });
+  }, 1000);
 
-  try {
-    const response = await createQrPayment(
-      productId,
-      finalTotal,
-      email,
-      clientNote
-    );
-    console.log("✅ QR thanh toán đã được tạo:", response);
-
-    if (response.data && response.data.qrCode) {
-      setQrImage(response.data.qrCode);
-      setShowPaymentInfo(true);
-    } else {
-      alert("Không nhận được mã QR từ hệ thống.");
+  const pollingInterval = setInterval(async () => {
+    try {
+      const res = await getPaymentFilter(transactionCode);
+      const status = res?.data?.[0]?.status;
+      if (status === 1) {
+        alert("✅ Thanh toán thành công! Cảm ơn bạn.");
+        clearInterval(countdownInterval);
+        clearInterval(pollingInterval);
+        if (onClose) onClose(); // 👈 Tự đóng sau khi thanh toán
+      }
+    } catch (error) {
+      console.error("❌ Lỗi khi kiểm tra trạng thái thanh toán:", error);
     }
-  } catch (error) {
-    console.error("❌ Lỗi khi tạo QR thanh toán:", error);
-    alert("Không thể tạo mã QR. Vui lòng thử lại sau.");
-  }
-};
+  }, CHECK_INTERVAL);
 
+  return () => {
+    clearInterval(countdownInterval);
+    clearInterval(pollingInterval);
+  };
+}, [transactionCode, showPaymentInfo]);
+
+  const handleApplyCoupon = () => {
+    calculateTotal();
+  };
+
+  const handleProceedPayment = async () => {
+    if (!email || !email.includes("@")) {
+      alert("Vui lòng nhập email hợp lệ để tiếp tục.");
+      return;
+    }
+
+    try {
+      const response = await createQrPayment(productId, finalTotal);
+      const { qrCode, transactionCode: trxCode } = response.data || {};
+
+      if (qrCode && trxCode) {
+        setQrImage(qrCode);
+        setTransactionCode(trxCode);
+        setShowPaymentInfo(true);
+        await updateOrder(trxCode, { contactInfo: email });
+      } else {
+        alert("Không nhận được mã QR từ hệ thống.");
+      }
+    } catch (error) {
+      console.error("❌ Lỗi khi tạo QR thanh toán:", error);
+      alert("Không thể tạo mã QR. Vui lòng thử lại sau.");
+    }
+  };
+
+  // Khi coupon thay đổi, tự tính lại tổng tiền
+  useEffect(() => {
+    calculateTotal();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coupon]);
 
   return (
     <div className="max-w-xl w-full bg-white rounded-xl shadow-md border border-gray-200 p-6 mx-auto space-y-6 max-h-screen overflow-y-auto">
+      {/* Email + Coupon */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Email */}
         <div className="flex flex-col">
           <label
             htmlFor="email"
@@ -75,8 +120,6 @@ const handleProceedPayment = async () => {
             className="border rounded-md px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-
-        {/* Coupon */}
         <div className="flex flex-col">
           <label
             htmlFor="coupon"
@@ -84,10 +127,7 @@ const handleProceedPayment = async () => {
           >
             Mã giảm giá:
           </label>
-          <div
-            className="flex gap-1
-          "
-          >
+          <div className="flex gap-1">
             <input
               id="coupon"
               type="text"
@@ -107,8 +147,8 @@ const handleProceedPayment = async () => {
         </div>
       </div>
 
+      {/* Thông tin thanh toán */}
       <div className="bg-gray-50 p-4 rounded-md border space-y-3 text-sm text-gray-800">
-        {/* Tên sản phẩm */}
         <div className="text-center">
           <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">
             {productName}
@@ -117,45 +157,38 @@ const handleProceedPayment = async () => {
         <div className="flex justify-between">
           <span className="font-medium">Giá sản phẩm:</span>
           <span className="font-semibold text-black">
-            {Number(amount).toLocaleString("vi-VN")}₫
+            {amount.toLocaleString("vi-VN")}₫
           </span>
         </div>
         <div className="flex justify-between">
-          <span className="font-medium">Tiền giảm giá: </span>
+          <span className="font-medium">Tiền giảm giá:</span>
           <span className="font-semibold text-black">
-            0₫
-            <span className="text-gray-500 text-xs ml-1"></span>
+            -{discount.toLocaleString("vi-VN")}₫
           </span>
         </div>
         <div className="flex justify-between">
           <span className="font-medium">Phí giao dịch:</span>
           <span className="font-semibold text-black">
-            {Number(fee).toLocaleString("vi-VN")}₫
-            <span className="text-gray-500 text-xs ml-1"></span>
+            {fee.toLocaleString("vi-VN")}₫
           </span>
         </div>
-
         <div className="border-t pt-3 flex justify-between text-base font-semibold">
           <span>Tổng thanh toán:</span>
           <span className="text-green-600 text-lg font-bold">
-            {Number(finalTotal).toLocaleString("vi-VN")}₫
+            {finalTotal.toLocaleString("vi-VN")}₫
           </span>
         </div>
       </div>
 
-      {/* Email & Coupon */}
-
+      {/* Cảnh báo */}
       {!showPaymentInfo && (
-        <div className="flex flex-col text-center">
-          <p className="text-sm text-red-600">
-            * Vui lòng nhập email trước khi thanh toán, shop sẽ gửi thông báo
-            trong trường hợp bảo hành hoặc cập nhật thông tin tài khoản tới
-            email này
-          </p>
-        </div>
+        <p className="text-sm text-red-600 text-center">
+          * Vui lòng nhập email trước khi thanh toán, shop sẽ gửi thông báo hỗ
+          trợ qua email này.
+        </p>
       )}
 
-      {/* Nút tiến hành thanh toán */}
+      {/* Nút thanh toán */}
       <div className="text-center">
         <button
           onClick={handleProceedPayment}
@@ -165,42 +198,43 @@ const handleProceedPayment = async () => {
         </button>
       </div>
 
+      {/* QR + hướng dẫn + đồng hồ */}
       {showPaymentInfo && (
-        <div className="flex flex-col gap-6 mt-6 md:flex-row md:items-start md:justify-center">
-          {/* QR Image */}
-          <div className="w-full max-w-[280px] mx-auto md:mx-0 md:w-56 aspect-square border rounded-lg overflow-hidden flex-shrink-0">
-            <img
-              src={qrImage} 
-              alt="QR code"
-              className="w-full h-full object-contain"
-            />
-          </div>
+        <>
+          <div className="flex flex-col gap-6 mt-6 md:flex-row md:items-start md:justify-center">
+           <div className="flex flex-col w-full max-w-[280px] mx-auto md:mx-0 md:w-56 border rounded-lg overflow-hidden flex-shrink-0 items-center">
+  <img
+    src={qrImage}
+    alt="QR code"
+    className="w-full h-full object-contain"
+  />
+  <div className="text-center text-xs text-gray-600 mt-2">
+    Mã QR sẽ hết hạn sau {" "}
+    <span className="text-red-500 font-semibold">{countdown}s</span>.
+  </div>
+</div>
 
-          {/* Hướng dẫn */}
-          <div className="text-sm text-gray-700 leading-relaxed w-full">
-            <p className="font-semibold text-base mb-2 text-center md:text-left">
-              Thực hiện theo hướng dẫn sau để thanh toán tự động:
-            </p>
-            <ol className="space-y-1 list-decimal pl-5 mb-4">
-              <li>
-                Mở ứng dụng <strong>Mobile Banking</strong> của ngân hàng
-              </li>
-              <li>
-                Chọn <strong>"Thanh Toán"</strong> và quét mã QR bên trái và
-                thanh toán
-              </li>
-              <li>
-                Giữ màn hình 10-20s để hệ thống xác nhận thanh toán và gửi tài
-                khoản qua email bạn đã nhập
-              </li>
-            </ol>
-            <p className="text-red-600 text-sm font-medium text-center md:text-left">
-              ⚠ Nếu sau 1 phút thanh toán nhưng không nhận tài khoản, vui lòng
-              liên hệ Zalo: <strong>0344665098</strong> và gửi bill chuyển khoản
-              để được hỗ trợ.
-            </p>
+
+            <div className="text-sm text-gray-700 leading-relaxed w-full">
+              <p className="font-semibold text-base mb-2 text-center md:text-left">
+                Thực hiện theo hướng dẫn sau để thanh toán tự động:
+              </p>
+              <ol className="space-y-1 list-decimal pl-5 mb-4">
+                <li>
+                  Mở ứng dụng <strong>Mobile Banking</strong> của ngân hàng
+                </li>
+                <li>
+                  Chọn <strong>"Thanh Toán"</strong> và quét mã QR bên trái
+                </li>
+                <li>Chờ 10-20s để hệ thống xác nhận</li>
+              </ol>
+              <p className="text-red-600 text-sm font-medium text-center md:text-left">
+                ⚠ Nếu sau 1 phút thanh toán nhưng không thành công, vui lòng
+                liên hệ Zalo: <strong>0344665098</strong>
+              </p>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

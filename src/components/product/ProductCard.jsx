@@ -91,6 +91,7 @@ function ProductCard({
         ×
       </button>
       <PaymentModal
+        onClose={() => setShowPayment(false)}
         productId={productId} // Replace with actual product ID
         productName={title}
         amount={price }
