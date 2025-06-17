@@ -28,6 +28,7 @@ const ProductList = () => {
         {products.map((product) => (
           <ProductCard
             key={product.productId}
+            productId={product.productId}
             image={`${apiUrl}${product.productImage}`}
             title={product.productName}
             price={product.price}

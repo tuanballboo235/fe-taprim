@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-
-const PaymentModal = ({ productName, amount, fee, total, qrImageUrl }) => {
+import { createQrPayment } from "../../services/api/paymentService";
+const PaymentModal = ({ productId, productName, amount, fee, total }) => {
   const [email, setEmail] = useState("");
   const [coupon, setCoupon] = useState("");
   const [finalTotal, setFinalTotal] = useState(total);
   const [showPaymentInfo, setShowPaymentInfo] = useState(false);
-
+  const [qrImage, setQrImage] = useState(null);
+  const clientNote = "Thanh toán sản phẩm TAPRIM";
   const handleApplyCoupon = () => {
     let discount = 0;
 
@@ -17,15 +18,41 @@ const PaymentModal = ({ productName, amount, fee, total, qrImageUrl }) => {
     const updatedTotal = amount + fee - discount;
     setFinalTotal(updatedTotal);
   };
+const handleProceedPayment = async () => {
+  if (!email || !email.includes("@")) {
+    alert("Vui lòng nhập email hợp lệ để tiếp tục.");
+    return;
+  }
 
-  const handleProceedPayment = () => {
-    if (!email) {
-      alert("Vui lòng nhập email để tiếp tục.");
-      return;
+  // ✅ In ra dữ liệu trước khi gọi API
+  console.log("📦 Gửi thông tin tạo QR:", {
+    productId,
+    finalTotal,
+    email,
+    clientNote
+  });
+
+  try {
+    const response = await createQrPayment(
+      productId,
+      finalTotal,
+      email,
+      clientNote
+    );
+    console.log("✅ QR thanh toán đã được tạo:", response);
+
+    if (response.data && response.data.qrCode) {
+      setQrImage(response.data.qrCode);
+      setShowPaymentInfo(true);
+    } else {
+      alert("Không nhận được mã QR từ hệ thống.");
     }
+  } catch (error) {
+    console.error("❌ Lỗi khi tạo QR thanh toán:", error);
+    alert("Không thể tạo mã QR. Vui lòng thử lại sau.");
+  }
+};
 
-    setShowPaymentInfo(true);
-  };
 
   return (
     <div className="max-w-xl w-full bg-white rounded-xl shadow-md border border-gray-200 p-6 mx-auto space-y-6 max-h-screen overflow-y-auto">
@@ -143,10 +170,7 @@ const PaymentModal = ({ productName, amount, fee, total, qrImageUrl }) => {
           {/* QR Image */}
           <div className="w-full max-w-[280px] mx-auto md:mx-0 md:w-56 aspect-square border rounded-lg overflow-hidden flex-shrink-0">
             <img
-              src={
-                qrImageUrl ||
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTOFQu7p46XsbV39CIHYl3swUPQfDc7HGoP6FrVBIK9rPnaAw68GgDZrbVqAtA-HfGcz4&usqp=CAU"
-              }
+              src={qrImage} 
               alt="QR code"
               className="w-full h-full object-contain"
             />

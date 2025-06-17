@@ -1,6 +1,7 @@
 import React,{ useState } from "react";
 import PaymentModal from "../payment/PaymentModal";
 function ProductCard({
+  productId,
   image,
   title,
   price,
@@ -90,11 +91,11 @@ function ProductCard({
         ×
       </button>
       <PaymentModal
+        productId={productId} // Replace with actual product ID
         productName={title}
         amount={price }
         fee={500}
         total={(hasDiscount ? salePrice : price) + 500}
-        qrImageUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTOFQu7p46XsbV39CIHYl3swUPQfDc7HGoP6FrVBIK9rPnaAw68GgDZrbVqAtA-HfGcz4&usqp=CAU"
       />
     </div>
   </div>
