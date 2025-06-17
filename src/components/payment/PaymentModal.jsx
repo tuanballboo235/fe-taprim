@@ -66,10 +66,13 @@ const PaymentModal = ({
       </div>
 
       {/* Email & Coupon */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Email */}
         <div className="flex flex-col">
-          <label htmlFor="email" className="text-sm text-gray-700 font-medium mb-1">
+          <label
+            htmlFor="email"
+            className="text-sm text-gray-700 font-medium mb-1"
+          >
             Email nhận hóa đơn <span className="text-red-500">*</span>:
           </label>
           <input
@@ -85,10 +88,14 @@ const PaymentModal = ({
 
         {/* Coupon */}
         <div className="flex flex-col">
-          <label htmlFor="coupon" className="text-sm text-gray-700 font-medium mb-1">
+          <label
+            htmlFor="coupon"
+            className="text-sm text-gray-700 font-medium mb-1"
+          >
             Mã giảm giá:
           </label>
-          <div className="flex gap-2">
+          <div className="flex gap-1
+          ">
             <input
               id="coupon"
               type="text"
@@ -106,6 +113,13 @@ const PaymentModal = ({
             </button>
           </div>
         </div>
+      </div>
+
+      <div className="flex flex-col text-center">
+        <p className="text-sm text-red-600">
+          * Vui lòng nhập email trước khi thanh toán, shop sẽ gửi thông báo trong
+          trường hợp bảo hành hoặc cập nhật thông tin tài khoản tới email này
+        </p>
       </div>
 
       {/* Nút tiến hành thanh toán */}
@@ -139,13 +153,22 @@ const PaymentModal = ({
               Thực hiện theo hướng dẫn sau để thanh toán tự động:
             </p>
             <ol className="space-y-1 list-decimal pl-5 mb-4">
-              <li>Mở ứng dụng <strong>Mobile Banking</strong> của ngân hàng</li>
-              <li>Chọn <strong>"Thanh Toán"</strong> và quét mã QR tại hướng dẫn này</li>
-              <li>Hoàn thành các bước thanh toán theo hướng dẫn và đợi hệ thống xử lý</li>
+              <li>
+                Mở ứng dụng <strong>Mobile Banking</strong> của ngân hàng
+              </li>
+              <li>
+                Chọn <strong>"Thanh Toán"</strong> và quét mã QR tại hướng dẫn
+                này
+              </li>
+              <li>
+                Hoàn thành các bước thanh toán theo hướng dẫn và đợi hệ thống xử
+                lý
+              </li>
             </ol>
             <p className="text-red-600 text-sm font-medium">
               ⚠ Nếu sau 1 phút chưa thành công, vui lòng liên hệ Zalo:{" "}
-              <strong>0344665098</strong> và gửi bill chuyển khoản để được hỗ trợ.
+              <strong>0344665098</strong> và gửi bill chuyển khoản để được hỗ
+              trợ.
             </p>
           </div>
         </div>
