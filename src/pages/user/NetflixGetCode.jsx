@@ -36,13 +36,13 @@ const NetflixGetCode = () => {
 
   return (
     <div className="bg-black text-white min-h-screen px-4 py-6 w-full">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <h2 className="text-2xl font-bold mb-4">📩 Lấy Mã Đăng Nhập Netflix Family</h2>
 
         <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 mb-6">
           <input
             type="text"
-            placeholder="Nhập mã giao dịch"
+            placeholder="Nhập mã thanh toán (bắt đầu bằng TAPR)"
             value={transactionCode}
             onChange={(e) => setTransactionCode(e.target.value)}
             className="px-4 py-2 w-full sm:flex-1 rounded bg-white text-black placeholder-gray-500"
