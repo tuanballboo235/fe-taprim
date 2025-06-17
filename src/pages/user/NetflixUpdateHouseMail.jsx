@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import {getNetflixUpdateFamily} from '../../services/api/tempMail'
 import EmailList from '../../components/tempmail/EmailList'
 
-const TempMail = () => {
+const NetflixUpdateHouseMail = () => {
   const [netflixTemporaryMail, setNetflixTemporaryMail] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -43,4 +43,4 @@ return (
 
 }
 
-export default TempMail
+export default NetflixUpdateHouseMail
