@@ -19,9 +19,6 @@ const handleEmailClick = async (id) => {
   };
 
   const closeModal = () => setSelectedEmail(null);
-  const emailList = Array.isArray(emails)
-    ? emails
-    : []
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-gray-900 via-black to-gray-900 py-8 px-4">
       <div className="max-w-6xl mx-auto bg-[#1e1e1e] p-6 rounded-xl shadow-lg">

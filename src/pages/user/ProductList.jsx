@@ -29,7 +29,7 @@ const ProductList = () => {
           <ProductCard
             key={product.productId}
             image={`${apiUrl}${product.productImage}`}
-            title={product.productName}s
+            title={product.productName}
             price={product.price}
             salePrice={'500000'}
             isSale={product.isSale}
@@ -41,7 +41,6 @@ const ProductList = () => {
     {/* <div className="max-w-5xl mx-auto mt-6">
       <Carousel images={images} autoSlide={true} autoSlideInterval={4000} />
     </div> */}
-<ProductDetails />
     </>
   )
 };

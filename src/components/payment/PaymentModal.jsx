@@ -1,12 +1,6 @@
 import React, { useState } from "react";
 
-const PaymentModal = ({
-  productName = "Sản phẩm không tên",
-  amount,
-  fee = 0,
-  total,
-  qrImageUrl,
-}) => {
+const PaymentModal = ({ productName, amount, fee, total, qrImageUrl }) => {
   const [email, setEmail] = useState("");
   const [coupon, setCoupon] = useState("");
   const [finalTotal, setFinalTotal] = useState(total);
@@ -34,38 +28,7 @@ const PaymentModal = ({
   };
 
   return (
-    <div className="max-w-4xl w-full bg-white rounded-xl shadow-md border border-gray-200 p-6 mx-auto space-y-6">
-      {/* Tên sản phẩm */}
-      <div className="text-center">
-        <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">
-          {productName}
-        </h2>
-      </div>
-
-      {/* Thông tin tiền */}
-      <div className="flex flex-col sm:flex-row sm:justify-between text-gray-800 text-sm font-medium border-b pb-3 space-y-2 sm:space-y-0">
-        <p>
-          Số tiền:{" "}
-          <span className="font-semibold text-black">
-            {Number(amount).toLocaleString("vi-VN")}đ
-          </span>
-        </p>
-        <p>
-          Phí giao dịch:{" "}
-          <span className="font-semibold text-black">
-            {Number(fee).toLocaleString("vi-VN")}đ
-          </span>{" "}
-          ({((fee / amount) * 100).toFixed(0)}%)
-        </p>
-        <p>
-          Tổng tiền:{" "}
-          <span className="font-bold text-green-600">
-            {Number(finalTotal).toLocaleString("vi-VN")}đ
-          </span>
-        </p>
-      </div>
-
-      {/* Email & Coupon */}
+    <div className="max-w-xl w-full bg-white rounded-xl shadow-md border border-gray-200 p-6 mx-auto space-y-6 max-h-screen overflow-y-auto">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Email */}
         <div className="flex flex-col">
@@ -94,8 +57,10 @@ const PaymentModal = ({
           >
             Mã giảm giá:
           </label>
-          <div className="flex gap-1
-          ">
+          <div
+            className="flex gap-1
+          "
+          >
             <input
               id="coupon"
               type="text"
@@ -115,12 +80,53 @@ const PaymentModal = ({
         </div>
       </div>
 
-      <div className="flex flex-col text-center">
-        <p className="text-sm text-red-600">
-          * Vui lòng nhập email trước khi thanh toán, shop sẽ gửi thông báo trong
-          trường hợp bảo hành hoặc cập nhật thông tin tài khoản tới email này
-        </p>
+      <div className="bg-gray-50 p-4 rounded-md border space-y-3 text-sm text-gray-800">
+        {/* Tên sản phẩm */}
+        <div className="text-center">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">
+            {productName}
+          </h2>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Giá sản phẩm:</span>
+          <span className="font-semibold text-black">
+            {Number(amount).toLocaleString("vi-VN")}₫
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Tiền giảm giá: </span>
+          <span className="font-semibold text-black">
+            0₫
+            <span className="text-gray-500 text-xs ml-1"></span>
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Phí giao dịch:</span>
+          <span className="font-semibold text-black">
+            {Number(fee).toLocaleString("vi-VN")}₫
+            <span className="text-gray-500 text-xs ml-1"></span>
+          </span>
+        </div>
+
+        <div className="border-t pt-3 flex justify-between text-base font-semibold">
+          <span>Tổng thanh toán:</span>
+          <span className="text-green-600 text-lg font-bold">
+            {Number(finalTotal).toLocaleString("vi-VN")}₫
+          </span>
+        </div>
       </div>
+
+      {/* Email & Coupon */}
+
+      {!showPaymentInfo && (
+        <div className="flex flex-col text-center">
+          <p className="text-sm text-red-600">
+            * Vui lòng nhập email trước khi thanh toán, shop sẽ gửi thông báo
+            trong trường hợp bảo hành hoặc cập nhật thông tin tài khoản tới
+            email này
+          </p>
+        </div>
+      )}
 
       {/* Nút tiến hành thanh toán */}
       <div className="text-center">
@@ -132,11 +138,10 @@ const PaymentModal = ({
         </button>
       </div>
 
-      {/* QR + hướng dẫn chỉ hiển thị khi đã nhập email */}
       {showPaymentInfo && (
-        <div className="flex flex-col md:flex-row items-start justify-center gap-6 mt-6">
+        <div className="flex flex-col gap-6 mt-6 md:flex-row md:items-start md:justify-center">
           {/* QR Image */}
-          <div className="w-full md:w-56 aspect-square border rounded-lg overflow-hidden flex-shrink-0 mx-auto">
+          <div className="w-full max-w-[280px] mx-auto md:mx-0 md:w-56 aspect-square border rounded-lg overflow-hidden flex-shrink-0">
             <img
               src={
                 qrImageUrl ||
@@ -149,7 +154,7 @@ const PaymentModal = ({
 
           {/* Hướng dẫn */}
           <div className="text-sm text-gray-700 leading-relaxed w-full">
-            <p className="font-semibold text-base mb-2">
+            <p className="font-semibold text-base mb-2 text-center md:text-left">
               Thực hiện theo hướng dẫn sau để thanh toán tự động:
             </p>
             <ol className="space-y-1 list-decimal pl-5 mb-4">
@@ -157,18 +162,18 @@ const PaymentModal = ({
                 Mở ứng dụng <strong>Mobile Banking</strong> của ngân hàng
               </li>
               <li>
-                Chọn <strong>"Thanh Toán"</strong> và quét mã QR tại hướng dẫn
-                này
+                Chọn <strong>"Thanh Toán"</strong> và quét mã QR bên trái và
+                thanh toán
               </li>
               <li>
-                Hoàn thành các bước thanh toán theo hướng dẫn và đợi hệ thống xử
-                lý
+                Giữ màn hình 10-20s để hệ thống xác nhận thanh toán và gửi tài
+                khoản qua email bạn đã nhập
               </li>
             </ol>
-            <p className="text-red-600 text-sm font-medium">
-              ⚠ Nếu sau 1 phút chưa thành công, vui lòng liên hệ Zalo:{" "}
-              <strong>0344665098</strong> và gửi bill chuyển khoản để được hỗ
-              trợ.
+            <p className="text-red-600 text-sm font-medium text-center md:text-left">
+              ⚠ Nếu sau 1 phút thanh toán nhưng không nhận tài khoản, vui lòng
+              liên hệ Zalo: <strong>0344665098</strong> và gửi bill chuyển khoản
+              để được hỗ trợ.
             </p>
           </div>
         </div>
