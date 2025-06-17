@@ -2,6 +2,8 @@ import React from 'react'
 import EmailRow from './EmailRow'
 
 const EmailTable = ({ emails, onEmailClick }) => {
+  const hasEmails = Array.isArray(emails) && emails.length > 0
+
   return (
     <table className="w-full text-left table-fixed">
       <thead>
@@ -12,9 +14,20 @@ const EmailTable = ({ emails, onEmailClick }) => {
         </tr>
       </thead>
       <tbody>
-        {emails.map((email) => (
-          <EmailRow key={email.id} email={email} onClick={onEmailClick} />
-        ))}
+        {hasEmails ? (
+          emails.map((email) => (
+            <EmailRow key={email.id} email={email} onClick={onEmailClick} />
+          ))
+        ) : (
+          <tr>
+            <td
+              colSpan="3"
+              className="text-center py-6 text-gray-400 italic"
+            >
+              Không có email nào để hiển thị.
+            </td>
+          </tr>
+        )}
       </tbody>
     </table>
   )

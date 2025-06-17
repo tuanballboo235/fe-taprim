@@ -25,6 +25,9 @@ const NetflixUpdateHouseMail = () => {
     fetchData()
   }, [])
 
+
+
+
 return (
   <div className="bg-black text-white px-4 py-6 w-full">
     <div className="max-w-6xl mx-auto">
