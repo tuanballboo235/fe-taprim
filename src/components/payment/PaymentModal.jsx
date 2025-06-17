@@ -4,7 +4,7 @@ import { updateOrder } from "../../services/api/orderService";
 import { getPaymentFilter } from "../../services/api/paymentService";
 
 // Config constants
-const DEFAULT_COUNTDOWN = 10; // seconds
+const DEFAULT_COUNTDOWN = 50; // seconds
 const CHECK_INTERVAL = 10000; // ms
 const DISCOUNTS = {
   GIAM10: 0.1,
@@ -37,7 +37,11 @@ const PaymentModal = ({ productId, productName, amount, fee, total,onClose  }) =
         clearInterval(countdownInterval);
         clearInterval(pollingInterval);
         console.warn("⏰ Hết thời gian thanh toán.");
-        if (onClose) onClose(); // 👈 Thêm dòng này
+
+        // Dùng setTimeout để tránh gọi setState trong render phase
+        setTimeout(() => {
+          if (onClose) onClose();
+        }, 0);
         return 0;
       }
       return prev - 1;
@@ -52,7 +56,10 @@ const PaymentModal = ({ productId, productName, amount, fee, total,onClose  }) =
         alert("✅ Thanh toán thành công! Cảm ơn bạn.");
         clearInterval(countdownInterval);
         clearInterval(pollingInterval);
-        if (onClose) onClose(); // 👈 Tự đóng sau khi thanh toán
+
+        setTimeout(() => {
+          if (onClose) onClose();
+        }, 0);
       }
     } catch (error) {
       console.error("❌ Lỗi khi kiểm tra trạng thái thanh toán:", error);

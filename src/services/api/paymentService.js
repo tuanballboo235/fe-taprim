@@ -12,7 +12,7 @@ export const createQrPayment = async ( productId, totalAmount) => {
   return response.data
 }
 export const getPaymentFilter = async (transactionCode) => {
-  const response = await api.post(`Payment/filter-payments?transactionCode=${transactionCode}`, {
+  const response = await api.get(`Payment/filter-payments?TransactionCode=${encodeURIComponent(transactionCode)}`, {
     transactionCode: String(transactionCode),
   })
   return response.data
