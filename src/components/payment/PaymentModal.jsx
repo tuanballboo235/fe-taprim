@@ -4,7 +4,7 @@ import { updateOrder } from "../../services/api/orderService";
 import { getPaymentFilter } from "../../services/api/paymentService";
 
 // Config constants
-const DEFAULT_COUNTDOWN = 50; // seconds
+const DEFAULT_COUNTDOWN = 120; // seconds
 const CHECK_INTERVAL = 10000; // ms
 const DISCOUNTS = {
   GIAM10: 0.1,
