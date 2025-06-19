@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { createQrPayment } from "../../services/api/paymentService";
 import { updateOrder } from "../../services/api/orderService";
 import { getPaymentFilter } from "../../services/api/paymentService";
-
 // Config constants
 const DEFAULT_COUNTDOWN = 120; // seconds
 const CHECK_INTERVAL = 10000; // ms
@@ -10,7 +9,15 @@ const DISCOUNTS = {
   GIAM10: 0.1,
 };
 
-const PaymentModal = ({ productId, productName, amount, fee, total,onClose  }) => {
+const PaymentModal = ({
+  productId,
+  productName,
+  amount,
+  fee,
+  total,
+  onClose,
+  onSuccess,
+}) => {
   const [email, setEmail] = useState("");
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -29,48 +36,54 @@ const PaymentModal = ({ productId, productName, amount, fee, total,onClose  }) =
     setFinalTotal(amount + fee - discountAmount);
   };
   useEffect(() => {
-  if (!transactionCode || !showPaymentInfo) return;
+    if (!transactionCode || !showPaymentInfo) return;
 
-  const countdownInterval = setInterval(() => {
-    setCountdown((prev) => {
-      if (prev <= 1) {
-        clearInterval(countdownInterval);
-        clearInterval(pollingInterval);
-        console.warn("⏰ Hết thời gian thanh toán.");
+    const countdownInterval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(countdownInterval);
+          clearInterval(pollingInterval);
+          console.warn("⏰ Hết thời gian thanh toán.");
 
-        // Dùng setTimeout để tránh gọi setState trong render phase
-        setTimeout(() => {
-          if (onClose) onClose();
-        }, 0);
-        return 0;
+          // Dùng setTimeout để tránh gọi setState trong render phase
+          setTimeout(() => {
+            if (onClose) onClose();
+          }, 0);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    const pollingInterval = setInterval(async () => {
+      try {
+        const res = await getPaymentFilter(transactionCode);
+        const status = res?.data?.[0]?.status;
+        if (status === 1) {
+          clearInterval(countdownInterval);
+          clearInterval(pollingInterval);
+
+          const fakeOrder = {
+            paymentTransactionCode: transactionCode,
+            productName,
+            productAccountData: "tuanballboo6@gmail.com:netflix22442", // hoặc lấy từ response thực tế nếu có
+          };
+
+          setTimeout(() => {
+            if (onClose) onClose(); // ẩn PaymentModal
+            if (onSuccess) onSuccess(fakeOrder); // gọi callback để hiện OrderResult
+          }, 0);
+        }
+      } catch (error) {
+        console.error("❌ Lỗi khi kiểm tra trạng thái thanh toán:", error);
       }
-      return prev - 1;
-    });
-  }, 1000);
+    }, CHECK_INTERVAL);
 
-  const pollingInterval = setInterval(async () => {
-    try {
-      const res = await getPaymentFilter(transactionCode);
-      const status = res?.data?.[0]?.status;
-      if (status === 1) {
-        alert("✅ Thanh toán thành công! Cảm ơn bạn.");
-        clearInterval(countdownInterval);
-        clearInterval(pollingInterval);
-
-        setTimeout(() => {
-          if (onClose) onClose();
-        }, 0);
-      }
-    } catch (error) {
-      console.error("❌ Lỗi khi kiểm tra trạng thái thanh toán:", error);
-    }
-  }, CHECK_INTERVAL);
-
-  return () => {
-    clearInterval(countdownInterval);
-    clearInterval(pollingInterval);
-  };
-}, [transactionCode, showPaymentInfo]);
+    return () => {
+      clearInterval(countdownInterval);
+      clearInterval(pollingInterval);
+    };
+  }, [transactionCode, showPaymentInfo]);
 
   const handleApplyCoupon = () => {
     calculateTotal();
@@ -209,18 +222,18 @@ const PaymentModal = ({ productId, productName, amount, fee, total,onClose  }) =
       {showPaymentInfo && (
         <>
           <div className="flex flex-col gap-6 mt-6 md:flex-row md:items-start md:justify-center">
-           <div className="flex flex-col w-full max-w-[280px] mx-auto md:mx-0 md:w-56 border rounded-lg overflow-hidden flex-shrink-0 items-center">
-  <img
-    src={qrImage}
-    alt="QR code"
-    className="w-full h-full object-contain"
-  />
-  <div className="text-center text-xs text-gray-600 mt-2">
-    Mã QR sẽ hết hạn sau {" "}
-    <span className="text-red-500 font-semibold">{countdown}s</span>.
-  </div>
-</div>
-
+            <div className="flex flex-col w-full max-w-[280px] mx-auto md:mx-0 md:w-56 border rounded-lg overflow-hidden flex-shrink-0 items-center">
+              <img
+                src={qrImage}
+                alt="QR code"
+                className="w-full h-full object-contain"
+              />
+              <div className="text-center text-xs text-gray-600 mt-2">
+                Mã QR sẽ hết hạn sau{" "}
+                <span className="text-red-500 font-semibold">{countdown}s</span>
+                .
+              </div>
+            </div>
 
             <div className="text-sm text-gray-700 leading-relaxed w-full">
               <p className="font-semibold text-base mb-2 text-center md:text-left">

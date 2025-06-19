@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import {getNetflixUpdateFamily} from '../../services/api/tempMail'
+import { getNetflixUpdateFamily } from '../../services/api/tempMail'
 import EmailList from '../../components/tempmail/EmailList'
 
 const NetflixUpdateHouseMail = () => {
@@ -25,25 +25,29 @@ const NetflixUpdateHouseMail = () => {
     fetchData()
   }, [])
 
+  return (
+    <div className="bg-gray-100 min-h-screen w-full px-4 sm:px-6 md:px-8 py-6 sm:py-10">
+      <div className="w-full bg-white shadow-md rounded-lg p-6 sm:p-8 border border-gray-200">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 text-center">
+          🏡 Cập nhật hộ gia đình Netflix Family
+        </h2>
 
+        {loading && (
+          <p className="text-sm text-gray-500 text-center">Đang tải dữ liệu...</p>
+        )}
 
+        {error && (
+          <p className="text-red-500 font-medium text-sm text-center">{error}</p>
+        )}
 
-return (
-  <div className="bg-black text-white px-4 py-6 w-full">
-    <div className="max-w-6xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Lấy thông tin Netflix Family</h2>
+        {!loading && !error && Array.isArray(netflixTemporaryMail?.data) && (
+          <EmailList emails={netflixTemporaryMail.data} />
+        )}
 
-      {loading && <p className="text-gray-500 mt-2">Đang tải dữ liệu...</p>}
-      {error && <p className="text-red-500 mt-2">{error}</p>}
-
-      {!loading && !error && Array.isArray(netflixTemporaryMail?.data) && (
-        <EmailList emails={netflixTemporaryMail.data} />
-      )}
+        
+      </div>
     </div>
-  </div>
-)
-
-
+  )
 }
 
 export default NetflixUpdateHouseMail

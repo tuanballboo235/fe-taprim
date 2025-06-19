@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import PaymentModal from "../payment/PaymentModal";
+import OrderAccount from "../order/OrderAccount";
 
 function ProductCard({
   productId,
@@ -13,18 +14,22 @@ function ProductCard({
 }) {
   const hasDiscount = salePrice !== undefined && salePrice < price;
   const [showPayment, setShowPayment] = useState(false);
+  const [orderResult, setOrderResult] = useState(null); // ✅ thêm state mới
+
+  const handleSuccess = (order) => {
+    setOrderResult(order);
+    setShowPayment(false);
+  };
 
   return (
     <>
       <div className="group relative bg-white border rounded-xl shadow-sm hover:shadow-xl transition-all duration-200 overflow-hidden flex flex-col">
-        {/* Sale badge */}
         {isSale && (
           <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded z-10">
             Sale
           </span>
         )}
 
-        {/* Product Image */}
         <div className="relative w-full h-[200px] overflow-hidden">
           <img
             src={image}
@@ -33,9 +38,7 @@ function ProductCard({
           />
         </div>
 
-        {/* Product Info */}
         <div className="p-4 flex flex-col justify-between flex-1">
-          {/* Title cải tiến */}
           <h3
             title={title}
             className="text-lg from-neutral-20 text-gray-900 leading-tight line-clamp-2 hover:text-blue-600 transition-colors duration-150"
@@ -43,7 +46,6 @@ function ProductCard({
             {title}
           </h3>
 
-          {/* Price cải tiến */}
           <div className="mt-2 flex flex-col items-start">
             {hasDiscount ? (
               <>
@@ -61,7 +63,6 @@ function ProductCard({
             )}
           </div>
 
-          {/* Actions */}
           <div className="mt-4 flex justify-between gap-2">
             <button
               onClick={onViewDetail}
@@ -82,7 +83,22 @@ function ProductCard({
         </div>
       </div>
 
-      {/* Payment Modal */}
+      {/* Hiện kết quả thanh toán nếu có */}
+      {orderResult && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="relative bg-white p-6 rounded-xl max-w-lg w-full shadow-lg">
+            <OrderAccount order={orderResult} />
+            <button
+              onClick={() => setOrderResult(null)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal thanh toán */}
       {showPayment && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="relative bg-white p-6 rounded-xl max-w-2xl w-full shadow-lg">
@@ -94,6 +110,7 @@ function ProductCard({
             </button>
             <PaymentModal
               onClose={() => setShowPayment(false)}
+              onSuccess={handleSuccess} // ✅ truyền callback
               productId={productId}
               productName={title}
               amount={price}

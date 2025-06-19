@@ -7,6 +7,7 @@ import ProductList from './pages/user/ProductList.jsx';
 import 'react-toastify/dist/ReactToastify.css';
 import NetflixUpdateHouseMail from './pages/user/NetflixUpdateHouseMail.jsx';
 import NetflixGetCode from './pages/user/NetflixGetCode.jsx';
+import OrderLookupPage from './pages/user/OrderLookUp.jsx';
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -17,6 +18,8 @@ function App() {
           <Route path="/netflix-mail" element={<NetflixUpdateHouseMail />} />
           <Route path="/product" element={<ProductList />} />
           <Route path="/netflix-code" element={<NetflixGetCode />} />
+          <Route path="/order-lookup" element={<OrderLookupPage />} />
+
           <Route path="/" element={<Home />} />
         </Routes>
       </BrowserRouter>

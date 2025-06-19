@@ -22,7 +22,7 @@ const Header = () => {
             <Link to="/netflix-code" className="hover:text-blue-600 transition">Mail Login Netflix</Link>
             <Link to="/chatgpt-code" className="hover:text-blue-600 transition">Mail Code Chatgpt</Link>
 
-            <Link to="#" className="hover:text-blue-600 transition">Tra cứu đơn</Link>
+            <Link to="/order-lookup" className="hover:text-blue-600 transition">Tra cứu đơn</Link>
             <Link to="#" className="hover:text-blue-600 transition">Liên hệ</Link>
 
           </nav>
@@ -56,7 +56,7 @@ const Header = () => {
             <Link to="/netflix-mail" className="hover:text-blue-600 transition"> Mail Update Netflix</Link>
             <Link to="/netflix-code" className="hover:text-blue-600 transition">Mail Login Netflix</Link>
             <Link to="/chatgpt-code" className="hover:text-blue-600 transition">Mail Code Chatgpt</Link>
-            <Link to="#" className="hover:text-blue-600 transition">Tra cứu đơn</Link>
+            <Link to="/order-lookup" className="hover:text-blue-600 transition">Tra cứu đơn</Link>
             <Link to="#" className="hover:text-blue-600 transition">Liên hệ</Link>
             </nav>
             <div className="flex items-center border border-gray-300 rounded overflow-hidden">
