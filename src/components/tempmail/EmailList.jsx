@@ -6,12 +6,10 @@ import { getEmailContentByEmailId } from "../../services/api/tempMail";
 const EmailList = ({ emails }) => {
   const [selectedEmail, setSelectedEmail] = useState(null);
 
-const handleEmailClick = async (id) => {
-
+  const handleEmailClick = async (id) => {
     try {
       const res = await getEmailContentByEmailId(id);
-          console.log("✅ Nội dung nhận được:", res);
-
+      console.log("✅ Nội dung nhận được:", res);
       setSelectedEmail(res.data);
     } catch (error) {
       console.error("Lỗi khi lấy nội dung email:", error);
@@ -19,9 +17,10 @@ const handleEmailClick = async (id) => {
   };
 
   const closeModal = () => setSelectedEmail(null);
+
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-gray-900 via-black to-gray-900 py-8 px-4">
-      <div className="max-w-6xl mx-auto bg-[#1e1e1e] p-6 rounded-xl shadow-lg">
+    <div className="min-h-screen w-full bg-gray-100 py-10 px-4 sm:px-6 md:px-8">
+      <div className="w-full bg-white rounded-xl border border-gray-200 shadow-md p-6 sm:p-8 max-w-5xl mx-auto">
         <EmailTable emails={emails} onEmailClick={handleEmailClick} />
       </div>
 

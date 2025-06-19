@@ -8,16 +8,16 @@ const EmailRow = ({ email, onClick }) => {
   return (
     <tr
       onClick={() => onClick(email.id)}
-      className="border-b border-gray-700 hover:bg-gray-800 transition cursor-pointer"
+      className="border-b border-gray-200 hover:bg-gray-100 transition cursor-pointer"
     >
-      <td className="py-3 px-4 text-sm font-semibold text-white">
+      <td className="py-3 px-4 text-sm font-semibold text-gray-800">
         <p>{senderName || 'Unknown'}</p>
-        <p className="text-gray-400 text-xs">{from}</p>
+        <p className="text-gray-500 text-xs">{from}</p>
       </td>
-      <td className="py-3 px-4 text-sm text-green-400 max-w-[300px] truncate">
+      <td className="py-3 px-4 text-sm text-blue-600 max-w-[300px] truncate">
         {subject}
       </td>
-      <td className="py-3 px-4 text-sm text-gray-400 whitespace-nowrap">
+      <td className="py-3 px-4 text-sm text-gray-500 whitespace-nowrap">
         {timeAgo}
       </td>
     </tr>
