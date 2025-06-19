@@ -1,5 +1,6 @@
-import React,{ useState } from "react";
+import React, { useState } from "react";
 import PaymentModal from "../payment/PaymentModal";
+
 function ProductCard({
   productId,
   image,
@@ -15,94 +16,95 @@ function ProductCard({
 
   return (
     <>
-  
-    <div className="relative bg-white shadow rounded-lg overflow-hidden border hover:shadow-lg transition-all duration-200">
-      {/* Sale badge */}
-      {isSale && (
-        <div className="absolute top-2 right-2 bg-yellow-400 text-white text-xs font-bold px-2 py-1 rounded-full z-10">
-          Sale!
-        </div>
-      )}
-
-      {/* Image */}
-      <img src={image} alt={title} className="w-full h-[180px] object-cover" />
-
-      {/* Content */}
-      <div className="p-4 flex flex-col gap-2">
-        {/* Title */}
-        <h3 className="text-sm font-semibold text-gray-800 leading-snug line-clamp-2 min-h-[40px]">
-          {title}
-        </h3>
-
-        {/* Rating 
-        {rating && (
-          <div className="flex items-center gap-1 text-yellow-500 text-sm">
-            {"★".repeat(Math.floor(rating))}
-            <span className="text-gray-500 ml-1 text-xs">({rating})</span>
-          </div>
+      <div className="group relative bg-white border rounded-xl shadow-sm hover:shadow-xl transition-all duration-200 overflow-hidden flex flex-col">
+        {/* Sale badge */}
+        {isSale && (
+          <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded z-10">
+            Sale
+          </span>
         )}
-        */}
 
-        {/* Price */}
-        <div className="flex gap-2 items-center">
-          {hasDiscount ? (
-            <>
-              <span className="text-sm line-through text-gray-400">
-                {price.toLocaleString()} ₫
-              </span>
-              <span className="text-sm font-bold text-red-500">
-                {salePrice.toLocaleString()} ₫
-              </span>
-            </>
-          ) : (
-            <span className="text-sm font-bold text-gray-800">
-              {price.toLocaleString()} ₫
-            </span>
-          )}
+        {/* Product Image */}
+        <div className="relative w-full h-[200px] overflow-hidden">
+          <img
+            src={image}
+            alt={title}
+            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
+          />
         </div>
 
-        {/* Action buttons */}
-        <div className="mt-4 flex justify-between gap-2">
-          <button
-            onClick={onViewDetail}
-            className="flex-1 border border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white text-sm px-4 py-2 rounded-md transition"
+        {/* Product Info */}
+        <div className="p-4 flex flex-col justify-between flex-1">
+          {/* Title cải tiến */}
+          <h3
+            title={title}
+            className="text-lg from-neutral-20 text-gray-900 leading-tight line-clamp-2 hover:text-blue-600 transition-colors duration-150"
           >
-            Xem chi tiết
-          </button>
-          <button 
-            onClick={() => {
-              setShowPayment(true);
-              if (onCheckout) onCheckout();
-            }}
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-md transition"
-          >
-            Thanh toán ngay
-          </button>
+            {title}
+          </h3>
+
+          {/* Price cải tiến */}
+          <div className="mt-2 flex flex-col items-start">
+            {hasDiscount ? (
+              <>
+                <span className="text-sm text-gray-400 line-through">
+                  {price.toLocaleString("vi-VN")}₫
+                </span>
+                <span className="text-xl font-bold text-red-600">
+                  {salePrice.toLocaleString("vi-VN")}₫
+                </span>
+              </>
+            ) : (
+              <span className="text-xl font-bold text-gray-800">
+                {price.toLocaleString("vi-VN")}₫
+              </span>
+            )}
+          </div>
+
+          {/* Actions */}
+          <div className="mt-4 flex justify-between gap-2">
+            <button
+              onClick={onViewDetail}
+              className="flex-1 text-sm px-4 py-2 rounded-md border border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white transition"
+            >
+              Xem chi tiết
+            </button>
+            <button
+              onClick={() => {
+                setShowPayment(true);
+                if (onCheckout) onCheckout();
+              }}
+              className="flex-1 text-sm px-4 py-2 rounded-md bg-green-600 hover:bg-green-700 text-white transition"
+            >
+              Thanh toán
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-    {showPayment && (
-  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-    <div className="relative bg-white p-6 rounded-xl max-w-2xl w-full">
-      <button
-        onClick={() => setShowPayment(false)}
-        className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
-      >
-        ×
-      </button>
-      <PaymentModal
-        onClose={() => setShowPayment(false)}
-        productId={productId} // Replace with actual product ID
-        productName={title}
-        amount={price }
-        fee={500}
-        total={(hasDiscount ? salePrice : price) + 500}
-      />
-    </div>
-  </div>
-)}
 
-      </>
+      {/* Payment Modal */}
+      {showPayment && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="relative bg-white p-6 rounded-xl max-w-2xl w-full shadow-lg">
+            <button
+              onClick={() => setShowPayment(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
+            >
+              ×
+            </button>
+            <PaymentModal
+              onClose={() => setShowPayment(false)}
+              productId={productId}
+              productName={title}
+              amount={price}
+              fee={500}
+              total={(hasDiscount ? salePrice : price) + 500}
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 }
+
 export default ProductCard;
