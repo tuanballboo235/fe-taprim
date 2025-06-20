@@ -59,18 +59,17 @@ const PaymentModal = ({
     const pollingInterval = setInterval(async () => {
   try {
     const res = await getPaymentFilter(transactionCode);
-    console.log("🟡 Res polling: ", res);
-
     const data = Array.isArray(res?.data) ? res.data[0] : res.data;
 
     if (data?.status === 1) {
       clearInterval(countdownInterval);
       clearInterval(pollingInterval);
       const productAccountData = await getProductAccountByTransactionCode(data.transactionCode);
+      console.log("✅ Thanh toán thành công:", productAccountData.data.accountData);
       const orderResult = {
         paymentTransactionCode: transactionCode,
         productName,
-        productAccountData: productAccountData.productAccountData,
+        productAccountData: productAccountData.data.accountData,
       };
 
       setTimeout(() => {

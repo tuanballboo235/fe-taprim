@@ -35,7 +35,7 @@ const ProductList = () => {
             price={product.price}
             salePrice={'500000'}
             isSale={product.isSale}
-           quantity={product.accountStockQuantity}
+            quantity={product.accountStockQuantity}
           />
         ))}
       </div>
