@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createQrPayment } from "../../services/api/paymentService";
 import { updateOrder } from "../../services/api/orderService";
 import { getPaymentFilter } from "../../services/api/paymentService";
+import { getProductAccountByTransactionCode } from "../../services/api/productAccountService";
 // Config constants
 const DEFAULT_COUNTDOWN = 120; // seconds
 const CHECK_INTERVAL = 10000; // ms
@@ -56,28 +57,32 @@ const PaymentModal = ({
     }, 1000);
 
     const pollingInterval = setInterval(async () => {
-      try {
-        const res = await getPaymentFilter(transactionCode);
-        const status = res?.data?.[0]?.status;
-        if (status === 1) {
-          clearInterval(countdownInterval);
-          clearInterval(pollingInterval);
+  try {
+    const res = await getPaymentFilter(transactionCode);
+    console.log("🟡 Res polling: ", res);
 
-          const fakeOrder = {
-            paymentTransactionCode: transactionCode,
-            productName,
-            productAccountData: "tuanballboo6@gmail.com:netflix22442", // hoặc lấy từ response thực tế nếu có
-          };
+    const data = Array.isArray(res?.data) ? res.data[0] : res.data;
 
-          setTimeout(() => {
-            if (onClose) onClose(); // ẩn PaymentModal
-            if (onSuccess) onSuccess(fakeOrder); // gọi callback để hiện OrderResult
-          }, 0);
-        }
-      } catch (error) {
-        console.error("❌ Lỗi khi kiểm tra trạng thái thanh toán:", error);
-      }
-    }, CHECK_INTERVAL);
+    if (data?.status === 1) {
+      clearInterval(countdownInterval);
+      clearInterval(pollingInterval);
+      const productAccountData = await getProductAccountByTransactionCode(data.transactionCode);
+      const orderResult = {
+        paymentTransactionCode: transactionCode,
+        productName,
+        productAccountData: productAccountData.productAccountData,
+      };
+
+      setTimeout(() => {
+        if (onClose) onClose();
+        if (onSuccess) onSuccess(orderResult);
+      }, 0);
+    }
+  } catch (error) {
+    console.error("❌ Lỗi khi kiểm tra trạng thái thanh toán:", error);
+  }
+}, CHECK_INTERVAL);
+
 
     return () => {
       clearInterval(countdownInterval);

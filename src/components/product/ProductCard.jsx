@@ -9,12 +9,16 @@ function ProductCard({
   price,
   salePrice,
   isSale = false,
+  quantity = 1,
   onViewDetail,
   onCheckout,
+  onOrder,
 }) {
   const hasDiscount = salePrice !== undefined && salePrice < price;
+  const isOutOfStock = quantity === 0;
+
   const [showPayment, setShowPayment] = useState(false);
-  const [orderResult, setOrderResult] = useState(null); // ✅ thêm state mới
+  const [orderResult, setOrderResult] = useState(null);
 
   const handleSuccess = (order) => {
     setOrderResult(order);
@@ -23,70 +27,108 @@ function ProductCard({
 
   return (
     <>
-      <div className="group relative bg-white border rounded-xl shadow-sm hover:shadow-xl transition-all duration-200 overflow-hidden flex flex-col">
-        {isSale && (
-          <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded z-10">
-            Sale
-          </span>
-        )}
-
-        <div className="relative w-full h-[200px] overflow-hidden">
+      <div className="group bg-white border border-gray-200 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col overflow-hidden">
+        <div className="relative">
           <img
             src={image}
             alt={title}
-            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-[220px] object-cover transition-transform duration-300 group-hover:scale-105"
           />
+          {isSale && (
+            <span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-semibold px-3 py-1 rounded shadow-md">
+              SALE
+            </span>
+          )}
+          {isOutOfStock && (
+            <span className="absolute top-3 right-3 bg-gray-600 text-white text-xs px-3 py-1 rounded shadow-md">
+              Hết hàng
+            </span>
+          )}
         </div>
 
-        <div className="p-4 flex flex-col justify-between flex-1">
-          <h3
-            title={title}
-            className="text-lg from-neutral-20 text-gray-900 leading-tight line-clamp-2 hover:text-blue-600 transition-colors duration-150"
-          >
-            {title}
-          </h3>
+        <div className="p-5 flex flex-col justify-between flex-1 gap-3">
+          {/* ==== Thông tin sản phẩm gom gọn lại ==== */}
+          <div className="flex justify-between items-start gap-4">
+            {/* Tiêu đề và số lượng */}
+            <div className="flex flex-col flex-1">
+              <h3 className="text-base font-semibold text-gray-900 hover:text-blue-600 transition line-clamp-2">
+                {title}
+              </h3>
+              <p className="text-sm text-gray-500 mt-1">
+                Số lượng:{" "}
+                <span className={`font-semibold ${isOutOfStock ? "text-red-600" : "text-gray-800"}`}>
+                  {quantity}
+                </span>
+              </p>
+            </div>
 
-          <div className="mt-2 flex flex-col items-start">
-            {hasDiscount ? (
-              <>
-                <span className="text-sm text-gray-400 line-through">
+            {/* Giá */}
+            <div className="text-right min-w-[100px]">
+              {hasDiscount ? (
+                <>
+                  <p className="text-xs text-gray-400 line-through">
+                    {price.toLocaleString("vi-VN")}₫
+                  </p>
+                  <p className="text-lg font-bold text-red-600">
+                    {salePrice.toLocaleString("vi-VN")}₫
+                  </p>
+                </>
+              ) : (
+                <p className="text-lg font-bold text-gray-800">
                   {price.toLocaleString("vi-VN")}₫
-                </span>
-                <span className="text-xl font-bold text-red-600">
-                  {salePrice.toLocaleString("vi-VN")}₫
-                </span>
-              </>
-            ) : (
-              <span className="text-xl font-bold text-gray-800">
-                {price.toLocaleString("vi-VN")}₫
-              </span>
-            )}
+                </p>
+              )}
+            </div>
           </div>
 
-          <div className="mt-4 flex justify-between gap-2">
+          {/* ==== Nút thao tác ==== */}
+          <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
             <button
               onClick={onViewDetail}
-              className="flex-1 text-sm px-4 py-2 rounded-md border border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white transition"
+              className="text-sm px-4 py-2 rounded-lg border border-gray-700 text-gray-700 hover:bg-gray-800 hover:text-white transition"
             >
               Xem chi tiết
             </button>
+
+            <button
+              onClick={() => onOrder?.()}
+              disabled={isOutOfStock}
+              className={`text-sm px-4 py-2 rounded-lg transition font-medium ${
+                isOutOfStock
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-yellow-400 hover:bg-yellow-500 text-gray-900"
+              }`}
+            >
+              Đặt hàng
+            </button>
+
             <button
               onClick={() => {
                 setShowPayment(true);
-                if (onCheckout) onCheckout();
+                onCheckout?.();
               }}
-              className="flex-1 text-sm px-4 py-2 rounded-md bg-green-600 hover:bg-green-700 text-white transition"
+              disabled={isOutOfStock}
+              className={`text-sm px-4 py-2 rounded-lg transition font-medium ${
+                isOutOfStock
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700 text-white"
+              }`}
             >
               Thanh toán
             </button>
           </div>
         </div>
       </div>
-
-      {/* Hiện kết quả thanh toán nếu có */}
+  {/* Tooltip khi hết hàng */}
+  {isOutOfStock && (
+    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 px-2 py-1 rounded bg-black text-white text-xs opacity-0 group-hover:opacity-100 transition pointer-events-none z-10 whitespace-nowrap">
+      Sản phẩm đã hết
+    </div>
+  )}
+      {/* Kết quả thanh toán */}
       {orderResult && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="relative bg-white p-6 rounded-xl max-w-lg w-full shadow-lg">
+          <div className="relative bg-white p-6 rounded-xl max-w-lg w-full shadow-xl">
             <OrderAccount order={orderResult} />
             <button
               onClick={() => setOrderResult(null)}
@@ -101,7 +143,7 @@ function ProductCard({
       {/* Modal thanh toán */}
       {showPayment && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="relative bg-white p-6 rounded-xl max-w-2xl w-full shadow-lg">
+          <div className="relative bg-white p-6 rounded-xl max-w-2xl w-full shadow-xl">
             <button
               onClick={() => setShowPayment(false)}
               className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
@@ -110,12 +152,13 @@ function ProductCard({
             </button>
             <PaymentModal
               onClose={() => setShowPayment(false)}
-              onSuccess={handleSuccess} // ✅ truyền callback
+              onSuccess={handleSuccess}
               productId={productId}
               productName={title}
               amount={price}
               fee={500}
               total={(hasDiscount ? salePrice : price) + 500}
+              quantity={quantity}
             />
           </div>
         </div>
