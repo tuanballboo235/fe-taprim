@@ -11,6 +11,7 @@ const ProductList = () => {
       try {
         const data = await getAllProducts()
         setProducts(data)
+        console.log('Dữ liệu sản phẩm:', data)
       } catch (error) {
         console.error('Lỗi khi fetch sản phẩm:', error)
       }
@@ -34,7 +35,7 @@ const ProductList = () => {
             price={product.price}
             salePrice={'500000'}
             isSale={product.isSale}
-           
+           quantity={product.accountStockQuantity}
           />
         ))}
       </div>

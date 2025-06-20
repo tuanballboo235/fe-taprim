@@ -9,7 +9,7 @@ function ProductCard({
   price,
   salePrice,
   isSale = false,
-  quantity = 1,
+  quantity,
   onViewDetail,
   onCheckout,
   onOrder,
@@ -85,22 +85,17 @@ function ProductCard({
           <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
             <button
               onClick={onViewDetail}
-              className="text-sm px-4 py-2 rounded-lg border border-gray-700 text-gray-700 hover:bg-gray-800 hover:text-white transition"
+              className="text-sm px-4 py-2 rounded-lg font-semibold bg-orange-400 border-gray-700 text-black hover:bg-gray-800 hover:text-white transition"
             >
               Xem chi tiết
             </button>
 
             <button
               onClick={() => onOrder?.()}
-              disabled={isOutOfStock}
-              className={`text-sm px-4 py-2 rounded-lg transition font-medium ${
-                isOutOfStock
-                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                  : "bg-yellow-400 hover:bg-yellow-500 text-gray-900"
-              }`}
+              className="text-sm px-4 py-2 rounded-lg transition font-medium bg-yellow-400 hover:bg-yellow-500 text-gray-900"
             >
-              Đặt hàng
-            </button>
+              Liên hệ
+              </button>
 
             <button
               onClick={() => {
