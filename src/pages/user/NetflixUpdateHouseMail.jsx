@@ -28,8 +28,8 @@ const NetflixUpdateHouseMail = () => {
   return (
     <div className="bg-gray-100 min-h-screen w-full px-4 sm:px-6 md:px-8 py-6 sm:py-10">
       <div className="w-full bg-white shadow-md rounded-lg p-6 sm:p-8 border border-gray-200">
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 text-center">
-          🏡 Cập nhật hộ gia đình Netflix Family
+        <h2 className="text-xl sm:text-3xl font-bold text-gray-800 mb-6 text-center">
+          Cập nhật hộ gia đình Netflix Family
         </h2>
 
         {loading && (

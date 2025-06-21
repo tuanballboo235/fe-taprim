@@ -18,3 +18,15 @@ export const updateOrder = async (transactionCode, orderData) => {
     throw error;
   }
 };
+export const getOrderByTransactionCode = async (transactionCode) => {
+  try {
+    const response = await api.post(`Order/get-order-detail-by-transaction-code`, {
+     transactionCode: transactionCode
+    });
+    console.error("Lấy thông tin đơn hàng thành công:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy thông tin đơn hàng:", error);
+    throw error;
+  }
+};

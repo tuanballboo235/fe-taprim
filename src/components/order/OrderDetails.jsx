@@ -15,13 +15,14 @@ export default function OrderDetails({ order }) {
     return date.toLocaleString("vi-VN");
   };
 
+  if (!order) return null;
+
   return (
-    <div className="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl p-8 border border-gray-100">
-      <h2 className="text-3xl font-bold text-center text-green-600 mb-8">
+    <div className="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl p-8 border border-gray-100 space-y-6">
+      <h2 className="text-2xl font-bold text-center text-green-600 mt-6">
         Chi tiết đơn hàng
       </h2>
 
-      {/* Table-style info */}
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left text-gray-700">
           <tbody className="divide-y divide-gray-200">
@@ -32,11 +33,9 @@ export default function OrderDetails({ order }) {
               ["Thời gian thanh toán", formatDateTime(order.paidAt)],
               ["Ngày tạo đơn", formatDateTime(order.createAt)],
               ["Hết hạn lấy mã", formatDateTime(order.expiredAt)],
-              [
-                "Mã giảm giá",
-                `${order.couponCode} (-${order.couponDiscountPersent}%)`,
-              ],
-              ["Tổng tiền", `${order.totalAmount.toLocaleString("vi-VN")}₫`],
+            
+             ["Tổng tiền", order.totalAmount ? order.totalAmount.toLocaleString("vi-VN") + "₫" : "0₫"]
+
             ].map(([label, value], idx) => (
               <tr key={idx} className="hover:bg-gray-50">
                 <td className="py-3 pr-4 font-medium text-gray-600 w-1/3">
@@ -49,7 +48,7 @@ export default function OrderDetails({ order }) {
         </table>
       </div>
 
-      {/* Tài khoản sản phẩm - nổi bật riêng */}
+      {/* Tài khoản sản phẩm */}
       <div className="mt-10 p-6 bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl shadow-sm">
         <h3 className="text-base font-semibold text-gray-700 mb-3">
           Tài khoản sản phẩm
