@@ -9,6 +9,7 @@ import NetflixUpdateHouseMailPage from './pages/user/NetflixUpdateHouseMailPage.
 import NetflixGetCodePage from './pages/user/NetflixGetCodePage.jsx';
 import OrderLookupPage from './pages/user/OrderLookUpPage.jsx';
 import CreateProductPage from './pages/admin/CreateProductPage.jsx';
+import ProductAccountPage from './pages/admin/ProductAccountPage.jsx';
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -24,6 +25,9 @@ function App() {
 
           {/*ADMIN ROUTE*/}
           <Route path="/admin-create-product" element={<CreateProductPage />} />
+          <Route path="/admin-product-account/:productId" element={<ProductAccountPage />} />
+
+          {/* Redirect to home if no match */}
           <Route path="/" element={<ProductListPage />} />
         </Routes>
       </BrowserRouter>
