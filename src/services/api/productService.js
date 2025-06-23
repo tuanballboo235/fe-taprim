@@ -11,5 +11,9 @@ export const getProductById = async (id) => {
   return response.data
 }
 
+export const createProduct = async (productData) => {
+  const response = await api.post('product/create-product', productData)
+  return response.data
+}
 // Có thể thêm create/update/delete nếu cần
 export default getAllProducts;
