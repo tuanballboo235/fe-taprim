@@ -1,12 +1,14 @@
 import { Link } from 'react-router-dom';
-
+import ContactCard from '../../components/contact/ContactCard';
 
 function Home() {
   return (
-    <div className="home-container">
-      <h1>Welcome to My Ecommerce Apsp</h1>
-      <p>Explore our products or check your <Link to="/netflix-mail">Netflix Temporary Emails</Link>.</p>
-    </div>
+  <ContactCard
+    facebookUrl="https://www.facebook.com/yourprofile"
+    zaloUrl="https://zalo.me/yourzalo"
+    phoneNumber="123-456-7890"
+    fbGroupUrl="https://www.facebook.com/groups/yourgroup"
+  ></ContactCard>
   );
 }
 

@@ -20,7 +20,7 @@ function App() {
           <Route path="/netflix-code" element={<NetflixGetCode />} />
           <Route path="/order-lookup" element={<OrderLookupPage />} />
 
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<ProductList />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
