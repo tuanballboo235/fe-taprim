@@ -1,56 +1,144 @@
-import React, { useEffect, useState } from 'react'
-import ProductCard from "../../components/product/ProductCard";
-import getAllProducts from '../../services/api/productService'
-import ProductDetails from '../../components/product/ProductDetail';
+import React from "react";
+import CategorySection from "../../components/category/CategorySection";
 
 const ProductList = () => {
-  const [products, setProducts] = useState([])
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await getAllProducts();
-
-        // Kiểm tra và gán đúng data là mảng
-        if (res && Array.isArray(res.data)) {
-          setProducts(res.data);
-        } else {
-          console.warn('Dữ liệu trả về không hợp lệ:', res);
-          setProducts([]);
-        }
-
-        console.log('Dữ liệu sản phẩm:', res);
-      } catch (error) {
-        console.error('Lỗi khi fetch sản phẩm:', error);
-      }
+  // Dữ liệu mẫu tĩnh cho từng danh mục
+  const mockData = [
+    {
+      title: "Game trên Steam",
+      description: "Những trò chơi được đánh giá tốt, nội dung hấp dẫn đang chờ bạn",
+      viewAllLink: "/category/steam",
+      products: [
+        {
+          id: 1,
+          name: "ELDEN RING Shadow of the Erdtree",
+          image: "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg",
+          salePrice: 99000,
+          originalPrice: 1690000,
+          discount: 94,
+          inStock: true,
+        },
+        {
+          id: 2,
+          name: "Roblox Pet",
+          image: "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg",
+          salePrice: 15000,
+          originalPrice: 60000,
+          discount: 75,
+          inStock: false,
+        },
+        {
+          id: 3,
+          name: "Split Fiction - Thuê game 1 ngày",
+          image: "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg",
+          salePrice: 23000,
+          originalPrice: 899000,
+          discount: 97,
+          inStock: true,
+        },
+          {
+          id: 3,
+          name: "Split Fiction - Thuê game 1 ngày",
+          image: "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg",
+          salePrice: 23000,
+          originalPrice: 899000,
+          discount: 97,
+          inStock: true,
+        },  {
+          id: 3,
+          name: "Split Fiction - Thuê game 1 ngày",
+          image: "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg",
+          salePrice: 23000,
+          originalPrice: 899000,
+          discount: 97,
+          inStock: true,
+        },
+          {
+          id: 3,
+          name: "Split Fiction - Thuê game 1 ngày",
+          image: "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg",
+          salePrice: 23000,
+          originalPrice: 899000,
+          discount: 97,
+          inStock: true,
+        },
+          {
+          id: 3,
+          name: "Split Fiction - Thuê game 1 ngày",
+          image: "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg",
+          salePrice: 23000,
+          originalPrice: 899000,
+          discount: 97,
+          inStock: true,
+        },
+        
+      ],
+    },
+    {
+      title: "Ứng dụng giải trí",
+      description: "YouTube, Spotify, Netflix và nhiều hơn nữa",
+      viewAllLink: "/category/giai-tri",
+      products: [
+        {
+          id: 4,
+          name: "YouTube Premium - 6 tháng",
+          image: "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg",
+          salePrice: 69000,
+          originalPrice: 149000,
+          discount: 54,
+          inStock: true,
+        },
+        {
+          id: 5,
+          name: "Spotify Premium - Cá nhân",
+          image: "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg",
+          salePrice: 99000,
+          originalPrice: 149000,
+          discount: 33,
+          inStock: true,
+        },
+      ],
+    },
+     {
+      title: "Ứng dụng giải trí",
+      description: "YouTube, Spotify, Netflix và nhiều hơn nữa",
+      viewAllLink: "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg",
+      products: [
+        {
+          id: 4,
+          name: "YouTube Premium - 6 tháng",
+          image: "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg",
+          salePrice: 69000,
+          originalPrice: 149000,
+          discount: 54,
+          inStock: true,
+        },
+        {
+          id: 5,
+          name: "Spotify Premium - Cá nhân",
+          image: "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg",
+          salePrice: 99000,
+          originalPrice: 149000,
+          discount: 33,
+          inStock: false,
+        },
+      ],
     }
-
-    fetchData()
-  }, [])
+  ];
 
   return (
-    <>
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold mb-6">Tất cả sản phẩm</h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {products.map((product) => (
-            <ProductCard
-              key={product.productId}
-              productId={product.productId}
-              image={`${apiUrl}${product.productImage}`}
-              title={product.productName}
-              price={product.price}
-              salePrice={'500000'}
-              isSale={product.isSale}
-              quantity={product.accountStockQuantity}
-            />
-          ))}
-        </div>
-      </div>
-    </>
-  )
+    <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
+      {mockData.map((section) => (
+        <CategorySection
+          key={section.title}
+          title={section.title}
+          description={section.description}
+          products={section.products}
+          viewAllLink={section.viewAllLink}
+        />
+      ))}
+    </div>
+  );
 };
 
 export default ProductList;
