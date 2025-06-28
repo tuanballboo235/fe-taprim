@@ -22,9 +22,10 @@ const CategorySection = ({ title, description, products }) => {
           const isOutOfStock = !product.inStock;
 
           return (
-            <div
+            <Link
               key={product.id}
-              className="relative bg-white rounded-xl overflow-hidden shadow hover:shadow-xl transition min-w-[240px]"
+              to={`/product/${product.id}`}
+              className="relative bg-white rounded-xl overflow-hidden shadow hover:shadow-xl transition min-w-[240px] block"
             >
               {/* Product Image */}
               <div className="relative z-0">
@@ -34,12 +35,16 @@ const CategorySection = ({ title, description, products }) => {
                 )}
 
                 <img
-                  src={product.image || "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg"}
+                  src={
+                    product.image ||
+                    "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg"
+                  }
                   alt={product.name}
                   className="w-full h-40 object-cover"
                   onError={(e) => {
-                    e.target.onerror = null; // tránh lặp vô hạn nếu ảnh fallback cũng lỗi
-                    e.target.src = "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg";
+                    e.target.onerror = null;
+                    e.target.src =
+                      "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg";
                   }}
                 />
 
@@ -70,7 +75,7 @@ const CategorySection = ({ title, description, products }) => {
                   )}
                 </div>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>

@@ -10,6 +10,7 @@ import NetflixGetCodePage from './pages/user/NetflixGetCodePage.jsx';
 import OrderLookupPage from './pages/user/OrderLookUpPage.jsx';
 import CreateProductPage from './pages/admin/CreateProductPage.jsx';
 import ProductAccountPage from './pages/admin/ProductAccountPage.jsx';
+import ProductDetailPage from './components/product/ProductDetails.jsx';
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -22,6 +23,7 @@ function App() {
           <Route path="/product" element={<ProductListPage />} />
           <Route path="/netflix-code" element={<NetflixGetCodePage />} />
           <Route path="/order-lookup" element={<OrderLookupPage />} />
+          <Route path="/product/:id" element={<ProductDetailPage />} />
 
           {/*ADMIN ROUTE*/}
           <Route path="/admin-create-product" element={<CreateProductPage />} />
