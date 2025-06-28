@@ -70,15 +70,15 @@ function ProductCard({
               {hasDiscount ? (
                 <>
                   <p className="text-xs text-slate-400 line-through">
-                    {price.toLocaleString("vi-VN")}₫
+                   
                   </p>
                   <p className="text-lg font-semibold text-purple-600">
-                    {salePrice.toLocaleString("vi-VN")}₫
+                 
                   </p>
                 </>
               ) : (
                 <p className="text-lg font-semibold text-slate-800">
-                  {price.toLocaleString("vi-VN")}₫
+               
                 </p>
               )}
             </div>

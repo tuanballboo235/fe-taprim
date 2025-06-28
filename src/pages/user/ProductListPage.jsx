@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import ProductCard from "../../components/product/ProductCard";
-import getAllProducts  from '../../services/api/productService'
+import getAllProducts from '../../services/api/productService'
 import ProductDetails from '../../components/product/ProductDetail';
+
 const ProductList = () => {
   const [products, setProducts] = useState([])
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -9,11 +10,19 @@ const ProductList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getAllProducts()
-        setProducts(data)
-        console.log('Dữ liệu sản phẩm:', data)
+        const res = await getAllProducts();
+
+        // Kiểm tra và gán đúng data là mảng
+        if (res && Array.isArray(res.data)) {
+          setProducts(res.data);
+        } else {
+          console.warn('Dữ liệu trả về không hợp lệ:', res);
+          setProducts([]);
+        }
+
+        console.log('Dữ liệu sản phẩm:', res);
       } catch (error) {
-        console.error('Lỗi khi fetch sản phẩm:', error)
+        console.error('Lỗi khi fetch sản phẩm:', error);
       }
     }
 
@@ -21,28 +30,25 @@ const ProductList = () => {
   }, [])
 
   return (
-        <>
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <h2 className="text-2xl font-bold mb-6">Tất cả sản phẩm</h2>
+    <>
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <h2 className="text-2xl font-bold mb-6">Tất cả sản phẩm</h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {products.map((product) => (
-          <ProductCard
-            key={product.productId}
-            productId={product.productId}
-            image={`${apiUrl}${product.productImage}`}
-            title={product.productName}
-            price={product.price}
-            salePrice={'500000'}
-            isSale={product.isSale}
-            quantity={product.accountStockQuantity}
-          />
-        ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {products.map((product) => (
+            <ProductCard
+              key={product.productId}
+              productId={product.productId}
+              image={`${apiUrl}${product.productImage}`}
+              title={product.productName}
+              price={product.price}
+              salePrice={'500000'}
+              isSale={product.isSale}
+              quantity={product.accountStockQuantity}
+            />
+          ))}
+        </div>
       </div>
-    </div>
-    {/* <div className="max-w-5xl mx-auto mt-6">
-      <Carousel images={images} autoSlide={true} autoSlideInterval={4000} />
-    </div> */}
     </>
   )
 };
