@@ -1,7 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 
-const CategorySection = ({ title, description, products, viewAllLink }) => {
+const CategorySection = ({ title, description, products }) => {
   return (
     <section className="mb-24 px-2">
       <hr />
@@ -14,14 +14,6 @@ const CategorySection = ({ title, description, products, viewAllLink }) => {
             <p className="text-sm text-gray-500 mt-1">{description}</p>
           )}
         </div>
-        {viewAllLink && (
-          <Link
-            to={viewAllLink}
-            className="text-sm bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition"
-          >
-            Khám phá
-          </Link>
-        )}
       </div>
 
       {/* Product Grid */}
@@ -34,17 +26,21 @@ const CategorySection = ({ title, description, products, viewAllLink }) => {
               key={product.id}
               className="relative bg-white rounded-xl overflow-hidden shadow hover:shadow-xl transition min-w-[240px]"
             >
-              
               {/* Product Image */}
-              <div className="relative z-0" >{/* Overlay khi hết hàng */}
-              {isOutOfStock && (
-                    <div className="absolute inset-0 bg-white/60 opacity-100 z-10"></div>
-              )}
+              <div className="relative z-0">
+                {/* Overlay khi hết hàng */}
+                {isOutOfStock && (
+                  <div className="absolute inset-0 bg-white/60 opacity-100 z-10"></div>
+                )}
 
                 <img
-                  src={product.image}
+                  src={product.image || "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg"}
                   alt={product.name}
                   className="w-full h-40 object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null; // tránh lặp vô hạn nếu ảnh fallback cũng lỗi
+                    e.target.src = "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg";
+                  }}
                 />
 
                 {/* Out of stock badge */}
@@ -57,13 +53,15 @@ const CategorySection = ({ title, description, products, viewAllLink }) => {
 
               {/* Product Info */}
               <div className="p-3 z-0 relative">
-                <p className="text-sm font-medium text-gray-900 line-clamp-2 min-h-[40px]">
+                <p className="text-base font-medium text-gray-900 line-clamp-2 min-h-[40px]">
                   {product.name}
                 </p>
 
                 <div className="mt-2 flex items-center justify-between">
                   <span className="text-sm text-red-600 font-semibold">
-                    {product.salePrice.toLocaleString()} đ
+                    {product.minPrice != null && product.maxPrice != null
+                      ? `${product.minPrice.toLocaleString()} đ - ${product.maxPrice.toLocaleString()} đ`
+                      : "Liên hệ"}
                   </span>
                   {product.discount && (
                     <span className="text-xs font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded">
@@ -71,12 +69,6 @@ const CategorySection = ({ title, description, products, viewAllLink }) => {
                     </span>
                   )}
                 </div>
-
-                {product.originalPrice && (
-                  <div className="text-xs text-gray-400 line-through mt-1">
-                    {product.originalPrice.toLocaleString()} đ
-                  </div>
-                )}
               </div>
             </div>
           );
