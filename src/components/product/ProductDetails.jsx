@@ -8,6 +8,8 @@ const ProductDetailPage = () => {
   const { id } = useParams();
   const [entryPrice, setEntryPrice] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [entryStockAccount, setEntryStockAccount] = useState(0);
+
   const [showPayment, setShowPayment] = useState(false);
   const [orderResult, setOrderResult] = useState(null);
   const [fetchdata, setFetchData] = useState(null);
@@ -23,6 +25,7 @@ const ProductDetailPage = () => {
         if (available) {
           setSelectedOption(available.productOptionId);
           setEntryPrice(available.price);
+          setEntryStockAccount(available.stockAccount);
         }
         console.log("Thông tin sản phẩm:", fetchdata);
       } catch (error) {
@@ -36,7 +39,7 @@ const ProductDetailPage = () => {
   const handlePaymentSuccess = (order) => {
     setOrderResult(order); // bạn có thể dùng sau để hiển thị kết quả
     setShowPayment(false);
-
+    
   };
 
   //Hiển thị thông báo loading
@@ -73,7 +76,7 @@ const ProductDetailPage = () => {
         </h1>
 
         <p className="text-sm text-gray-700">
-          Tình trạng:
+          Kho hàng:
           <span
             className={`ml-1 font-semibold ${
               fetchdata.productOptions.some((opt) => opt.stockAccount > 0)
@@ -81,9 +84,7 @@ const ProductDetailPage = () => {
                 : "text-red-600"
             }`}
           >
-            {fetchdata.productOptions.some((opt) => opt.stockAccount > 0)
-              ? "Còn hàng"
-              : "Hết hàng"}
+           {entryStockAccount > 0 ? `${entryStockAccount} sản phẩm` : "Hết hàng"}
           </span>
         </p>
 
@@ -123,6 +124,7 @@ const ProductDetailPage = () => {
                   if (option.stockAccount > 0) {
                     setSelectedOption(option.productOptionId);
                     setEntryPrice(option.price);
+                    setEntryStockAccount(option.stockAccount);
                   }
                 }}
                 disabled={option.stockAccount === 0}
@@ -158,7 +160,7 @@ const ProductDetailPage = () => {
           </button>
 
           <button className="bg-gray-100 text-gray-800 px-6 py-2 rounded-md font-medium text-sm hover:bg-gray-200 w-full">
-            ➕ Thêm vào giỏ
+            📞 Liên hệ shop
           </button>
         </div>
       </div>
