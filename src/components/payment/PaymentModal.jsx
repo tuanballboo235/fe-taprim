@@ -3,6 +3,7 @@ import { createQrPayment } from "../../services/api/paymentService";
 import { updateOrder } from "../../services/api/orderService";
 import { getPaymentFilter } from "../../services/api/paymentService";
 import { getProductAccountByTransactionCode } from "../../services/api/productAccountService";
+import { toast } from "react-toastify";
 // Config constants
 const DEFAULT_COUNTDOWN = 120; // seconds
 const CHECK_INTERVAL = 10000; // ms
@@ -44,7 +45,7 @@ const PaymentModal = ({
         if (prev <= 1) {
           clearInterval(countdownInterval);
           clearInterval(pollingInterval);
-          console.warn("⏰ Hết thời gian thanh toán.");
+          toast.warn("⏰ Hết thời gian thanh toán.");
 
           // Dùng setTimeout để tránh gọi setState trong render phase
           setTimeout(() => {
@@ -57,31 +58,37 @@ const PaymentModal = ({
     }, 1000);
 
     const pollingInterval = setInterval(async () => {
-  try {
-    const res = await getPaymentFilter(transactionCode);
-    const data = Array.isArray(res?.data) ? res.data[0] : res.data;
+      try {
+        const res = await getPaymentFilter(transactionCode);
+        const data = Array.isArray(res?.data) ? res.data[0] : res.data;
 
-    if (data?.status === 1) {
-      clearInterval(countdownInterval);
-      clearInterval(pollingInterval);
-      const productAccountData = await getProductAccountByTransactionCode(data.transactionCode);
-      console.log("✅ Thanh toán thành công:", productAccountData.data.accountData);
-      const orderResult = {
-        paymentTransactionCode: transactionCode,
-        productName,
-        productAccountData: productAccountData.data.accountData,
-      };
+        if (data?.status === 1) {
+          clearInterval(countdownInterval);
+          clearInterval(pollingInterval);
+          const productAccountData = await getProductAccountByTransactionCode(
+            data.transactionCode
+          );
+          console.log(
+            "✅ Thanh toán thành công:",
+            productAccountData.data.accountData
+          );
+          const orderResult = {
+            paymentTransactionCode: transactionCode,
+            productName,
+            productAccountData: productAccountData.data.accountData,
+          };
 
-      setTimeout(() => {
-        if (onClose) onClose();
-        if (onSuccess) onSuccess(orderResult);
-      }, 0);
-    }
-  } catch (error) {
-    console.error("❌ Lỗi khi kiểm tra trạng thái thanh toán:", error);
-  }
-}, CHECK_INTERVAL);
-
+          setTimeout(() => {
+            if (onClose) onClose();
+            if (onSuccess) onSuccess(orderResult);
+          }, 0);
+        }
+      } catch (error) {
+        toast.warn(
+          "❌ Lỗi khi kiểm tra trạng thái thanh toán. Vui lòng thử lại sau."
+        );
+      }
+    }, CHECK_INTERVAL);
 
     return () => {
       clearInterval(countdownInterval);
@@ -113,7 +120,9 @@ const PaymentModal = ({
       }
     } catch (error) {
       console.error("❌ Lỗi khi tạo QR thanh toán:", error);
-      alert("Không thể tạo mã QR. Vui lòng thử lại sau.");
+      toast.warn(
+        "Không thể tạo mã QR thanh toán. Vui lòng liên hệ admin hoặc thử lại sau."
+      );
     }
   };
 
