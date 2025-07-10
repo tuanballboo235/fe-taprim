@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const CategorySection = ({ title, description, products }) => {
+    console.log("Products data:", products); // 👈 Thêm dòng này
+
   return (
     <section className="mb-20 px-4">
       <div className="border-b pb-6 mb-6">
@@ -15,6 +17,7 @@ const CategorySection = ({ title, description, products }) => {
         {products.map((product) => {
           const isOutOfStock = !product.inStock;
           const imageFallback = "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg";
+          const baseUrl = "http://103.238.235.227/"; // hoặc domain thật nếu deploy
 
           return (
             <Link
@@ -27,7 +30,7 @@ const CategorySection = ({ title, description, products }) => {
               {/* Image Section */}
               <div className="relative">
                 <img
-                  src={product.image || imageFallback}
+                  src={product.image ? `${baseUrl}${product.image}` : imageFallback}
                   alt={product.name}
                   className="w-full h-48 object-cover"
                   onError={(e) => {

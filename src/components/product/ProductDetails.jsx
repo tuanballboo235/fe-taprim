@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { getProductOptionByProductId } from "../../services/api/productService";
 import PaymentModal from "../../components/payment/PaymentModal.jsx";
 import { toast } from 'react-toastify';
+import { decreaseCouponUsage } from "../../services/api/couponService";
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -36,10 +37,18 @@ const ProductDetailPage = () => {
     fetchProduct();
   }, [id]);
 
-  const handlePaymentSuccess = (order) => {
+  const handlePaymentSuccess =async  (order) => {
     setOrderResult(order); // bạn có thể dùng sau để hiển thị kết quả
     setShowPayment(false);
     
+  if (order.couponCode) {
+    try {
+      await decreaseCouponUsage(order.couponCode);
+      console.log("✅ Giảm lượt coupon thành công");
+    } catch (error) {
+      console.error("❌ Lỗi giảm lượt coupon:", error);
+    }
+  }
   };
 
   //Hiển thị thông báo loading
@@ -183,7 +192,7 @@ const ProductDetailPage = () => {
       </button>
 
       <PaymentModal
-        productId={fetchdata.productId}
+        productOptionId={selectedOption}
         productName={fetchdata.productName}
         amount={entryPrice}
         fee={500}
