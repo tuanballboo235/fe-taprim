@@ -13,13 +13,13 @@ import OrderLookupPage from './pages/user/OrderLookUpPage.jsx';
 import CreateProductPage from './pages/admin/CreateProductPage.jsx';
 import ProductAccountPage from './pages/admin/ProductAccountPage.jsx';
 import ProductDetailPage from './components/product/ProductDetails.jsx';
-
+import AdminLayout from './layouts/AdminLayout.jsx';
+import UserLayout from './layouts/UserLayout.jsx';
 function App() {
   
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Header />
         
         {/* ✅ Toast container để hiển thị thông báo toàn app */}
         <ToastContainer
@@ -35,20 +35,26 @@ function App() {
           theme="colored"
         />
         <Routes>
-          {/* USER ROUTE*/}
-          <Route path="/home" element={<Home />} />
-          <Route path="/netflix-mail" element={<NetflixUpdateHouseMailPage />} />
-          <Route path="/product" element={<ProductListPage />} />
-          <Route path="/netflix-code" element={<NetflixGetCodePage />} />
-          <Route path="/order-lookup" element={<OrderLookupPage />} />
-          <Route path="/product/:id" element={<ProductDetailPage />} />
-
-          {/*ADMIN ROUTE*/}
-          <Route path="/admin-create-product" element={<CreateProductPage />} />
-          <Route path="/admin-product-account/:productId" element={<ProductAccountPage />} />
-
-          {/* Redirect to home if no match */}
+        {/* USER LAYOUT */}
+          <Route element={<UserLayout />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/netflix-mail" element={<NetflixUpdateHouseMailPage />} />
+            <Route path="/product" element={<ProductListPage />} />
+            <Route path="/netflix-code" element={<NetflixGetCodePage />} />
+            <Route path="/order-lookup" element={<OrderLookupPage />} />
+            <Route path="/product/:id" element={<ProductDetailPage />} />
+            <Route path="/" element={<Navigate to="/product" />} />
+             {/* Redirect to home if no match */}
           <Route path="/" element={<ProductListPage />} />
+          </Route>
+
+
+         {/* ADMIN LAYOUT */}
+          <Route element={<AdminLayout />}>
+            <Route path="/admin-create-product" element={<CreateProductPage />} />
+            <Route path="/admin-product-account/:productId" element={<ProductAccountPage />} />
+          </Route>
+         
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
