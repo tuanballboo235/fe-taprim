@@ -66,22 +66,28 @@ const ProductAccountPage = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-xl font-semibold mb-4">Thêm tài khoản sản phẩm</h2>
-     <div className="mt-6">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 bg-white shadow-md rounded-lg">
+      <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-center sm:text-left">
+        Thêm tài khoản sản phẩm
+      </h2>
+
+      {/* Import Box */}
+      <div className="mt-6">
         <h3 className="text-lg font-medium mb-2">
           Import nhanh danh sách tài khoản
         </h3>
+
         <textarea
           value={importText}
           onChange={(e) => setImportText(e.target.value)}
           rows={6}
-          className="w-full border rounded-md p-2 text-sm"
-          placeholder="username|password|sellCount\nvd: user1|pass1|3"
+          className="w-full border rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+          placeholder="username|password|sellCount&#10;vd: user1|pass1|3"
         ></textarea>
+
         <button
           onClick={handleImport}
-          className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="mt-3 w-full sm:w-auto px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors duration-200"
         >
           Import
         </button>
@@ -93,8 +99,8 @@ const ProductAccountPage = () => {
               {importedAccounts.map((acc, index) => (
                 <li key={index}>
                   <span className="font-mono">
-                    {acc.usernameProductAccount} | {acc.passwordProductAccount}{" "}
-                    | {acc.sellCount}
+                    {acc.usernameProductAccount} | {acc.passwordProductAccount} |{" "}
+                    {acc.sellCount}
                   </span>
                 </li>
               ))}
@@ -102,15 +108,14 @@ const ProductAccountPage = () => {
           </div>
         )}
       </div>
+
+      {/* Form nhập tay */}
+      <hr className="my-6" />
       <ProductAccountForm
         form={form}
         onChange={handleChange}
         onSubmit={handleSubmit}
       />
-
-      <hr className="my-6" />
-
-      
     </div>
   );
 };

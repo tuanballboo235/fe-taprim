@@ -6,7 +6,7 @@ import { queryClient } from './hooks/useFetch'; // đảm bảo file này tồn 
 import Home from './pages/user/HomePage.jsx';
 import Header from './components/common/Header.jsx';
 import ProductListPage from './pages/user/ProductListPage.jsx';
-
+import AdminProductPage from './pages/admin/ProductManagementPage.jsx';
 import NetflixUpdateHouseMailPage from './pages/user/NetflixUpdateHouseMailPage.jsx';
 import NetflixGetCodePage from './pages/user/NetflixGetCodePage.jsx';
 import OrderLookupPage from './pages/user/OrderLookUpPage.jsx';
@@ -53,6 +53,7 @@ function App() {
           <Route element={<AdminLayout />}>
             <Route path="/admin-create-product" element={<CreateProductPage />} />
             <Route path="/admin-product-account/:productId" element={<ProductAccountPage />} />
+            <Route path="/admin-product-list" element={<AdminProductPage />} />
           </Route>
          
         </Routes>

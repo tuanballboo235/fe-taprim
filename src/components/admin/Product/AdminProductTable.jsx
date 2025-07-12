@@ -3,7 +3,7 @@ import { FaEdit, FaPlus } from 'react-icons/fa';
 
 const AdminProductTable = ({ data = [] }) => {
   return (
-    <div className="overflow-x-auto bg-white rounded-lg shadow">
+    <div className="overflow-x-auto bg-white rounded-lg shadow mb-6">
       <table className="min-w-full text-sm text-left border-collapse">
         <thead className="bg-gray-100 text-gray-700">
           <tr>
