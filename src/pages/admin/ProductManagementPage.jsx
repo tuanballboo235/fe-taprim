@@ -10,9 +10,10 @@ const AdminProductPage = () => {
     const fetchProducts = async () => {
       try {
         const res = await getProductByCategory(); // gọi API từ service
+         console.log("Dữ liệu:", res);
         // giả sử API trả về mảng gồm cả product & service, ta tách ra theo CategoryId
-        const productList = res.filter(p => p.CategoryId === 1); // ví dụ: sản phẩm
-        const serviceList = res.filter(p => p.CategoryId === 2); // ví dụ: dịch vụ
+        const productList = res.data.filter(p => p.categoryId === 1); // ví dụ: sản phẩm
+        const serviceList = res.data.filter(p => p.categoryId === 2); // ví dụ: dịch vụ
         console.log("Dữ liệu sản phẩm:", productList);
         console.log("Dữ liệu dịch vụ:", serviceList);
         setProductData(productList);
