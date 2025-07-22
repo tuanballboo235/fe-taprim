@@ -52,7 +52,7 @@ function App() {
          {/* ADMIN LAYOUT */}
           <Route element={<AdminLayout />}>
             <Route path="/admin-create-product" element={<CreateProductPage />} />
-            <Route path="/admin-product-account/:productId" element={<ProductAccountManager />} />
+            <Route path="/admin-product-account/:productOptionId" element={<ProductAccountManager />} />
             <Route path="/admin-product-list" element={<AdminProductPage />} />
           </Route>
          

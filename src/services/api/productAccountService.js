@@ -22,3 +22,11 @@ export const addProductAccountToProduct = async ( productId, data) => {
          })
   return response.data
 }
+
+export const getProductAccountFilter = async ( object = {}) => {
+
+  const response = await api.get('ProductAccount/get-product-account', {
+          params: object
+         })
+  return response.data
+}

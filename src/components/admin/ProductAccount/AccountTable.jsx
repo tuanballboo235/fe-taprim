@@ -21,18 +21,22 @@ const AccountTable = ({ accounts, onEdit, onDelete }) => {
           <table className="w-full border text-sm rounded-lg overflow-hidden shadow">
             <thead className="bg-gray-100 text-gray-700">
               <tr>
-                <th className="p-3 border">#</th>
-                <th className="p-3 border">Email</th>
-                <th className="p-3 border">Mật khẩu</th>
+              
+                <th className="p-3 border">Account Data</th>
+             
+                <th className="p-3 border">Lượt bán</th>
+                   <th className="p-3 border">Trạng thái</th>
+                <th className="p-3 border">Có thể bán</th>
                 <th className="p-3 border text-center">Thao tác</th>
               </tr>
             </thead>
             <tbody>
               {accounts.map((acc, i) => (
                 <tr key={acc.id} className="hover:bg-gray-50 transition-all">
-                  <td className="p-3 border text-center">{i + 1}</td>
-                  <td className="p-3 border">{acc.email}</td>
-                  <td className="p-3 border">{acc.password}</td>
+                  <td className="p-3 border">{acc.email}:{acc.password}</td>
+                  <td className="p-3 border"></td>
+                      <td className="p-3 border"></td>
+                          <td className="p-3 border"></td>
                   <td className="p-3 border text-center space-x-3">
                     <button
                       className="text-blue-600 hover:text-blue-800"
