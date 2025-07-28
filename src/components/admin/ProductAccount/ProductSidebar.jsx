@@ -18,7 +18,7 @@ const ProductSidebar = ({ products, onSelect, selectedProductId }) => {
                 : "hover:bg-gray-50 border-gray-200"
             }`}
           >
-            {product.name}
+            {product.label}
           </li>
         ))}
       </ul>

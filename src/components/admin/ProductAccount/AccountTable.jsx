@@ -24,7 +24,7 @@ const AccountTable = ({ accounts, onEdit, onDelete }) => {
               
                 <th className="p-3 border">Account Data</th>
              
-                <th className="p-3 border">Lượt bán</th>
+                <th className="p-3 border">Lượt bán còn</th>
                    <th className="p-3 border">Trạng thái</th>
                 <th className="p-3 border">Có thể bán</th>
                 <th className="p-3 border text-center">Thao tác</th>
@@ -32,10 +32,10 @@ const AccountTable = ({ accounts, onEdit, onDelete }) => {
             </thead>
             <tbody>
               {accounts.map((acc, i) => (
-                <tr key={acc.id} className="hover:bg-gray-50 transition-all">
-                  <td className="p-3 border">{acc.email}:{acc.password}</td>
-                  <td className="p-3 border"></td>
-                      <td className="p-3 border"></td>
+                <tr key={i} className="hover:bg-gray-50 transition-all">
+                  <td className="p-3 border">{acc.accountData}:{acc.password}</td>
+                  <td className="p-3 border">{acc.sellCount}</td>
+                      <td className="p-3 border">{acc.status}</td>
                           <td className="p-3 border"></td>
                   <td className="p-3 border text-center space-x-3">
                     <button

@@ -4,49 +4,56 @@ import AccountTable from "../../components/admin/ProductAccount/AccountTable";
 // (tùy chọn): import AccountFormModal
 import { useParams } from "react-router-dom";
 import { getProductAccountFilter } from "../../services/api/productAccountService"; // giả định bạn có hàm này
-const mockProducts = [
-  {
-    id: 1,
-    name: "Quizlet Plus",
-    accounts: [{ id: 1, email: "a@a.com", password: "123456" }],
-  },
-  { id: 2, name: "Netflix", accounts: [] },
-  { id: 3, name: "Canva Pro", accounts: [] },
-];
+import { getProductOptionByProductId } from "../../services/api/productService";
 
 const ProductAccountManager = () => {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const { productOptionId } = useParams(); // 👈 lấy param từ URL
-  console.log("Selected Product Option ID:", productOptionId);
+  const [productAccounts, setProductAccounts] = useState([]);
+  const { productId } = useParams(); // 👈 lấy param từ URL
   const handleEditAccount = (account) => {
     console.log("edit or create", account);
     // mở modal hoặc hiển thị form
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await getProductAccountFilter({
-          productOptionId: productOptionId,
-        });
-          var items = res.data?.items || [];
-        setProducts(items);
-        console.log("Fetched products:", items);
-      
-        // ✅ Chọn phần tử đầu tiên sau khi fetch xong
-        if (items.length > 0) {
-          setSelectedProduct(items[0]);
-          console.log("lon hon 0");
-        }else {
-          console.log("Khong co san pham nao");
-        }
-      } catch (err) {
-        console.error("Lỗi khi fetch:", err);
-      }
-    };
 
-    fetchData();
-  }, [productOptionId]);
+  //Get product account
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const res = await getProductOptionByProductId(productId);
+      const items = res.data?.productOptions || [];
+      setProducts(items);
+      console.log("Fetched products:", items);
+      if (items.length > 0) {
+        setSelectedProduct(items[0]);
+        console.log("productOption:", items[0].productOptionId);
+      }
+    } catch (err) {
+      console.error("Lỗi khi fetch:", err);
+    }
+  };
+  fetchData();
+}, [productId]);
+
+
+  //Get product options list
+  useEffect(() => {
+  const fetchData2 = async () => {
+    if (!selectedProduct?.productOptionId) return;
+
+    try {
+      const res = await getProductAccountFilter({
+        productOptionId: selectedProduct.productOptionId,
+      });
+      const items = res.data?.items || [];
+      console.log("Fetched product accounts:", items);
+      setProductAccounts(items);
+    } catch (err) {
+      console.error("Lỗi khi fetch:", err);
+    }
+  };
+  fetchData2();
+}, [selectedProduct]);
 
   const handleDeleteAccount = (accId) => {
     const updated = products.map((prod) =>
@@ -68,7 +75,7 @@ const ProductAccountManager = () => {
         selectedProductId={selectedProduct?.id}
       />
       <AccountTable
-        accounts={selectedProduct?.accounts || []}
+        accounts={productAccounts || []}
         onEdit={handleEditAccount}
         onDelete={handleDeleteAccount}
       />
