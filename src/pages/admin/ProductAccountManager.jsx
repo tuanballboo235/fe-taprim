@@ -72,7 +72,7 @@ useEffect(() => {
       <ProductSidebar
         products={products}
         onSelect={setSelectedProduct}
-        selectedProductId={selectedProduct?.id}
+        selectedProductId={selectedProduct?.productOptionId}
       />
       <AccountTable
         accounts={productAccounts || []}
