@@ -15,12 +15,11 @@ const ProductSidebar = ({ products = [], onSelect, selectedProductId }) => {
             <li
               key={product.id}
               onClick={() => onSelect?.(product)}
-             className={`p-3 rounded-lg border cursor-pointer transition-all ${
-  product.productOptionId  === selectedProductId
-    ? "bg-blue-100 border-blue-400 text-blue-700 font-semibold"
-    : "hover:bg-gray-50 border-gray-200"
-}`}
-
+              className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                product.productOptionId === selectedProductId
+                  ? "bg-blue-100 border-blue-400 text-blue-700 font-semibold"
+                  : "hover:bg-gray-50 border-gray-200"
+              }`}
             >
               {product.label || product.name || "Sản phẩm không tên"}
             </li>
