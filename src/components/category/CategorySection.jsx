@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const CategorySection = ({ title, description, products }) => {
-    console.log("Products data:", products); // 👈 Thêm dòng này
+  console.log("Products data:", products);
 
   return (
     <section className="mb-20 px-4">
@@ -13,11 +13,13 @@ const CategorySection = ({ title, description, products }) => {
         )}
       </div>
 
-      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      {/* 5 card / hàng ở màn lớn */}
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
         {products.map((product) => {
-          const isOutOfStock = !product.inStock;
-          const imageFallback = "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg";
-          const baseUrl = "http://103.238.235.227/"; // hoặc domain thật nếu deploy
+          const isOutOfStock = product.canSell < 1;
+          const imageFallback =
+            "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg";
+          const baseUrl = "http://103.238.235.227/"; // đổi sang domain thật khi deploy
 
           return (
             <Link
@@ -27,12 +29,13 @@ const CategorySection = ({ title, description, products }) => {
                 isOutOfStock ? "pointer-events-none opacity-70" : ""
               }`}
             >
-              {/* Image Section */}
-              <div className="relative">
+              {/* Image Section: giữ nguyên layout, KHÔNG cắt ảnh */}
+              <div className="relative bg-gray-50 h-48 flex items-center justify-center">
                 <img
                   src={product.image ? `${baseUrl}${product.image}` : imageFallback}
                   alt={product.name}
-                  className="w-full h-48 object-cover"
+                  loading="lazy"
+                  className="max-h-full max-w-full object-contain"
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = imageFallback;

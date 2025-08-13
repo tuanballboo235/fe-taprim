@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { FaUserPlus, FaTrashAlt, FaEdit } from "react-icons/fa";
 import AddProductAccountModal from "./AddProductAccountModal";
-const AccountTable = ({ accounts, onEdit, onDelete }) => {
-    const [modalOpen, setModalOpen] = useState(false);
+import LoadingSpinner from "../../common/LoadingSpinner";
+
+const AccountTable = ({ accounts, onEdit, onDelete, isLoading }) => {
+  const [modalOpen, setModalOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(null);
+
   const handleOpenModal = (account) => {
     setSelectedAccount(account);
     setModalOpen(true);
@@ -24,13 +27,21 @@ const AccountTable = ({ accounts, onEdit, onDelete }) => {
     }
     handleCloseModal();
   };
+console.log("can sell", accounts.map(acc => acc.callSell));
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
 
   return (
     <div className="w-full p-4">
       {/* Khu vực quản lý tài khoản */}
       <div className="flex justify-between items-center bg-white p-4 rounded shadow mb-6">
         <h2 className="text-xl font-semibold text-gray-800">Danh sách tài khoản</h2>
-         <button
+        <button
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
           onClick={() => handleOpenModal(null)}
         >
@@ -40,29 +51,36 @@ const AccountTable = ({ accounts, onEdit, onDelete }) => {
 
       {/* Bảng dữ liệu */}
       <div className="mt-6 bg-white rounded shadow p-4">
-        {accounts.length === 0 ? (
+        {isLoading ? (
+          <LoadingSpinner text="Đang tải danh sách tài khoản..." />
+        ) : accounts.length === 0 ? (
           <div className="text-gray-500 italic text-center">Chưa có tài khoản nào được thêm.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full border text-sm rounded-lg overflow-hidden shadow-sm">
               <thead className="bg-gray-100 text-gray-700">
                 <tr>
-                  <th className="p-3 border">Account Data</th>
-                  <th className="p-3 border">Lượt bán còn</th>
-                  <th className="p-3 border">Trạng thái</th>
-                  <th className="p-3 border">Có thể bán</th>
+                  <th className="p-3 w-80 border">Account</th>
+                  <th className="p-3 w-8 border">Lượt bán</th>
+                  <th className="p-3 w-8 border">Trạng thái</th>
+                  <th className="p-3 w-28 border">Khoảng bán</th>
+                  <th className="p-3 w-28 border">Ngày thêm</th>
                   <th className="p-3 border text-center">Thao tác</th>
                 </tr>
               </thead>
               <tbody>
                 {accounts.map((acc, i) => (
-                  <tr key={i} className="hover:bg-gray-50 transition">
-                    <td className="p-3 border">{acc.accountData}:{acc.password}</td>
-                    <td className="p-3 border">{acc.sellCount}</td>
-                    <td className="p-3 border">{acc.status}</td>
-                    <td className="p-3 border text-center">
-                      {acc.canSell ? "✔️" : "❌"}
-                    </td>
+                  <tr
+                    key={i}
+                    className={`transition hover:bg-gray-50 ${
+                      acc.canSell ? 'bg-green-100' : 'bg-red-100'
+                    }`}
+                  >
+                    <td className="p-3 w-80 border">{acc.accountData}:{acc.password}</td>
+                    <td className="p-3 w-8 border">{acc.sellCount}</td>
+                    <td className="p-3 w-8 border">{acc.status}</td>
+                    <td className="p-3 w-28 border">{formatDate(acc.sellFrom)} - {formatDate(acc.sellTo)}</td>
+                    <td className="p-3 w-28 border">{formatDate(acc.createAt)}</td>
                     <td className="p-3 border text-center space-x-3">
                       <button
                         className="text-blue-600 hover:text-blue-800"
@@ -86,7 +104,8 @@ const AccountTable = ({ accounts, onEdit, onDelete }) => {
           </div>
         )}
       </div>
-        {/* Modal thêm/sửa tài khoản */}
+
+      {/* Modal thêm/sửa tài khoản */}
       <AddProductAccountModal
         isOpen={modalOpen}
         onClose={handleCloseModal}

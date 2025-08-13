@@ -3,7 +3,7 @@ import { FaStore } from "react-icons/fa";
 
 const ProductSidebar = ({ products = [], onSelect, selectedProductId }) => {
   return (
-    <aside className="w-full md:w-1/3 xl:w-1/4 bg-white p-4 border-r shadow-sm">
+    <aside className="w-full md:w-1/4 xl:w-1/6 bg-white p-4 border-r shadow-sm">
       <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
         <FaStore className="text-blue-500" /> Danh sách sản phẩm
       </h2>
@@ -11,9 +11,9 @@ const ProductSidebar = ({ products = [], onSelect, selectedProductId }) => {
         {products.length === 0 ? (
           <li className="text-gray-400 italic">Không có sản phẩm</li>
         ) : (
-          products.map((product) => (
+          products.map((product, index) => (
             <li
-              key={product.id}
+              key={product.id || product.productOptionId || index}
               onClick={() => onSelect?.(product)}
               className={`p-3 rounded-lg border cursor-pointer transition-all ${
                 product.productOptionId === selectedProductId

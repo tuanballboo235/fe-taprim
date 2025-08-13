@@ -11,6 +11,8 @@ const ProductAccountManager = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [productAccounts, setProductAccounts] = useState([]);
   const { productId } = useParams(); // 👈 lấy param từ URL
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleEditAccount = (account) => {
     console.log("edit or create", account);
     // mở modal hoặc hiển thị form
@@ -37,23 +39,26 @@ useEffect(() => {
 
 
   //Get product options list
-  useEffect(() => {
+useEffect(() => {
   const fetchData2 = async () => {
     if (!selectedProduct?.productOptionId) return;
 
     try {
+      setIsLoading(true); // 👉 bắt đầu loading
       const res = await getProductAccountFilter({
         productOptionId: selectedProduct.productOptionId,
       });
       const items = res.data?.items || [];
-      console.log("Fetched product accounts:", items);
       setProductAccounts(items);
     } catch (err) {
       console.error("Lỗi khi fetch:", err);
+    } finally {
+      setIsLoading(false); // 👉 kết thúc loading dù có lỗi hay không
     }
   };
   fetchData2();
 }, [selectedProduct]);
+
 
   const handleDeleteAccount = (accId) => {
     const updated = products.map((prod) =>
@@ -77,6 +82,7 @@ useEffect(() => {
       <AccountTable
         accounts={productAccounts || []}
         onEdit={handleEditAccount}
+        isLoading={isLoading}
         onDelete={handleDeleteAccount}
       />
     </div>
