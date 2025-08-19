@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getProductOptionByProductId } from "../../services/api/productService";
 import PaymentModal from "../../components/payment/PaymentModal.jsx";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { decreaseCouponUsage } from "../../services/api/couponService";
+import { FANPAGE_URL } from "../../utils/constant/Contact.js";
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -14,6 +15,10 @@ const ProductDetailPage = () => {
   const [showPayment, setShowPayment] = useState(false);
   const [orderResult, setOrderResult] = useState(null);
   const [fetchdata, setFetchData] = useState(null);
+
+  // email state
+  const [email, setEmail] = useState("");
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -28,30 +33,33 @@ const ProductDetailPage = () => {
           setEntryPrice(available.price);
           setEntryStockAccount(available.stockAccount);
         }
-        console.log("Thông tin sản phẩm:", fetchdata);
       } catch (error) {
-        toast.error("❌ Lỗi khi tải thông tin sản phẩm",{ toastId: "load-error" });
+        toast.error("❌ Lỗi khi tải thông tin sản phẩm", { toastId: "load-error" });
       }
     };
 
     fetchProduct();
   }, [id]);
 
-  const handlePaymentSuccess =async  (order) => {
-    setOrderResult(order); // bạn có thể dùng sau để hiển thị kết quả
+  const handlePaymentSuccess = async (order) => {
+    setOrderResult(order);
     setShowPayment(false);
-    
-  if (order.couponCode) {
-    try {
-      await decreaseCouponUsage(order.couponCode);
-      console.log("✅ Giảm lượt coupon thành công");
-    } catch (error) {
-      console.error("❌ Lỗi giảm lượt coupon:", error);
+
+    if (order.couponCode) {
+      try {
+        await decreaseCouponUsage(order.couponCode);
+        console.log("✅ Giảm lượt coupon thành công");
+      } catch (error) {
+        console.error("❌ Lỗi giảm lượt coupon:", error);
+      }
     }
-  }
   };
 
-  //Hiển thị thông báo loading
+  // validate email cơ bản
+const validateEmail = (value) => {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(value);
+};
   if (!fetchdata) {
     return (
       <div className="text-center py-10">Đang tải dữ liệu sản phẩm...</div>
@@ -59,7 +67,7 @@ const ProductDetailPage = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-xl shadow-md border border-gray-200">
+    <div className="max-w-6xl mt-5 mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-xl shadow-md border border-gray-200">
       {/* Left - Image */}
       <div className="flex flex-col items-center">
         <img
@@ -93,7 +101,9 @@ const ProductDetailPage = () => {
                 : "text-red-600"
             }`}
           >
-           {entryStockAccount > 0 ? `${entryStockAccount} sản phẩm` : "Hết hàng"}
+            {entryStockAccount > 0
+              ? `${entryStockAccount} sản phẩm`
+              : "Hết hàng"}
           </span>
         </p>
 
@@ -113,9 +123,7 @@ const ProductDetailPage = () => {
 
         {/* Duration buttons */}
         <div>
-          <p className="text-sm font-medium text-gray-700 mb-1">
-            Chọn thời hạn
-          </p>
+          <p className="text-sm font-medium text-gray-700 mb-1">Chọn thời hạn</p>
           <div className="flex flex-wrap gap-2">
             {fetchdata.productOptions.map((option) => (
               <button
@@ -148,62 +156,105 @@ const ProductDetailPage = () => {
         </div>
 
         {/* Email input */}
-        <div>
-          <label className="text-sm font-medium text-gray-700 block mb-1">
-            Nhập thông tin bổ sung
+        <div className="mb-4">
+          <label className="text-sm font-semibold text-gray-800 block mb-2">
+            📧 Email khách hàng <span className="text-red-600">*</span>
           </label>
-          <input
-            type="email"
-            placeholder="Email khách hàng"
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-          />
+          <p className="text-xs text-gray-500 mb-2">
+            Email này sẽ được sử dụng để gửi thông tin hóa đơn, bảo hành và các
+            thông báo liên quan.
+          </p>
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-teal-600">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                />
+              </svg>
+            </span>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Nhập email khách hàng..."
+              className="w-full border border-teal-400 rounded pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 placeholder-gray-400"
+              required
+            />
+          </div>
         </div>
 
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-3">
           <button
-            onClick={() => setShowPayment(true)}
+            onClick={() => {
+              if (!email) {
+                toast.error("Vui lòng nhập email trước khi mua hàng");
+                return;
+              }
+              if (!validateEmail(email)) {
+                toast.error("Email không hợp lệ, vui lòng kiểm tra lại");
+                return;
+              }
+              setShowPayment(true);
+            }}
             className="bg-teal-600 text-white px-6 py-2 rounded-md font-medium text-sm hover:bg-teal-700 w-full"
           >
-            📥 Mua ngay
+            Mua ngay
           </button>
 
-          <button className="bg-gray-100 text-gray-800 px-6 py-2 rounded-md font-medium text-sm hover:bg-gray-200 w-full">
-            📞 Liên hệ shop
-          </button>
+          <a
+            href={FANPAGE_URL}
+            className="bg-gray-100 text-center text-gray-800 px-6 py-2 rounded-md font-medium text-sm hover:bg-gray-200 w-full"
+          >
+            Liên hệ shop
+          </a>
         </div>
       </div>
 
       {/* Ghi chú */}
-      <div className="md:col-span-2 mt-8 bg-orange-50 text-sm text-gray-800 rounded-lg p-4 border border-orange-200">
+    {
+      fetchdata.description &&(<div className="md:col-span-2 mt-8 bg-orange-50 text-sm text-gray-800 rounded-lg p-4 border border-orange-200">
         <p className="font-semibold text-orange-700 mb-2">📌 Lưu ý:</p>
         <pre className="whitespace-pre-wrap leading-relaxed">
           {fetchdata.description}
         </pre>
-      </div>
+      </div>) 
+
+    }  
       {showPayment && (
-  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-    <div className="relative bg-white p-6 rounded-xl max-w-2xl w-full shadow-xl">
-      <button
-        onClick={() => setShowPayment(false)}
-        className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
-      >
-        ×
-      </button>
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="relative bg-white p-6 rounded-xl max-w-2xl w-full shadow-xl">
+            <button
+              onClick={() => setShowPayment(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
+            >
+              ×
+            </button>
 
-      <PaymentModal
-        productOptionId={selectedOption}
-        productName={fetchdata.productName}
-        amount={entryPrice}
-        fee={500}
-        total={entryPrice + 500}
-        onClose={() => setShowPayment(false)}
-        onSuccess={handlePaymentSuccess}
-      />
-    </div>
-  </div>
-)}
-
+            <PaymentModal
+              productOptionId={selectedOption}
+              productName={fetchdata.productName}
+              amount={entryPrice}
+              fee={500}
+              customerEmail={email}
+              total={entryPrice + 500}
+              onClose={() => setShowPayment(false)}
+              onSuccess={handlePaymentSuccess}
+              // có thể truyền thêm email xuống nếu backend cần
+              // customerEmail={email}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
