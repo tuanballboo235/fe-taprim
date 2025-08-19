@@ -3,7 +3,7 @@ name: Deploy React Frontend to VPS
 on:
   push:
     branches:
-      - main  # hoặc 'master' tùy theo repo
+      - main  # hoặc 'master'
 
 jobs:
   build-and-deploy:
@@ -17,20 +17,60 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'npm'
 
       - name: 📦 Install dependencies
         run: npm ci
 
       - name: 🛠️ Build React app
+        # Vite -> dist/ ; CRA -> build/ (nếu CRA, đổi dòng nén bên dưới)
         run: npm run build
 
-      - name: 🚀 Deploy to VPS via SCP
+      - name: 📦 Archive build (Vite -> dist)
+        run: tar -czf web-dist.tar.gz -C dist .
+
+      - name: 🚀 Upload build artifact to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          source: "dist/**"            # ✅ phải là dist/*, không phải build/*
-          target: "/var/www/react-app"
+          source: "web-dist.tar.gz"
+          target: "/tmp/react-app-upload"
           debug: true
 
+      - name: 🔁 Atomic swap on VPS (no leftovers)
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+            DEST=/var/www/react-app
+            STAGE=/var/www/react-app.new
+            TS=$(date +%s)
+
+            sudo mkdir -p "$DEST"
+            sudo rm -rf "$STAGE"
+            sudo mkdir -p "$STAGE"
+
+            # Giải nén vào thư mục tạm
+            sudo tar -xzf /tmp/react-app-upload/web-dist.tar.gz -C "$STAGE"
+
+            # Đổi thư mục atomically: không còn file cũ sót lại
+            if [ -d "$DEST" ]; then
+              sudo mv "$DEST" "/var/www/react-app.old.$TS"
+            fi
+            sudo mv "$STAGE" "$DEST"
+
+            # Phân quyền (tuỳ môi trường web server)
+            sudo chown -R www-data:www-data "$DEST" || true
+
+            # Dọn artifact tạm
+            sudo rm -f /tmp/react-app-upload/web-dist.tar.gz || true
+
+            # Giữ lại 2 bản old gần nhất, xoá phần còn lại
+            ls -1d /var/www/react-app.old.* 2>/dev/null | sort -r | sed -e '1,2d' | xargs -r sudo rm -rf
+
+            echo "✅ Deployed to $DEST"
