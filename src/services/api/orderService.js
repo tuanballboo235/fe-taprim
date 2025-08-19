@@ -10,8 +10,6 @@ export const updateOrder = async (transactionCode, orderData) => {
       contactInfo: orderData.contactInfo,
       totalAmount: parseFloat(orderData.totalAmount)
     });
-    console.error("cập nhật thành công:");
-
     return response.data;
   } catch (error) {
     console.error("Lỗi khi cập nhật đơn hàng:", error);
