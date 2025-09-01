@@ -7,7 +7,7 @@ const AccountTable = ({ accounts, onEdit, onDelete, isLoading }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [nameProductOption, setNameProductOption] = useState("");
-
+//
   useEffect(() => {
     if (selectedAccount) {
       setNameProductOption(selectedAccount.productOptionName);
