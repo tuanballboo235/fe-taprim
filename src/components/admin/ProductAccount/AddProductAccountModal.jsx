@@ -1,49 +1,104 @@
 import React, { useState, useEffect } from "react";
-import clsx from "clsx"; // dùng để xử lý class conditionally
+import clsx from "clsx";
 
 const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
+  const today = new Date().toISOString().split("T")[0]; // yyyy-mm-dd
+
   const [activeTab, setActiveTab] = useState("single");
+  const [multiInput, setMultiInput] = useState("");
 
   const [form, setForm] = useState({
     accountData: "",
     usernameProductAccount: "",
     passwordProductAccount: "",
-    dateChangePass: "",
-    sellCount: 0,
-    sellDateFrom: "",
-    sellDateTo: "",
+    dateChangePass: new Date().toISOString().slice(0, 16), // yyyy-MM-ddTHH:mm
+    sellCount: 1,
+    sellDateFrom: today,
+    sellDateTo: today,
     status: 0,
+    customDays: "" // giữ string để dễ control input
   });
 
-  const [multiInput, setMultiInput] = useState(""); // cho tab nhiều tài khoản
+  // Hàm cộng ngày an toàn
+  const addDaysSafe = (from, days) => {
+    const base = from && !Number.isNaN(new Date(from).getTime()) ? new Date(from) : new Date();
+    const d = new Date(base);
+    d.setDate(d.getDate() + Number(days || 0));
+    return d.toISOString().split("T")[0];
+  };
 
+  // Quick select số ngày
+  const handleQuickSelect = (days) => {
+    // nếu người dùng xoá ô tùy chỉnh -> không làm gì
+    if (days === "" || days === null || Number.isNaN(Number(days))) {
+      setForm((prev) => ({ ...prev, customDays: "" }));
+      return;
+    }
+    setForm((prev) => ({
+      ...prev,
+      customDays: String(days),
+      sellDateTo: addDaysSafe(prev.sellDateFrom, Number(days)),
+    }));
+  };
+
+  // Đồng bộ khi initialData / isOpen thay đổi
   useEffect(() => {
     if (initialData) {
-      setForm({ ...initialData });
-    } else {
+      // đảm bảo có fallback cho ngày
+      const from = initialData.sellDateFrom || today;
+      const to = initialData.sellDateTo || from;
       setForm({
+        accountData: initialData.accountData ?? "",
+        usernameProductAccount: initialData.usernameProductAccount ?? "",
+        passwordProductAccount: initialData.passwordProductAccount ?? "",
+        dateChangePass: initialData.dateChangePass ?? new Date().toISOString().slice(0, 16),
+        sellCount: initialData.sellCount ?? 0,
+        sellDateFrom: from,
+        sellDateTo: to,
+        status: initialData.status ?? 0,
+        customDays: ""
+      });
+    } else {
+      // KHÔNG để rỗng: tránh Invalid Date
+      setForm((prev) => ({
+        ...prev,
         accountData: "",
         usernameProductAccount: "",
         passwordProductAccount: "",
         dateChangePass: new Date().toISOString().slice(0, 16),
-        sellCount: 0,
-        sellDateFrom: "",
-        sellDateTo: "",
+        sellCount: 1,
+        sellDateFrom: today,
+        sellDateTo: today,
         status: 0,
-      });
+        customDays: ""
+      }));
     }
-  }, [initialData, isOpen]);
+  }, [initialData, isOpen, today]);
+
+  // Khi đổi sellDateFrom, nếu có customDays thì tính lại sellDateTo
+  useEffect(() => {
+    if (form.customDays) {
+      setForm((prev) => ({
+        ...prev,
+
+        sellDateTo: addDaysSafe(prev.sellDateFrom, Number(prev.customDays)),
+      }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.sellDateFrom]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({
+      ...prev,
+      [name]: name === "sellCount" || name === "status" ? Number(value) : value,
+    }));
   };
 
   const handleSubmit = () => {
     if (activeTab === "single") {
       onSave(form);
     } else {
-      // xử lý nhiều tài khoản
       const lines = multiInput.split("\n").filter((line) => line.trim() !== "");
       const accounts = lines.map((line) => {
         const [accountData, username, password] = line.split(",");
@@ -53,14 +108,14 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
           passwordProductAccount: password?.trim() || "",
           dateChangePass: new Date().toISOString().slice(0, 16),
           sellCount: 0,
-          sellDateFrom: "",
-          sellDateTo: "",
+          sellDateFrom: today,
+          sellDateTo: today,
           status: 0,
+          customDays: ""
         };
       });
       onSave(accounts);
     }
-
     onClose();
   };
 
@@ -158,20 +213,44 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Thời gian bán</label>
+
+              {/* Nhóm nút chọn nhanh (nhỏ, đặt trước) */}
+              <div className="flex gap-2 mb-2">
+                {[1, 2, 3].map((d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => handleQuickSelect(d)}
+                    className="px-2 py-1 text-xs bg-blue-500 text-white rounded"
+                  >
+                    +{d} ngày
+                  </button>
+                ))}
+                <input
+                  type="number"
+                  min="1"
+                  placeholder="Tùy chỉnh"
+                  value={form.customDays}
+                  onChange={(e) => handleQuickSelect(e.target.value)}
+                  className="w-24 border p-1 text-xs rounded"
+                />
+              </div>
+
+              {/* chọn khoảng ngày */}
               <div className="flex gap-2">
                 <input
                   type="date"
                   name="sellDateFrom"
                   value={form.sellDateFrom}
                   onChange={handleChange}
-                  className="w-full border p-2 rounded"
+                  className="w-full border p-2 rounded text-sm"
                 />
                 <input
                   type="date"
                   name="sellDateTo"
                   value={form.sellDateTo}
                   onChange={handleChange}
-                  className="w-full border p-2 rounded"
+                  className="w-full border p-2 rounded text-sm"
                 />
               </div>
             </div>
@@ -199,9 +278,9 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
               value={multiInput}
               onChange={(e) => setMultiInput(e.target.value)}
               rows={8}
-              placeholder="Ví dụ:\nabc1@gmail.com,abc1,pass123\nabc2@gmail.com,abc2,pass456"
+              placeholder={"Ví dụ:\nabc1@gmail.com,abc1,pass123\nabc2@gmail.com,abc2,pass456"}
               className="w-full border p-2 rounded font-mono"
-            ></textarea>
+            />
           </div>
         )}
 

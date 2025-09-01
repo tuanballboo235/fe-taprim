@@ -53,7 +53,7 @@ useEffect(() => {
     } catch (err) {
       console.error("Lỗi khi fetch:", err);
     } finally {
-      setIsLoading(false); // 👉 kết thúc loading dù có lỗi hay không
+      setIsLoading(false); 
     }
   };
   fetchData2();
@@ -84,6 +84,7 @@ useEffect(() => {
         onEdit={handleEditAccount}
         isLoading={isLoading}
         onDelete={handleDeleteAccount}
+        
       />
     </div>
   );

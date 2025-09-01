@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaUserPlus, FaTrashAlt, FaEdit } from "react-icons/fa";
 import AddProductAccountModal from "./AddProductAccountModal";
 import LoadingSpinner from "../../common/LoadingSpinner";
@@ -6,6 +6,13 @@ import LoadingSpinner from "../../common/LoadingSpinner";
 const AccountTable = ({ accounts, onEdit, onDelete, isLoading }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(null);
+  const [nameProductOption, setNameProductOption] = useState("");
+
+  useEffect(() => {
+    if (selectedAccount) {
+      setNameProductOption(selectedAccount.productOptionName);
+    }
+  }, [selectedAccount]);
 
   const handleOpenModal = (account) => {
     setSelectedAccount(account);
@@ -27,7 +34,6 @@ const AccountTable = ({ accounts, onEdit, onDelete, isLoading }) => {
     }
     handleCloseModal();
   };
-console.log("can sell", accounts.map(acc => acc.callSell));
   function formatDate(dateString) {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
@@ -110,7 +116,7 @@ console.log("can sell", accounts.map(acc => acc.callSell));
         isOpen={modalOpen}
         onClose={handleCloseModal}
         onSave={handleSaveModal}
-        initialData={selectedAccount}
+        
       />
     </div>
   );

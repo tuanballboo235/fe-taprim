@@ -21,7 +21,7 @@ const ProductSidebar = ({ products = [], onSelect, selectedProductId }) => {
                   : "hover:bg-gray-50 border-gray-200"
               }`}
             >
-              {product.label || product.name || "Sản phẩm không tên"}
+              {product.label || product.name || "Sản phẩm không có tên"}
             </li>
           ))
         )}
