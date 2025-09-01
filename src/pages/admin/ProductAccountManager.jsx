@@ -11,6 +11,7 @@ const ProductAccountManager = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [productAccounts, setProductAccounts] = useState([]);
   const { productId } = useParams(); // 👈 lấy param từ URL
+  const [productInfo, setProductInfo] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleEditAccount = (account) => {
@@ -18,16 +19,16 @@ const ProductAccountManager = () => {
     // mở modal hoặc hiển thị form
   };
 
-  //Get product account
-useEffect(() => {
+ useEffect(() => {
   const fetchData = async () => {
     try {
       const res = await getProductOptionByProductId(productId);
-      const items = res.data?.productOptions || [];
+      // ✅ LẤY ĐÚNG MẢNG OPTIONS
+      const items = res?.data?.productOptions ?? [];
       setProducts(items);
-      console.log("Fetched products:", items);
       if (items.length > 0) {
-        setSelectedProduct(items[0]);
+        setSelectedProduct(items[0]); // ✅ chọn phần tử đầu
+        setProductInfo(res?.data.productName);
         console.log("productOption:", items[0].productOptionId);
       }
     } catch (err) {
@@ -77,14 +78,15 @@ useEffect(() => {
       <ProductSidebar
         products={products}
         onSelect={setSelectedProduct}
-        selectedProductId={selectedProduct?.productOptionId}
+  selectedProductId={selectedProduct?.productOptionId} // ✅ truyền id đúng
+  productInfo={productInfo} // ✅ truyền tên sản phẩm
       />
       <AccountTable
         accounts={productAccounts || []}
         onEdit={handleEditAccount}
         isLoading={isLoading}
         onDelete={handleDeleteAccount}
-        
+        productInfo={productInfo}
       />
     </div>
   );
