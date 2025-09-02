@@ -20,8 +20,8 @@ export const addProductAccountToProduct = async (productOptionId, data) => {
       passwordProductAccount: data.passwordProductAccount,
       dateChangePass: data.dateChangePass,
       sellCount: parseInt(data.sellCount, 10),
-      sellDateFrom: data.sellDateFrom,
-      sellDateTo: data.sellDateTo,
+      sellFrom: data.sellDateFrom,
+      sellTo: data.sellDateTo,
       status: parseInt(data.status, 10),
     }
   );

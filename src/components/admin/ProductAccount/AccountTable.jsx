@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { FaUserPlus, FaTrashAlt, FaEdit } from "react-icons/fa";
-import AddProductAccountModal from "./AddProductAccountModal";
+import AddProductAccountModal from "./AddProductAccountModal/AddProductAccountModal";
 import LoadingSpinner from "../../common/LoadingSpinner";
 import clsx from "clsx";
 

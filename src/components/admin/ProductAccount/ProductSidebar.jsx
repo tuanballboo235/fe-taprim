@@ -45,18 +45,23 @@ const ProductSidebar = ({ products, onSelect, selectedProductId,productInfo}) =>
               >
                 <div className="flex items-center justify-between">
                   <span>{product.label || product.name || "Sản phẩm không có tên"}</span>
-                  {typeof product.stockAccount === "number" && (
-                    <span
-                      className={clsx(
-                        "text-xs px-2 py-0.5 rounded-full",
-                        product.stockAccount > 0
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-600"
-                      )}
-                    >
-                      {product.stockAccount} tài khoản
-                    </span>
-                  )}
+                 {typeof product.stockAccount === "number" && (
+  <span
+    className={clsx(
+      "text-xs px-2 py-0.5 rounded-full",
+      product.stockAccount > 0
+        ? "bg-green-100 text-green-700"
+        : "bg-red-100 text-red-600"
+    )}
+  >
+    <div>
+      <p>{product.stockAccount} tài khoản</p>
+      {typeof product.sellCount === "number" && product.sellCount >= 1 && (
+        <p>{product.sellCount} lượt bán</p>
+      )}
+    </div>
+  </span>
+)}
                 </div>
               </li>
             );
