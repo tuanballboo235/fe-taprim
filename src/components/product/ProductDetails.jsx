@@ -10,7 +10,7 @@ const ProductDetailPage = () => {
   const { id } = useParams();
   const [entryPrice, setEntryPrice] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
-  const [entryStockAccount, setEntryStockAccount] = useState(0);
+  const [entrySellCount, setEntrySellCount] = useState(0);
 
   const [showPayment, setShowPayment] = useState(false);
   const [orderResult, setOrderResult] = useState(null);
@@ -25,13 +25,14 @@ const ProductDetailPage = () => {
         const data = await getProductOptionByProductId(id);
         setFetchData(data.data);
 
+        // chọn option còn lượt bán
         const available = data.data.productOptions.find(
-          (opt) => opt.stockAccount > 0
+          (opt) => (opt.sellCount ?? 0) > 0
         );
         if (available) {
           setSelectedOption(available.productOptionId);
-          setEntryPrice(available.price);
-          setEntryStockAccount(available.stockAccount);
+          setEntryPrice(available.price ?? 0);
+          setEntrySellCount(available.sellCount ?? 0);
         }
       } catch (error) {
         toast.error("❌ Lỗi khi tải thông tin sản phẩm", { toastId: "load-error" });
@@ -56,15 +57,16 @@ const ProductDetailPage = () => {
   };
 
   // validate email cơ bản
-const validateEmail = (value) => {
-  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return regex.test(value);
-};
+  const validateEmail = (value) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(value);
+  };
+
   if (!fetchdata) {
-    return (
-      <div className="text-center py-10">Đang tải dữ liệu sản phẩm...</div>
-    );
+    return <div className="text-center py-10">Đang tải dữ liệu sản phẩm...</div>;
   }
+
+  const hasAnySellLeft = fetchdata.productOptions.some((opt) => (opt.sellCount ?? 0) > 0);
 
   return (
     <div className="max-w-6xl mt-5 mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-xl shadow-md border border-gray-200">
@@ -96,14 +98,10 @@ const validateEmail = (value) => {
           Kho hàng:
           <span
             className={`ml-1 font-semibold ${
-              fetchdata.productOptions.some((opt) => opt.stockAccount > 0)
-                ? "text-green-600"
-                : "text-red-600"
+              hasAnySellLeft ? "text-green-600" : "text-red-600"
             }`}
           >
-            {entryStockAccount > 0
-              ? `${entryStockAccount} sản phẩm`
-              : "Hết hàng"}
+            {entrySellCount > 0 ? `${entrySellCount}` : "Hết hàng"}
           </span>
         </p>
 
@@ -117,7 +115,7 @@ const validateEmail = (value) => {
         {/* Pricing */}
         <div className="space-y-1">
           <div className="text-2xl font-bold text-teal-600">
-            {entryPrice.toLocaleString()}đ
+            {Number(entryPrice || 0).toLocaleString()}đ
           </div>
         </div>
 
@@ -125,33 +123,34 @@ const validateEmail = (value) => {
         <div>
           <p className="text-sm font-medium text-gray-700 mb-1">Chọn thời hạn</p>
           <div className="flex flex-wrap gap-2">
-            {fetchdata.productOptions.map((option) => (
-              <button
-                key={option.productOptionId}
-                className={`px-3 py-1 border text-sm rounded-md transition ${
-                  selectedOption === option.productOptionId
-                    ? "bg-blue-100 border-blue-500"
-                    : "border-gray-300"
-                } ${
-                  option.stockAccount === 0
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-blue-50"
-                }`}
-                onClick={() => {
-                  if (option.stockAccount > 0) {
-                    setSelectedOption(option.productOptionId);
-                    setEntryPrice(option.price);
-                    setEntryStockAccount(option.stockAccount);
-                  }
-                }}
-                disabled={option.stockAccount === 0}
-              >
-                {option.label} - {option.price.toLocaleString()}đ
-                {option.stockAccount === 0 && (
-                  <span className="ml-1 text-red-500 text-xs">(Hết hàng)</span>
-                )}
-              </button>
-            ))}
+            {fetchdata.productOptions.map((option) => {
+              const optionSellLeft = option.sellCount ?? 0;
+              const isDisabled = optionSellLeft === 0;
+
+              return (
+                <button
+                  key={option.productOptionId}
+                  className={`px-3 py-1 border text-sm rounded-md transition ${
+                    selectedOption === option.productOptionId
+                      ? "bg-blue-100 border-blue-500"
+                      : "border-gray-300"
+                  } ${isDisabled ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-50"}`}
+                  onClick={() => {
+                    if (!isDisabled) {
+                      setSelectedOption(option.productOptionId);
+                      setEntryPrice(option.price ?? 0);
+                      setEntrySellCount(optionSellLeft);
+                    }
+                  }}
+                  disabled={isDisabled}
+                >
+                  {option.label} - {(option.price ?? 0).toLocaleString()}đ
+                  {isDisabled && (
+                    <span className="ml-1 text-red-500 text-xs">(Hết lượt)</span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -162,7 +161,7 @@ const validateEmail = (value) => {
           </label>
           <p className="text-xs text-gray-500 mb-2">
             Email này sẽ được sử dụng để gửi thông tin hóa đơn, bảo hành và các
-            thông báo liên quan.
+            thông báo liên quan. Liên hệ ngay fanpage trong trường hợp cần hỗ trợ.
           </p>
           <div className="relative">
             <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-teal-600">
@@ -221,15 +220,15 @@ const validateEmail = (value) => {
       </div>
 
       {/* Ghi chú */}
-    {
-      fetchdata.description &&(<div className="md:col-span-2 mt-8 bg-orange-50 text-sm text-gray-800 rounded-lg p-4 border border-orange-200">
-        <p className="font-semibold text-orange-700 mb-2">📌 Lưu ý:</p>
-        <pre className="whitespace-pre-wrap leading-relaxed">
-          {fetchdata.description}
-        </pre>
-      </div>) 
+      {fetchdata.description && (
+        <div className="md:col-span-2 mt-8 bg-orange-50 text-sm text-gray-800 rounded-lg p-4 border border-orange-200">
+          <p className="font-semibold text-orange-700 mb-2">📌 Lưu ý:</p>
+          <pre className="whitespace-pre-wrap leading-relaxed">
+            {fetchdata.description}
+          </pre>
+        </div>
+      )}
 
-    }  
       {showPayment && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="relative bg-white p-6 rounded-xl max-w-2xl w-full shadow-xl">
@@ -249,8 +248,6 @@ const validateEmail = (value) => {
               total={entryPrice + 500}
               onClose={() => setShowPayment(false)}
               onSuccess={handlePaymentSuccess}
-              // có thể truyền thêm email xuống nếu backend cần
-              // customerEmail={email}
             />
           </div>
         </div>
