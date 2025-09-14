@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-
+import { HOSTADDRESS } from "../../utils/apiEndpoint.js";
 const CategorySection = ({ title, description, products }) => {
   console.log("Products data:", products);
 
@@ -14,28 +14,26 @@ const CategorySection = ({ title, description, products }) => {
       </div>
 
       {/* 5 card / hàng ở màn lớn */}
-      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-1 md:grid-cols-4 lg:grid-cols-4">
         {products.map((product) => {
           const isOutOfStock = product.canSell < 1;
           const imageFallback =
             "/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg";
-          const baseUrl = "http://103.238.235.227/"; // đổi sang domain thật khi deploy
-
           return (
             <Link
               key={product.id}
               to={isOutOfStock ? "#" : `/product/${product.id}`}
-              className={`relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition duration-200 border ${
+              className={`relative bg-white    ${
                 isOutOfStock ? "pointer-events-none opacity-70" : ""
               }`}
             >
               {/* Image Section: giữ nguyên layout, KHÔNG cắt ảnh */}
-              <div className="relative bg-gray-50 h-48 flex items-center justify-center">
+              <div className="relative  bg-gray-50 h-36">
                 <img
-                  src={product.image ? `${baseUrl}${product.image}` : imageFallback}
+                  src={product.image ? `${HOSTADDRESS}${product.image}` : imageFallback}
                   alt={product.name}
                   loading="lazy"
-                  className="max-h-full max-w-full object-contain"
+                  className="max-h-full max-w-full rounded-md object-contain"
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = imageFallback;
@@ -54,15 +52,15 @@ const CategorySection = ({ title, description, products }) => {
               </div>
 
               {/* Info */}
-              <div className="p-4">
-                <h3 className="text-[15px] font-semibold text-gray-900 line-clamp-2 min-h-[40px]">
+              <div className="p-1">
+                <h3 className="text-[15px] font-normal text-gray-900 line-clamp-2 min-h-[20px] hover:underline cursor-pointer">
                   {product.name}
                 </h3>
 
-                <div className="mt-3 flex items-center justify-between">
-                  <span className="text-sm text-red-600 font-semibold">
+                <div className="mt-1 flex items-center justify-between">
+                  <span className="text-[13px] text-black font-semibold">
                     {product.minPrice != null && product.maxPrice != null
-                      ? `${product.minPrice.toLocaleString()}đ - ${product.maxPrice.toLocaleString()}đ`
+                      ? `${product.minPrice.toLocaleString("de-DE")}đ - ${product.maxPrice.toLocaleString("de-DE")}đ`
                       : "Liên hệ"}
                   </span>
                   {product.discount && (

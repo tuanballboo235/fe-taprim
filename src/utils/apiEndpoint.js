@@ -5,3 +5,5 @@ export const API_ENDPOINTS = {
     GET_TEMP_EMAIL: '/netflix/get-email-temporary-watch-netflix',
   },
 };
+
+export const HOSTADDRESS = 'http://103.238.235.227/';

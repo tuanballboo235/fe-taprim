@@ -4,7 +4,7 @@ import React, { useState, useLayoutEffect } from "react";
  * TickerNotice – fixed, mượt, trong suốt
  */
 export default function TickerNotice({
-  message = "Website đang trong giai đoạn hoàn thiện. Nếu quý khách gặp có góp ý, vui lòng nhắn shop qua Zalo: 0344665098 hoặc fanpage. Shop xin cảm ơn quý khách!",
+  message = "Website đang trong giai đoạn hoàn thiện. Nếu quý khách gặp cần góp ý, vui lòng nhắn shop qua Zalo: 0344665098 hoặc fanpage. Shop xin cảm ơn quý khách!",
   zaloHref = "https://zalo.me/09xxxxxxxx",
   topOffset,
   speed = 500,      // giây cho 1 vòng

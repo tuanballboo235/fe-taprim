@@ -5,7 +5,8 @@ import PaymentModal from "../../components/payment/PaymentModal.jsx";
 import { toast } from "react-toastify";
 import { decreaseCouponUsage } from "../../services/api/couponService";
 import { FANPAGE_URL } from "../../utils/constant/Contact.js";
-
+import { CubeIcon, TagIcon } from "@heroicons/react/24/solid";
+import { HOSTADDRESS } from "../../utils/apiEndpoint.js";
 const ProductDetailPage = () => {
   const { id } = useParams();
   const [entryPrice, setEntryPrice] = useState(0);
@@ -18,6 +19,9 @@ const ProductDetailPage = () => {
 
   // email state
   const [email, setEmail] = useState("");
+// đặt gần các state khác
+const [displayImage, setDisplayImage] = useState("");
+
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -33,6 +37,7 @@ const ProductDetailPage = () => {
           setSelectedOption(available.productOptionId);
           setEntryPrice(available.price ?? 0);
           setEntrySellCount(available.sellCount ?? 0);
+          setDisplayImage(available.productOptionImage ?? "/images/default.jpg");
         }
       } catch (error) {
         toast.error("❌ Lỗi khi tải thông tin sản phẩm", { toastId: "load-error" });
@@ -69,90 +74,105 @@ const ProductDetailPage = () => {
   const hasAnySellLeft = fetchdata.productOptions.some((opt) => (opt.sellCount ?? 0) > 0);
 
   return (
-    <div className="max-w-6xl mt-5 mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-xl shadow-md border border-gray-200">
-      {/* Left - Image */}
-      <div className="flex flex-col items-center">
-        <img
-          src="/src/assets/images/483967539_2068210710352289_1535954025462080168_n.jpg"
-          className="rounded-lg w-full object-contain max-h-64"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = "/images/default.jpg";
-          }}
-        />
-        <button className="text-teal-600 text-sm mt-2 hover:underline">
-          Xem thêm ảnh
-        </button>
+   <div className="max-w-6xl mt-6 mx-auto p-8 grid grid-cols-1 md:grid-cols-2 gap-10 bg-white rounded-2xl shadow-md border border-gray-100 font-sans">
+  {/* Left - Image */}
+  <div className="flex flex-col items-center space-y-4">
+    <img
+      src={`${HOSTADDRESS}${displayImage}`}
+      alt={fetchdata?.productName || "Ảnh sản phẩm"}
+      className="rounded-xl w-full max-h-72 object-contain bg-gray-50 p-2 border border-gray-100"
+      onError={(e) => {
+        e.target.onerror = null;
+        e.target.src = "/images/default.jpg";
+      }}
+    />
+    
+  </div>
+
+  {/* Right - Info */}
+  <div className="space-y-6">
+    <div className="space-y-1">
+      <p className="text-xs uppercase text-gray-400 font-semibold tracking-wide">
+        Sản phẩm
+      </p>
+      <h1 className="text-2xl font-semibold text-gray-800 leading-snug">
+        {fetchdata.productName}
+      </h1>
+    </div>
+
+   <div className="space-y-2 text-sm">
+  {/* Kho hàng */}
+  <p className="text-gray-700 flex items-center">
+    <CubeIcon
+      className={`w-4 h-4 mr-1 ${
+        hasAnySellLeft ? "text-green-500" : "text-red-500"
+      }`}
+    />
+    Kho hàng:
+    <span
+      className={`ml-1 font-semibold ${
+        hasAnySellLeft ? "text-green-600" : "text-red-600"
+      }`}
+    >
+      {entrySellCount > 0 ? `${entrySellCount}` : "Hết hàng"}
+    </span>
+  </p>
+
+  {/* Thể loại */}
+  <p className="text-gray-700 flex items-center">
+    <TagIcon className="w-4 h-4 mr-1 text-gray-500" />
+    Thể loại:
+    <span className="ml-1 font-semibold">{fetchdata.categoryName}</span>
+  </p>
+</div>
+
+    {/* Pricing */}
+    <div className="space-y-1">
+      <div className="text-2xl font-bold text-teal-600 tracking-tight">
+        {Number(entryPrice || 0).toLocaleString("de-DE")}đ
       </div>
+    </div>
 
-      {/* Right - Info */}
-      <div className="space-y-5">
-        <p className="text-xs uppercase text-gray-400 font-semibold tracking-wide">
-          Sản phẩm
-        </p>
-        <h1 className="text-3xl font-extrabold text-gray-800">
-          {fetchdata.productName}
-        </h1>
+    {/* Duration buttons */}
+    <div className="space-y-3">
+      <p className="text-sm font-medium text-gray-700">
+        Chọn thời hạn
+      </p>
+      <div className="flex flex-wrap gap-3">
+        {fetchdata.productOptions.map((option) => {
+          const optionSellLeft = option.sellCount ?? 0;
+          const isDisabled = optionSellLeft === 0;
 
-        <p className="text-sm text-gray-700">
-          Kho hàng:
-          <span
-            className={`ml-1 font-semibold ${
-              hasAnySellLeft ? "text-green-600" : "text-red-600"
-            }`}
-          >
-            {entrySellCount > 0 ? `${entrySellCount}` : "Hết hàng"}
-          </span>
-        </p>
+          return (
+            <button
+              key={option.productOptionId}
+              className={[
+                "px-4 py-2 text-sm rounded-lg transition border font-medium",
+                selectedOption === option.productOptionId
+                  ? "bg-blue-600 border-blue-600 text-white shadow-sm"
+                  : "border-gray-300 text-gray-700 hover:bg-blue-50",
+                isDisabled ? "opacity-50 cursor-not-allowed hover:bg-white" : ""
+              ].join(" ")}
+              onClick={() => {
+                if (!isDisabled) {
+                  setSelectedOption(option.productOptionId);
+                  setEntryPrice(option.price ?? 0);
+                  setEntrySellCount(optionSellLeft);setDisplayImage(option.productOptionImage ?? "/images/default.jpg");
+                }
+              }}
+              disabled={isDisabled}
+            >
+              {option.label} - {(option.price ?? 0).toLocaleString("de-DE")}đ
+              {isDisabled && (
+                <span className="ml-1 text-red-500 text-xs">(Hết hàng)</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
 
-        <div className="text-sm text-gray-600">
-          <p>
-            Thể loại:{" "}
-            <span className="font-semibold">{fetchdata.categoryName}</span>
-          </p>
-        </div>
 
-        {/* Pricing */}
-        <div className="space-y-1">
-          <div className="text-2xl font-bold text-teal-600">
-            {Number(entryPrice || 0).toLocaleString()}đ
-          </div>
-        </div>
-
-        {/* Duration buttons */}
-        <div>
-          <p className="text-sm font-medium text-gray-700 mb-1">Chọn thời hạn</p>
-          <div className="flex flex-wrap gap-2">
-            {fetchdata.productOptions.map((option) => {
-              const optionSellLeft = option.sellCount ?? 0;
-              const isDisabled = optionSellLeft === 0;
-
-              return (
-                <button
-                  key={option.productOptionId}
-                  className={`px-3 py-1 border text-sm rounded-md transition ${
-                    selectedOption === option.productOptionId
-                      ? "bg-blue-100 border-blue-500"
-                      : "border-gray-300"
-                  } ${isDisabled ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-50"}`}
-                  onClick={() => {
-                    if (!isDisabled) {
-                      setSelectedOption(option.productOptionId);
-                      setEntryPrice(option.price ?? 0);
-                      setEntrySellCount(optionSellLeft);
-                    }
-                  }}
-                  disabled={isDisabled}
-                >
-                  {option.label} - {(option.price ?? 0).toLocaleString()}đ
-                  {isDisabled && (
-                    <span className="ml-1 text-red-500 text-xs">(Hết lượt)</span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
 
         {/* Email input */}
         <div className="mb-4">
