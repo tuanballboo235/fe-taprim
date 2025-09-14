@@ -81,7 +81,7 @@ const ProductDetailPage = () => {
   );
 
   return (
-    <div className="max-w-6xl mt-6 mx-auto p-8 grid grid-cols-1 md:grid-cols-2 gap-10 bg-white rounded-2xl shadow-md border border-gray-100 font-sans">
+    <div className="max-w-6xl mt-6  mb-10 mx-auto p-8 grid grid-cols-1 md:grid-cols-2 gap-10 bg-white rounded-2xl shadow-md border border-gray-100 font-sans">
       {/* Left - Image */}
       <div className="flex flex-col items-center space-y-4">
         <img

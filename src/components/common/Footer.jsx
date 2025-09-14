@@ -2,7 +2,9 @@ import { Facebook, Instagram, Youtube } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300 font-sans">
+    <footer className="bg-gray-900  text-gray-300 font-sans">
+      {/* 🔹Top notice line */}
+
       {/* Container */}
       <div className="max-w-6xl mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Logo & Slogan */}
@@ -45,10 +47,7 @@ export function Footer() {
         {/* Contact */}
         <div>
           <h2 className="text-white font-semibold text-lg mb-3">Liên hệ</h2>
-          <p className="text-sm mb-2">Hà Nội</p>
-          <p className="text-sm mb-2">
-            Email (for work): taprimshop@windmedia.vn
-          </p>
+          <p className="text-sm mb-2">Email (for work): taprimshop@gmail.com</p>
           <p className="text-sm">Zalo: 0344665098</p>
 
           <div className="flex items-center gap-4 mt-4">
@@ -61,7 +60,12 @@ export function Footer() {
               <Facebook size={20} />
             </a>
 
-            <a href="https://youtube.com" className="hover:text-teal-400">
+            <a
+              href="https://youtube.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-teal-400"
+            >
               <Youtube size={20} />
             </a>
           </div>
