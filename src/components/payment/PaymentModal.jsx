@@ -4,9 +4,13 @@ import {
   getPaymentFilter,
 } from "../../services/api/paymentService";
 import { updateOrder } from "../../services/api/orderService";
-import { getProductAccountByTransactionCode } from "../../services/api/productAccountService";
+import {
+  getProductAccountByTransactionCode,
+  getProductAccountFilter,
+} from "../../services/api/productAccountService";
 import { getCouponInfoByCouponCode } from "../../services/api/couponService";
 import { toast } from "react-toastify";
+import { CandlestickChart } from "lucide-react";
 
 const DEFAULT_COUNTDOWN = 120;
 const CHECK_INTERVAL = 10000;
@@ -115,6 +119,11 @@ const PaymentModal = ({
             productName,
             productAccountData: productAccountData?.data?.accountData,
             couponCode: couponData?.couponCode || null,
+            contactInfo: customerEmail || "",
+            totalAmount: finalTotal,
+            paidAt: new Date().toISOString(),
+            createAt: new Date().toISOString(), // nếu có createAt từ API thì thay thế
+            expiredAt: null, // nếu có expiredAt từ API thì thay thế
           };
 
           onClose?.();
@@ -144,6 +153,16 @@ const PaymentModal = ({
       return;
     }
     try {
+      const checkProductAccount = await getProductAccountFilter({
+        productOptionId,
+        canSell: true,
+      });
+      if (checkProductAccount?.data?.items.length === 0) {
+        toast.warn(
+          "Tiếc quá, sản phẩm đã hết hàng. Vui lòng liên hệ qua fanpage hoặc zalo 0344665098 để dược hỗ trợ."
+        );
+        return;
+      }
       const response = await createQrPayment(productOptionId, finalTotal);
       const { qrCode, transactionCode: trxCode } = response?.data || {};
       if (qrCode && trxCode) {

@@ -7,6 +7,7 @@ import { decreaseCouponUsage } from "../../services/api/couponService";
 import { FANPAGE_URL } from "../../utils/constant/Contact.js";
 import { CubeIcon, TagIcon } from "@heroicons/react/24/solid";
 import { HOSTADDRESS } from "../../utils/apiEndpoint.js";
+import OrderDetails from "../order/OrderDetails.jsx";
 const ProductDetailPage = () => {
   const { id } = useParams();
   const [entryPrice, setEntryPrice] = useState(0);
@@ -16,6 +17,7 @@ const ProductDetailPage = () => {
   const [showPayment, setShowPayment] = useState(false);
   const [orderResult, setOrderResult] = useState(null);
   const [fetchdata, setFetchData] = useState(null);
+  const [showOrderModal, setShowOrderModal] = useState(false);
 
   // email state
   const [email, setEmail] = useState("");
@@ -53,7 +55,7 @@ const ProductDetailPage = () => {
   const handlePaymentSuccess = async (order) => {
     setOrderResult(order);
     setShowPayment(false);
-
+    +setShowOrderModal(true);
     if (order.couponCode) {
       try {
         await decreaseCouponUsage(order.couponCode);
@@ -281,6 +283,45 @@ const ProductDetailPage = () => {
               onSuccess={handlePaymentSuccess}
             />
           </div>
+        </div>
+      )}
+
+      {showPayment && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="relative bg-white p-6 rounded-xl max-w-2xl w-full shadow-xl">
+            <button
+              onClick={() => setShowPayment(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
+            >
+              ×
+            </button>
+
+            <PaymentModal
+              productOptionId={selectedOption}
+              productName={fetchdata.productName}
+              amount={entryPrice}
+              fee={500}
+              customerEmail={email}
+              total={entryPrice + 500}
+              onClose={() => setShowPayment(false)}
+              onSuccess={handlePaymentSuccess}
+            />
+          </div>
+        </div>
+      )}
+
+      {showOrderModal && orderResult && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="relative bg-white p-6 rounded-xl max-w-2xl w-full shadow-xl">
+            <button
+              onClick={() => setShowOrderModal(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
+            >
+              ×
+            </button>
+            {/* Modal nội dung đơn hàng */}
+            <OrderDetails order={orderResult} />
+          </div>{" "}
         </div>
       )}
     </div>
