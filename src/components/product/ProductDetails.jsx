@@ -8,6 +8,8 @@ import { FANPAGE_URL } from "../../utils/constant/Contact.js";
 import { CubeIcon, TagIcon } from "@heroicons/react/24/solid";
 import { HOSTADDRESS } from "../../utils/apiEndpoint.js";
 import OrderDetails from "../order/OrderDetails.jsx";
+import ContactPurchaseButton from "../../components/contact/ContactPurchaseButton.jsx";
+
 const ProductDetailPage = () => {
   const { id } = useParams();
   const [entryPrice, setEntryPrice] = useState(0);
@@ -30,17 +32,15 @@ const ProductDetailPage = () => {
         const data = await getProductOptionByProductId(id);
         setFetchData(data.data);
 
-        // chọn option còn lượt bán
-        const available = data.data.productOptions.find(
-          (opt) => (opt.sellCount ?? 0) > 0
-        );
+        // chọn option còn lượt bán dầu tiên, nếu không có thì chọn option đầu tiên
+        const available =
+          data.data.productOptions.find((opt) => (opt.sellCount ?? 0) > 0) ??
+          data.data.productOptions[0];
         if (available) {
           setSelectedOption(available.productOptionId);
           setEntryPrice(available.price ?? 0);
           setEntrySellCount(available.sellCount ?? 0);
-          setDisplayImage(
-            available.productOptionImage ?? "/images/default.jpg"
-          );
+          setDisplayImage(available.productOptionImage ?? "");
         }
       } catch (error) {
         toast.error("❌ Lỗi khi tải thông tin sản phẩm", {
@@ -88,7 +88,7 @@ const ProductDetailPage = () => {
       <div className="flex flex-col items-center space-y-4">
         <img
           src={`${HOSTADDRESS}${displayImage}`}
-          alt={fetchdata?.productName || "Ảnh sản phẩm"}
+          alt={fetchdata?.displayImage || "Ảnh sản phẩm"}
           className="rounded-xl w-full max-h-72 object-contain bg-gray-50 p-2 border border-gray-100"
           onError={(e) => {
             e.target.onerror = null;
@@ -155,28 +155,23 @@ const ProductDetailPage = () => {
                   className={[
                     "px-4 py-2 text-sm rounded-lg transition border font-medium",
                     selectedOption === option.productOptionId
-                      ? "bg-blue-600 border-blue-600 text-white shadow-sm"
+                      ? "bg-blue-400 border-blue-600 text-white shadow-sm"
                       : "border-gray-300 text-gray-700 hover:bg-blue-50",
-                    isDisabled
-                      ? "opacity-50 cursor-not-allowed hover:bg-white"
-                      : "",
+                    isDisabled ? "opacity-50 cursor-not-allowed" : "",
                   ].join(" ")}
                   onClick={() => {
-                    if (!isDisabled) {
-                      setSelectedOption(option.productOptionId);
-                      setEntryPrice(option.price ?? 0);
-                      setEntrySellCount(optionSellLeft);
-                      setDisplayImage(
-                        option.productOptionImage ?? "/images/default.jpg"
-                      );
-                    }
+                    setSelectedOption(option.productOptionId);
+                    setEntryPrice(option.price ?? 0);
+                    setEntrySellCount(optionSellLeft);
+                    setDisplayImage(
+                      option.productOptionImage ?? "/images/default.jpg"
+                    );
                   }}
-                  disabled={isDisabled}
                 >
                   {option.label} - {(option.price ?? 0).toLocaleString("de-DE")}
                   đ
                   {isDisabled && (
-                    <span className="ml-1 text-red-500 text-xs">
+                    <span className="ml-1 text-red-700 text-xs relative z-20">
                       (Hết hàng)
                     </span>
                   )}
@@ -238,17 +233,18 @@ const ProductDetailPage = () => {
               }
               setShowPayment(true);
             }}
-            className="bg-teal-600 text-white px-6 py-2 rounded-md font-medium text-sm hover:bg-teal-700 w-full"
+            className="flex-1 bg-teal-600 text-white px-6 py-2 rounded-md font-medium text-sm hover:bg-teal-700 w-100"
           >
             Mua ngay
           </button>
-
-          <a
-            href={FANPAGE_URL}
-            className="bg-gray-100 text-center text-gray-800 px-6 py-2 rounded-md font-medium text-sm hover:bg-gray-200 w-full"
-          >
-            Liên hệ shop
-          </a>
+          <ContactPurchaseButton
+            label="Liên hệ mua hàng"
+            className="flex-2"
+            items={[
+              { text: "Chat Zalo", href: "https://zalo.me/0344665098" },
+              { text: "Fanpage Facebook", href: FANPAGE_URL },
+            ]}
+          />{" "}
         </div>
       </div>
 
