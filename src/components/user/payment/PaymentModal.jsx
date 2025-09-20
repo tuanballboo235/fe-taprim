@@ -34,6 +34,7 @@ const PaymentModal = ({
   const [qrImage, setQrImage] = useState(null);
   const [transactionCode, setTransactionCode] = useState("");
   const [countdown, setCountdown] = useState(DEFAULT_COUNTDOWN);
+  const hasExpiredRef = useRef(false);
 
   const countdownRef = useRef(null);
   const pollRef = useRef(null);
@@ -94,7 +95,11 @@ const PaymentModal = ({
         if (prev <= 1) {
           if (countdownRef.current) clearInterval(countdownRef.current);
           if (pollRef.current) clearInterval(pollRef.current);
-          toast.warn("⏰ Hết thời gian thanh toán.");
+          if (!hasExpiredRef.current) {
+            toast.warn("⏰ Hết thời gian thanh toán.");
+            hasExpiredRef.current = true;
+          }
+
           onClose?.();
           return 0;
         }
@@ -138,14 +143,7 @@ const PaymentModal = ({
       if (countdownRef.current) clearInterval(countdownRef.current);
       if (pollRef.current) clearInterval(pollRef.current);
     };
-  }, [
-    transactionCode,
-    showPaymentInfo,
-    onClose,
-    onSuccess,
-    productName,
-    couponData,
-  ]);
+  }, [transactionCode, showPaymentInfo]);
 
   const handleProceedPayment = async () => {
     if (!canPay) {
@@ -163,6 +161,7 @@ const PaymentModal = ({
         );
         return;
       }
+
       const response = await createQrPayment(productOptionId, finalTotal);
       const { qrCode, transactionCode: trxCode } = response?.data || {};
       if (qrCode && trxCode) {
