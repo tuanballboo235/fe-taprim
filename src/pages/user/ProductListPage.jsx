@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import CategorySection from "../../components/category/CategorySection";
 import { getProductByCategory } from "../../services/api/productService";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CategorySection from "../../components/user/category/CategorySection.jsx";
 
 const ProductList = () => {
   const [mockData, setMockData] = useState([]);

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { HOSTADDRESS } from "../../utils/apiEndpoint.js";
+import { HOSTADDRESS } from "../../../utils/apiEndpoint.js";
 const CategorySection = ({ title, description, products }) => {
   console.log("Products data:", products);
 
