@@ -1,34 +1,44 @@
-import React, { useState } from 'react';
-import ProductForm from '../../components/product/ProductCreateForm'; // Adjust the import path as needed 
-import { createProduct } from '../../services/api/productService'; // Adjust the import path as needed
+import React, { useState } from "react";
+import ProductForm from "../../components/user/product/ProductCreateForm"; // Adjust the import path as needed
+import { createProduct } from "../../services/api/productService"; // Adjust the import path as needed
 const CreateProductPage = () => {
   const [form, setForm] = useState({
-    ProductName: '', ProductCode: '', Price: '', DurationDay: '',
-    DiscountPercentDisplay: '', AttentionNote: '', Status: '1',
-    CategoryId: '', Description: ''
+    ProductName: "",
+    ProductCode: "",
+    Price: "",
+    DurationDay: "",
+    DiscountPercentDisplay: "",
+    AttentionNote: "",
+    Status: "1",
+    CategoryId: "",
+    Description: "",
   });
   const [image, setImage] = useState(null);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
   const handleFileChange = (e) => setImage(e.target.files[0]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData();
-    Object.keys(form).forEach(key => data.append(key, form[key]));
-    if (image) data.append('ProductImage', image);
+    Object.keys(form).forEach((key) => data.append(key, form[key]));
+    if (image) data.append("ProductImage", image);
 
     try {
-      console.log('Submitting product data:', Object.fromEntries(data.entries()));
+      console.log(
+        "Submitting product data:",
+        Object.fromEntries(data.entries())
+      );
       const response = await createProduct(data);
-      if (response.status !== 'Success') {
-        alert('Lỗi khi tạo sản phẩm');
+      if (response.status !== "Success") {
+        alert("Lỗi khi tạo sản phẩm");
       } else {
-        alert('Tạo sản phẩm thành công!');
+        alert("Tạo sản phẩm thành công!");
       }
     } catch (err) {
       console.error(err);
-      alert('Lỗi khi tạo sản phẩm');
+      alert("Lỗi khi tạo sản phẩm");
     }
   };
 

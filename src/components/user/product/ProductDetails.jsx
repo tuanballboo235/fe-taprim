@@ -1,26 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { getProductOptionByProductId } from "../../services/api/productService";
-import PaymentModal from "../../components/payment/PaymentModal.jsx";
+import { useParams, useNavigate } from "react-router-dom";
+import { getProductOptionByProductId } from "../../../services/api/productService.js";
+import PaymentModal from "../payment/PaymentModal.jsx";
 import { toast } from "react-toastify";
-import { decreaseCouponUsage } from "../../services/api/couponService";
-import { FANPAGE_URL } from "../../utils/constant/Contact.js";
+import { decreaseCouponUsage } from "../../../services/api/couponService.js";
+import { FANPAGE_URL } from "../../../utils/constant/Contact.js";
 import { CubeIcon, TagIcon } from "@heroicons/react/24/solid";
-import { HOSTADDRESS } from "../../utils/apiEndpoint.js";
+import { HOSTADDRESS } from "../../../utils/apiEndpoint.js";
 import OrderDetails from "../order/OrderDetails.jsx";
-import ContactPurchaseButton from "../../components/contact/ContactPurchaseButton.jsx";
+import ContactPurchaseButton from "../contact/ContactPurchaseButton.jsx";
 
 const ProductDetailPage = () => {
   const { id } = useParams();
   const [entryPrice, setEntryPrice] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [entrySellCount, setEntrySellCount] = useState(0);
+  const navigate = useNavigate();
 
   const [showPayment, setShowPayment] = useState(false);
   const [orderResult, setOrderResult] = useState(null);
   const [fetchdata, setFetchData] = useState(null);
   const [showOrderModal, setShowOrderModal] = useState(false);
-
   // email state
   const [email, setEmail] = useState("");
   // đặt gần các state khác
@@ -30,12 +30,23 @@ const ProductDetailPage = () => {
     const fetchProduct = async () => {
       try {
         const data = await getProductOptionByProductId(id);
+
+        // Nếu sản phẩm không khả dụng thì báo lỗi + điều hướng
+        if (data.data?.status === 0 || data.data?.canSell === false) {
+          toast.error("❌ Sản phẩm này hiện không khả dụng", {
+            toastId: "unavailable",
+          });
+          navigate("/product", { replace: true });
+          return; // ⛔ dừng tại đây, không set state nữa
+        }
+
         setFetchData(data.data);
 
-        // chọn option còn lượt bán dầu tiên, nếu không có thì chọn option đầu tiên
+        // chọn option còn lượt bán đầu tiên, nếu không có thì chọn option đầu tiên
         const available =
           data.data.productOptions.find((opt) => (opt.sellCount ?? 0) > 0) ??
           data.data.productOptions[0];
+
         if (available) {
           setSelectedOption(available.productOptionId);
           setEntryPrice(available.price ?? 0);
@@ -46,16 +57,17 @@ const ProductDetailPage = () => {
         toast.error("❌ Lỗi khi tải thông tin sản phẩm", {
           toastId: "load-error",
         });
+        navigate("/product", { replace: true });
       }
     };
 
     fetchProduct();
-  }, [id]);
+  }, [id, navigate]);
 
   const handlePaymentSuccess = async (order) => {
     setOrderResult(order);
     setShowPayment(false);
-    +setShowOrderModal(true);
+    setShowOrderModal(true);
     if (order.couponCode) {
       try {
         await decreaseCouponUsage(order.couponCode);
@@ -92,7 +104,8 @@ const ProductDetailPage = () => {
           className="rounded-xl w-full max-h-72 object-contain bg-gray-50 p-2 border border-gray-100"
           onError={(e) => {
             e.target.onerror = null;
-            e.target.src = "/images/default.jpg";
+            e.target.src =
+              "https://res.cloudinary.com/dzcb8xqjh/image/upload/v1750269205/logo_crop_xlfxai.png";
           }}
         />
       </div>
@@ -223,10 +236,17 @@ const ProductDetailPage = () => {
         <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={() => {
+              if (entrySellCount === 0) {
+                toast.error(
+                  "Sản phẩm đã hết hàng, vui lòng chọn sản phẩm khác hoặc liên hệ fanpage để được hỗ trợ"
+                );
+                return;
+              }
               if (!email) {
                 toast.error("Vui lòng nhập email trước khi mua hàng");
                 return;
               }
+
               if (!validateEmail(email)) {
                 toast.error("Email không hợp lệ, vui lòng kiểm tra lại");
                 return;

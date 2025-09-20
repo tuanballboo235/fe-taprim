@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import OrderDetails from "../../components/order/OrderDetails";
+import OrderDetails from "../../components/user/order/OrderDetails";
 import { getOrderByTransactionCode } from "../../services/api/orderService";
 
 export default function OrderLookup() {

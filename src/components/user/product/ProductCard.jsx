@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import PaymentModal from "../payment/PaymentModal";
-import OrderAccount from "../order/OrderAccount";
-import ContactCard from "../contact/ContactCard";
+import PaymentModal from "../../payment/PaymentModal";
+import OrderAccount from "../../order/OrderAccount";
+import ContactCard from "../../contact/ContactCard";
 import ProductDetailCard from "./ProductDetail";
 function ProductCard({
   productId,
@@ -69,17 +69,11 @@ function ProductCard({
             <div className="text-right min-w-[100px]">
               {hasDiscount ? (
                 <>
-                  <p className="text-xs text-slate-400 line-through">
-                   
-                  </p>
-                  <p className="text-lg font-semibold text-purple-600">
-                 
-                  </p>
+                  <p className="text-xs text-slate-400 line-through"></p>
+                  <p className="text-lg font-semibold text-purple-600"></p>
                 </>
               ) : (
-                <p className="text-lg font-semibold text-slate-800">
-               
-                </p>
+                <p className="text-lg font-semibold text-slate-800"></p>
               )}
             </div>
           </div>
@@ -189,8 +183,6 @@ function ProductCard({
               ×
             </button>
             <ProductDetailCard
-             
-          
               title={title}
               description="Mô tả chi tiết sản phẩm sẽ được cập nhật sau."
               price={price}

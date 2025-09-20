@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import EmailTable from "./EmailTable";
 import EmailContentModal from "./EmailContentModal";
-import { getEmailContentByEmailId } from "../../services/api/tempMail";
+import { getEmailContentByEmailId } from "../../../services/api/tempMail";
 
 const EmailList = ({ emails }) => {
   const [selectedEmail, setSelectedEmail] = useState(null);
