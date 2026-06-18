@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { HOSTADDRESS } from "../../../utils/apiEndpoint.js";
+import { getAssetUrl } from "../../../utils/apiEndpoint.js";
 const CategorySection = ({ title, description, products }) => {
   console.log("Products data:", products);
 
@@ -32,7 +32,7 @@ const CategorySection = ({ title, description, products }) => {
                   <img
                     src={
                       product.image
-                        ? `${HOSTADDRESS}${product.image}`
+                        ? getAssetUrl(product.image)
                         : imageFallback
                     }
                     alt={product.name}

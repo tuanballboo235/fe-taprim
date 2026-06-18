@@ -4,6 +4,7 @@ import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import { getAssetUrl } from '../../utils/apiEndpoint.js';
 
 const Carousel = ({ images = [], autoSlide = false, autoSlideInterval = 3000 }) => {
   if (!images || images.length === 0) return null;
@@ -31,7 +32,7 @@ const Carousel = ({ images = [], autoSlide = false, autoSlideInterval = 3000 }) 
         {images.map((img, index) => (
           <SwiperSlide key={index}>
             <img
-              src="http://103.238.235.227//uploads/a7c39abd-ca21-41d9-a300-c4b13d016e8d.png"
+              src={getAssetUrl(img)}
               alt={`slide-${index}`}
               className="w-full h-64 sm:h-80 md:h-[420px] object-cover"
             />

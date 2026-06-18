@@ -1,10 +1,10 @@
 // src/services/api/api.js
-import axios from 'axios'
+import axios from "axios";
+import { API_BASE_URL } from "../../utils/apiEndpoint.js";
 
 const api = axios.create({
-  baseURL: 'http://103.238.235.227:80/api', // 👉 đổi sang URL thật
-
+  baseURL: API_BASE_URL,
   timeout: 10000,
-})
+});
 
-export default api
+export default api;

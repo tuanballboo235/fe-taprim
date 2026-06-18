@@ -11,7 +11,6 @@ import {
 import { getCouponInfoByCouponCode } from "../../../services/api/couponService";
 import { toast } from "react-toastify";
 import { CandlestickChart } from "lucide-react";
-
 const DEFAULT_COUNTDOWN = 120;
 const CHECK_INTERVAL = 10000;
 
@@ -34,25 +33,43 @@ const PaymentModal = ({
   const [qrImage, setQrImage] = useState(null);
   const [transactionCode, setTransactionCode] = useState("");
   const [countdown, setCountdown] = useState(DEFAULT_COUNTDOWN);
-  const hasExpiredRef = useRef(false);
+
+  const [expired, setExpired] = useState(false);
+  const [shouldClose, setShouldClose] = useState(false); // ✅ mới
+  const [successOrder, setSuccessOrder] = useState(null); // ✅ mới
 
   const countdownRef = useRef(null);
   const pollRef = useRef(null);
+  const hasExpiredRef = useRef(false);
 
   const [couponLoading, setCouponLoading] = useState(false);
 
-  const validateEmail = (value) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || "").trim());
+  const validateEmail = (v) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((v || "").trim());
   const canPay = validateEmail(customerEmail);
 
-  // Tính lại tổng tiền khi coupon thay đổi
+  // gọi callback sau render
   useEffect(() => {
-    let discountAmount = 0;
+    if (shouldClose) onClose?.();
+  }, [shouldClose, onClose]);
+
+  useEffect(() => {
+    if (successOrder) onSuccess?.(successOrder);
+  }, [successOrder, onSuccess]);
+
+  const handleClose = () => {
+    if (transactionCode) onClose?.(transactionCode);
+    else onClose?.();
+  };
+
+  // tính tổng khi coupon đổi
+  useEffect(() => {
+    let d = 0;
     if (couponData?.isActive && couponData?.discountPercent > 0) {
-      discountAmount = Math.round(amount * (couponData.discountPercent / 100));
+      d = Math.round(amount * (couponData.discountPercent / 100));
     }
-    setDiscount(discountAmount);
-    setFinalTotal(Math.max(0, amount + fee - discountAmount));
+    setDiscount(d);
+    setFinalTotal(Math.max(0, amount + fee - d));
   }, [couponData, amount, fee]);
 
   const handleApplyCoupon = async () => {
@@ -70,7 +87,7 @@ const PaymentModal = ({
       setCouponData(data);
       toast.success("Áp dụng mã giảm giá thành công!");
     } catch (err) {
-      console.error("Lỗi khi áp dụng mã giảm giá:", err);
+      console.error(err);
       toast.error("Không thể áp dụng mã giảm giá. Vui lòng thử lại sau.");
     } finally {
       setCouponLoading(false);
@@ -83,24 +100,23 @@ const PaymentModal = ({
     setDiscount(0);
   };
 
-  // Polling + countdown khi đã có transactionCode
+  // countdown + polling
   useEffect(() => {
     if (countdownRef.current) clearInterval(countdownRef.current);
     if (pollRef.current) clearInterval(pollRef.current);
-
     if (!transactionCode || !showPaymentInfo) return;
 
     countdownRef.current = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          if (countdownRef.current) clearInterval(countdownRef.current);
-          if (pollRef.current) clearInterval(pollRef.current);
+          clearInterval(countdownRef.current);
+          clearInterval(pollRef.current);
           if (!hasExpiredRef.current) {
-            toast.warn("⏰ Hết thời gian thanh toán.");
+            setExpired(true);
+            setShouldClose(true); // ✅ chỉ set flag
+            toast.warn("Hết thời gian thanh toán.");
             hasExpiredRef.current = true;
           }
-
-          onClose?.();
           return 0;
         }
         return prev - 1;
@@ -113,37 +129,43 @@ const PaymentModal = ({
         const data = Array.isArray(res?.data) ? res.data[0] : res.data;
 
         if (data?.status === 1) {
-          if (countdownRef.current) clearInterval(countdownRef.current);
-          if (pollRef.current) clearInterval(pollRef.current);
+          clearInterval(countdownRef.current);
+          clearInterval(pollRef.current);
 
-          const productAccountData = await getProductAccountByTransactionCode(
+          const acc = await getProductAccountByTransactionCode(
             data.transactionCode
           );
-          const orderResult = {
+          setShouldClose(true); // ✅ chỉ set flag
+          setSuccessOrder({
             paymentTransactionCode: transactionCode,
             productName,
-            productAccountData: productAccountData?.data?.accountData,
+            productAccountData: acc?.data?.accountData,
             couponCode: couponData?.couponCode || null,
             contactInfo: customerEmail || "",
             totalAmount: finalTotal,
             paidAt: new Date().toISOString(),
-            createAt: new Date().toISOString(), // nếu có createAt từ API thì thay thế
-            expiredAt: null, // nếu có expiredAt từ API thì thay thế
-          };
-
-          onClose?.();
-          onSuccess?.(orderResult);
+            createAt: new Date().toISOString(),
+            expiredAt: null,
+          });
         }
       } catch {
         toast.warn("Lỗi khi kiểm tra trạng thái thanh toán.");
+        setShouldClose(true); // ✅ chỉ set flag
       }
     }, CHECK_INTERVAL);
 
     return () => {
-      if (countdownRef.current) clearInterval(countdownRef.current);
-      if (pollRef.current) clearInterval(pollRef.current);
+      clearInterval(countdownRef.current);
+      clearInterval(pollRef.current);
     };
-  }, [transactionCode, showPaymentInfo]);
+  }, [
+    transactionCode,
+    showPaymentInfo,
+    couponData,
+    customerEmail,
+    finalTotal,
+    productName,
+  ]);
 
   const handleProceedPayment = async () => {
     if (!canPay) {
@@ -151,19 +173,19 @@ const PaymentModal = ({
       return;
     }
     try {
-      const checkProductAccount = await getProductAccountFilter({
+      const check = await getProductAccountFilter({
         productOptionId,
         canSell: true,
       });
-      if (checkProductAccount?.data?.items.length === 0) {
+      if (check?.data?.items.length === 0) {
         toast.warn(
-          "Tiếc quá, sản phẩm đã hết hàng. Vui lòng liên hệ qua fanpage hoặc zalo 0344665098 để dược hỗ trợ."
+          "Sản phẩm đã hết hàng. Liên hệ fanpage hoặc Zalo để được tư vấn."
         );
         return;
       }
 
-      const response = await createQrPayment(productOptionId, finalTotal);
-      const { qrCode, transactionCode: trxCode } = response?.data || {};
+      const res = await createQrPayment(productOptionId, finalTotal);
+      const { qrCode, transactionCode: trxCode } = res?.data || {};
       if (qrCode && trxCode) {
         setQrImage(qrCode);
         setTransactionCode(trxCode);
@@ -173,13 +195,12 @@ const PaymentModal = ({
       } else {
         toast.error("Không nhận được mã QR từ hệ thống.");
       }
-    } catch (error) {
-      console.error("❌ Lỗi khi tạo QR thanh toán:", error);
+    } catch (e) {
+      console.error(e);
       toast.warn("Không thể tạo mã QR thanh toán.");
     }
   };
 
-  // Reset couponData khi gõ mã khác
   useEffect(() => {
     setCouponData(null);
   }, [coupon]);

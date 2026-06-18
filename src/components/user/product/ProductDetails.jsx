@@ -6,9 +6,10 @@ import { toast } from "react-toastify";
 import { decreaseCouponUsage } from "../../../services/api/couponService.js";
 import { FANPAGE_URL } from "../../../utils/constant/Contact.js";
 import { CubeIcon, TagIcon } from "@heroicons/react/24/solid";
-import { HOSTADDRESS } from "../../../utils/apiEndpoint.js";
+import { getAssetUrl } from "../../../utils/apiEndpoint.js";
 import OrderDetails from "../order/OrderDetails.jsx";
 import ContactPurchaseButton from "../contact/ContactPurchaseButton.jsx";
+import { clearOrderAndPaymentTempByTransactionCode } from "../../../services/api/paymentService.js";
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -25,6 +26,16 @@ const ProductDetailPage = () => {
   const [email, setEmail] = useState("");
   // đặt gần các state khác
   const [displayImage, setDisplayImage] = useState("");
+  const handleClosePayment = async (transactionCode) => {
+    if (transactionCode) {
+      try {
+        await clearOrderAndPaymentTempByTransactionCode(transactionCode);
+      } catch (err) {
+        console.error("❌ Lỗi clear order/payment temp:", err);
+      }
+    }
+    setShowPayment(false);
+  };
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -99,7 +110,7 @@ const ProductDetailPage = () => {
       {/* Left - Image */}
       <div className="flex flex-col items-center space-y-4">
         <img
-          src={`${HOSTADDRESS}${displayImage}`}
+          src={getAssetUrl(displayImage)}
           alt={fetchdata?.displayImage || "Ảnh sản phẩm"}
           className="rounded-xl w-full max-h-72 object-contain bg-gray-50 p-2 border border-gray-100"
           onError={(e) => {
@@ -282,7 +293,7 @@ const ProductDetailPage = () => {
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="relative bg-white p-6 rounded-xl max-w-2xl w-full shadow-xl">
             <button
-              onClick={() => setShowPayment(false)}
+              onClick={() => handleClosePayment()} // có thể không truyền code ở đây
               className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
             >
               ×
@@ -295,32 +306,8 @@ const ProductDetailPage = () => {
               fee={500}
               customerEmail={email}
               total={entryPrice + 500}
-              onClose={() => setShowPayment(false)}
-              onSuccess={handlePaymentSuccess}
-            />
-          </div>
-        </div>
-      )}
-
-      {showPayment && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="relative bg-white p-6 rounded-xl max-w-2xl w-full shadow-xl">
-            <button
-              onClick={() => setShowPayment(false)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
-            >
-              ×
-            </button>
-
-            <PaymentModal
-              productOptionId={selectedOption}
-              productName={fetchdata.productName}
-              amount={entryPrice}
-              fee={500}
-              customerEmail={email}
-              total={entryPrice + 500}
-              onClose={() => setShowPayment(false)}
-              onSuccess={handlePaymentSuccess}
+              onClose={handleClosePayment} // 🔥 truyền callback xuống
+              onSuccess={handlePaymentSuccess} // giữ nguyên
             />
           </div>
         </div>
