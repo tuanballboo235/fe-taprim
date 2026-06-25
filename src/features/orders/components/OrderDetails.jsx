@@ -14,7 +14,7 @@ const formatDateTime = (value) => {
 const formatMoney = (value) =>
   Number(value || 0).toLocaleString("vi-VN", {
     maximumFractionDigits: 0,
-  }) + "d";
+  }) + "đ";
 
 export default function OrderDetails({ order }) {
   const [showAccount, setShowAccount] = useState(false);
@@ -26,7 +26,7 @@ export default function OrderDetails({ order }) {
     try {
       await navigator.clipboard.writeText(order.productAccountData || "");
       setCopied(true);
-      notify.success("Da copy account.");
+      notify.success("Đã copy account.");
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
       notify.error("Không thể copy account.");
@@ -34,13 +34,13 @@ export default function OrderDetails({ order }) {
   };
 
   const rows = [
-    ["Ma giao dịch", order.paymentTransactionCode],
-    ["Ten sản phẩm", order.productName],
-    ["Email nhan hang", order.contactInfo],
-    ["Thoi gian thanh toan", formatDateTime(order.paidAt)],
-    ["Ngay tao don", formatDateTime(order.createAt)],
-    ["Het han lay ma", formatDateTime(order.expiredAt)],
-    ["Tong tien", formatMoney(order.totalAmount)],
+    ["Mã giao dịch", order.paymentTransactionCode],
+    ["Tên sản phẩm", order.productName],
+    ["Email nhận hàng", order.contactInfo],
+    ["Thời gian thanh toán", formatDateTime(order.paidAt)],
+    ["Ngày tạo đơn", formatDateTime(order.createAt)],
+    ["Hết hạn lấy mã", formatDateTime(order.expiredAt)],
+    ["Tổng tiền", formatMoney(order.totalAmount)],
   ];
 
   return (
@@ -82,7 +82,7 @@ export default function OrderDetails({ order }) {
               <span className="break-all">{order.productAccountData || "-"}</span>
             </div>
             <Button variant="info" onClick={handleCopy}>
-              {copied ? "Da copy" : "Copy"}
+              {copied ? "Đã copy" : "Copy"}
             </Button>
           </div>
         ) : (
@@ -91,13 +91,13 @@ export default function OrderDetails({ order }) {
             className="mt-3"
             onClick={() => setShowAccount(true)}
           >
-            Hien account
+            Hiện account
           </Button>
         )}
 
         <p className="mt-3 text-xs text-red-600">
           Định dạng thường gặp: email:password. Vui lòng đăng nhập đúng định
-          dang de tranh loi.
+          dạng để tránh lỗi.
         </p>
       </div>
     </section>

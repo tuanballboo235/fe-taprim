@@ -17,7 +17,7 @@ const DEFAULT_COUNTDOWN = 120;
 const CHECK_INTERVAL = 10000;
 
 const formatCurrency = (value) =>
-  `${Number(value || 0).toLocaleString("vi-VN")}d`;
+  `${Number(value || 0).toLocaleString("vi-VN")}đ`;
 
 const PaymentModal = ({
   productOptionId,
@@ -72,14 +72,14 @@ const PaymentModal = ({
 
       if (!data?.isActive || !data?.discountPercent) {
         setCouponData(null);
-        notify.warning("Mã giảm giá khong hop le hoac da het han.");
+        notify.warning("Mã giảm giá không hợp lệ hoặc đã hết hạn.");
         return;
       }
 
       setCouponData(data);
       notify.success("Áp dụng mã giảm giá thành công.");
     } catch (error) {
-      notify.error(getApiErrorMessage(error, "Không thể ap dung ma giam gia."));
+      notify.error(getApiErrorMessage(error, "Không thể áp dụng mã giảm giá."));
     } finally {
       setCouponLoading(false);
     }
@@ -92,7 +92,7 @@ const PaymentModal = ({
 
   const handleProceedPayment = async () => {
     if (!canPay) {
-      notify.error("Vui lòng nhap email hop le truoc khi thanh toan.");
+      notify.error("Vui lòng nhập email hợp lệ trước khi thanh toán.");
       return;
     }
 
@@ -211,7 +211,7 @@ const PaymentModal = ({
             {productName}
           </h2>
           <p className="mt-1 text-sm text-slate-500">
-            Kiem tra thong tin va tao ma QR de thanh toan.
+            Kiểm tra thông tin và tạo mã QR để thanh toán.
           </p>
         </div>
 
@@ -331,7 +331,7 @@ const PaymentModal = ({
                 <li>Chờ 10-20 giây để hệ thống xác nhận.</li>
               </ol>
               <p className="mt-3 text-red-600">
-                Mã QR hết hạn sau <strong>{countdown}s</strong>. ếu đã thanh
+                Mã QR hết hạn sau <strong>{countdown}s</strong>. Nếu đã thanh
                 toán nhưng chưa nhận đơn, vui lòng liên hệ Zalo 0344665098.
               </p>
             </div>

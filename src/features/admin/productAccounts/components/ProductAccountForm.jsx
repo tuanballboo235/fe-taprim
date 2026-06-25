@@ -9,7 +9,7 @@ const ProductAccountForm = ({ form, onChange, onSubmit, isSubmitting = false }) 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <label className="block">
           <span className="mb-1 block text-sm font-medium text-slate-700">
-            Thong tin tài khoản
+            Dữ liệu account
           </span>
           <input
             type="text"
@@ -22,7 +22,7 @@ const ProductAccountForm = ({ form, onChange, onSubmit, isSubmitting = false }) 
 
         <label className="block">
           <span className="mb-1 block text-sm font-medium text-slate-700">
-            Tên đăng nhập
+            Email đăng nhập
           </span>
           <input
             type="text"
@@ -35,7 +35,7 @@ const ProductAccountForm = ({ form, onChange, onSubmit, isSubmitting = false }) 
 
         <label className="block">
           <span className="mb-1 block text-sm font-medium text-slate-700">
-            Mat khau
+            Mật khẩu
           </span>
           <input
             type="text"
@@ -48,7 +48,7 @@ const ProductAccountForm = ({ form, onChange, onSubmit, isSubmitting = false }) 
 
         <label className="block">
           <span className="mb-1 block text-sm font-medium text-slate-700">
-            Ngay doi mat khau
+            Ngày đổi mật khẩu
           </span>
           <input
             type="datetime-local"
@@ -61,11 +61,12 @@ const ProductAccountForm = ({ form, onChange, onSubmit, isSubmitting = false }) 
 
         <label className="block">
           <span className="mb-1 block text-sm font-medium text-slate-700">
-            So lan ban
+            Lượt bán còn
           </span>
           <input
             type="number"
             name="sellCount"
+            min={0}
             value={form.sellCount}
             onChange={onChange}
             className={fieldClass}
@@ -82,14 +83,15 @@ const ProductAccountForm = ({ form, onChange, onSubmit, isSubmitting = false }) 
             onChange={onChange}
             className={fieldClass}
           >
-            <option value="0">Chưa bán</option>
-            <option value="1">Đã bán</option>
+            <option value="1">Đang bán</option>
+            <option value="0">Chưa sử dụng</option>
+            <option value="2">Hết hạn</option>
           </select>
         </label>
 
         <label className="block">
           <span className="mb-1 block text-sm font-medium text-slate-700">
-            Bat dau ban tu
+            Bắt đầu bán từ
           </span>
           <input
             type="datetime-local"
@@ -102,7 +104,7 @@ const ProductAccountForm = ({ form, onChange, onSubmit, isSubmitting = false }) 
 
         <label className="block">
           <span className="mb-1 block text-sm font-medium text-slate-700">
-            Ban den
+            Bán đến
           </span>
           <input
             type="datetime-local"

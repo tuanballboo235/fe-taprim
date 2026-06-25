@@ -13,14 +13,14 @@ const ProductForm = ({
         name="ProductName"
         value={form.ProductName}
         onChange={onChange}
-        placeholder="Ten sản phẩm"
+        placeholder="Tên sản phẩm"
         className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
       />
       <input
         name="ProductCode"
         value={form.ProductCode}
         onChange={onChange}
-        placeholder="Ma sản phẩm"
+        placeholder="Mã sản phẩm"
         className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
       />
       <input
@@ -28,7 +28,7 @@ const ProductForm = ({
         type="number"
         value={form.Price}
         onChange={onChange}
-        placeholder="Gia"
+        placeholder="Giá"
         className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
       />
       <input
@@ -53,8 +53,8 @@ const ProductForm = ({
         onChange={onChange}
         className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
       >
-        <option value="1">Hien thi</option>
-        <option value="0">An</option>
+        <option value="1">Hiển thị</option>
+        <option value="0">Ẩn</option>
       </select>
       <input
         name="CategoryId"
@@ -68,7 +68,7 @@ const ProductForm = ({
       name="AttentionNote"
       value={form.AttentionNote}
       onChange={onChange}
-      placeholder="Ghi chu"
+      placeholder="Ghi chú"
       className="min-h-24 w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
     />
     <textarea

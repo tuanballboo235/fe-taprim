@@ -6,7 +6,7 @@ export default function ProductPrice({
   className = "",
 }) {
   const formatPrice = (value) =>
-    value == null ? null : `${Number(value).toLocaleString("de-DE")}d`;
+    value == null ? null : `${Number(value).toLocaleString("de-DE")}đ`;
 
   if (price != null) {
     return <span className={className}>{formatPrice(price)}</span>;

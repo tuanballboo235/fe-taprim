@@ -2,49 +2,94 @@ import { useEffect, useState } from "react";
 import Button from "@/shared/components/Button";
 import notify from "@/shared/utils/notify";
 
-const getToday = () => new Date().toISOString().split("T")[0];
-const getDateTimeLocal = () => new Date().toISOString().slice(0, 16);
-
 const inputClass =
   "w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-blue-600 focus:ring-1 focus:ring-blue-600";
 const labelClass = "mb-1 block text-sm font-semibold text-slate-700";
 
+const toDateInput = (value) => {
+  const date = value ? new Date(value) : new Date();
+  if (Number.isNaN(date.getTime())) return new Date().toISOString().split("T")[0];
+
+  return date.toISOString().split("T")[0];
+};
+
+const toDateTimeInput = (value) => {
+  const date = value ? new Date(value) : new Date();
+  if (Number.isNaN(date.getTime())) return new Date().toISOString().slice(0, 16);
+
+  return date.toISOString().slice(0, 16);
+};
+
+const addDaysSafe = (from, days) => {
+  const base =
+    from && !Number.isNaN(new Date(from).getTime())
+      ? new Date(from)
+      : new Date();
+  const date = new Date(base);
+  date.setDate(date.getDate() + Number(days || 0));
+
+  return date.toISOString().split("T")[0];
+};
+
 const createSingleForm = () => {
-  const today = getToday();
+  const today = toDateInput();
 
   return {
     accountData: "",
     usernameProductAccount: "",
     passwordProductAccount: "",
-    dateChangePass: getDateTimeLocal(),
+    dateChangePass: toDateTimeInput(),
     sellCount: 1,
     sellDateFrom: today,
-    sellDateTo: today,
-    status: 0,
-    customDays: "",
+    sellDateTo: addDaysSafe(today, 1),
+    status: 1,
+    customDays: "1",
   };
 };
 
 const createMultiDefaults = () => {
-  const today = getToday();
+  const today = toDateInput();
 
   return {
-    dateChangePass: getDateTimeLocal(),
-    sellCount: 0,
+    dateChangePass: toDateTimeInput(),
+    sellCount: 1,
     sellDateFrom: today,
-    sellDateTo: today,
-    status: 0,
-    customDays: "",
+    sellDateTo: addDaysSafe(today, 1),
+    status: 1,
+    customDays: "1",
   };
 };
 
-const addDaysSafe = (from, days) => {
-  const base =
-    from && !Number.isNaN(new Date(from).getTime()) ? new Date(from) : new Date();
-  const date = new Date(base);
-  date.setDate(date.getDate() + Number(days || 0));
-  return date.toISOString().split("T")[0];
+const parseCredential = (value) => {
+  const trimmed = value.trim();
+  const separatorIndex = trimmed.indexOf(":");
+
+  if (separatorIndex <= 0 || separatorIndex === trimmed.length - 1) {
+    return null;
+  }
+
+  const email = trimmed.slice(0, separatorIndex).trim();
+  const password = trimmed.slice(separatorIndex + 1).trim();
+
+  if (!email || !password) return null;
+
+  return {
+    email,
+    password,
+    accountData: `${email}:${password}`,
+  };
 };
+
+const buildAccountPayload = (account, defaults = {}) => ({
+  accountData: account.accountData,
+  usernameProductAccount: account.usernameProductAccount,
+  passwordProductAccount: account.passwordProductAccount,
+  dateChangePass: account.dateChangePass ?? defaults.dateChangePass,
+  sellCount: account.sellCount ?? defaults.sellCount ?? 1,
+  sellDateFrom: account.sellDateFrom ?? defaults.sellDateFrom,
+  sellDateTo: account.sellDateTo ?? defaults.sellDateTo,
+  status: account.status ?? defaults.status,
+});
 
 const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
   const [activeTab, setActiveTab] = useState("single");
@@ -57,27 +102,28 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
     if (!isOpen) return;
 
     if (initialData) {
-      const today = getToday();
-      const from = initialData.sellDateFrom ?? initialData.sellFrom ?? today;
-      const to = initialData.sellDateTo ?? initialData.sellTo ?? from;
+      const from = toDateInput(initialData.sellDateFrom ?? initialData.sellFrom);
+      const to = toDateInput(initialData.sellDateTo ?? initialData.sellTo ?? from);
 
       setForm({
         accountData: initialData.accountData ?? "",
         usernameProductAccount: initialData.usernameProductAccount ?? "",
         passwordProductAccount:
           initialData.passwordProductAccount ?? initialData.password ?? "",
-        dateChangePass: initialData.dateChangePass ?? getDateTimeLocal(),
-        sellCount: initialData.sellCount ?? 0,
+        dateChangePass: toDateTimeInput(initialData.dateChangePass),
+        sellCount: initialData.sellCount ?? 1,
         sellDateFrom: from,
         sellDateTo: to,
-        status: initialData.status ?? 0,
+        status: initialData.status ?? 1,
         customDays: "",
       });
-    } else {
-      setForm(createSingleForm());
-      setMultiDefaults(createMultiDefaults());
-      setMultiInput("");
+      return;
     }
+
+    setForm(createSingleForm());
+    setMultiDefaults(createMultiDefaults());
+    setMultiInput("");
+    setActiveTab("single");
   }, [initialData, isOpen]);
 
   useEffect(() => {
@@ -142,44 +188,83 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
     }));
   };
 
-  const parseMultiInput = () =>
-    multiInput
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean)
-      .map((line) => {
-        const [accountData, username, password] = line.split(",");
+  const buildSinglePayload = () => {
+    const accountFromData = parseCredential(form.accountData);
+    const accountFromFields =
+      form.usernameProductAccount.trim() && form.passwordProductAccount.trim()
+        ? {
+            email: form.usernameProductAccount.trim(),
+            password: form.passwordProductAccount.trim(),
+            accountData: `${form.usernameProductAccount.trim()}:${form.passwordProductAccount.trim()}`,
+          }
+        : null;
+    const account = accountFromData ?? accountFromFields;
 
-        return {
-          accountData: accountData?.trim() || "",
-          usernameProductAccount: username?.trim() || "",
-          passwordProductAccount: password?.trim() || "",
-          dateChangePass: multiDefaults.dateChangePass,
-          sellCount: multiDefaults.sellCount,
-          sellDateFrom: multiDefaults.sellDateFrom,
-          sellDateTo: multiDefaults.sellDateTo,
-          status: multiDefaults.status,
-        };
+    if (!account) return null;
+
+    return buildAccountPayload({
+      ...form,
+      accountData: account.accountData,
+      usernameProductAccount: account.email,
+      passwordProductAccount: account.password,
+    });
+  };
+
+  const parseMultiInput = () => {
+    const invalidLines = [];
+    const accounts = multiInput
+      .split("\n")
+      .map((line, index) => ({ line: line.trim(), lineNumber: index + 1 }))
+      .filter(({ line }) => Boolean(line))
+      .map(({ line, lineNumber }) => {
+        const credential = parseCredential(line);
+
+        if (!credential) {
+          invalidLines.push(lineNumber);
+          return null;
+        }
+
+        return buildAccountPayload(
+          {
+            accountData: credential.accountData,
+            usernameProductAccount: credential.email,
+            passwordProductAccount: credential.password,
+          },
+          multiDefaults
+        );
       })
-      .filter((account) => account.accountData);
+      .filter(Boolean);
+
+    return { accounts, invalidLines };
+  };
 
   const handleSubmit = async () => {
-    const payload = activeTab === "single" ? form : parseMultiInput();
+    const payload =
+      activeTab === "single" ? buildSinglePayload() : parseMultiInput();
 
-    if (activeTab === "single" && !form.accountData.trim()) {
-      notify.warning("Vui lòng nhap account data.");
+    if (activeTab === "single" && !payload) {
+      notify.warning("Vui lòng nhập đúng định dạng email:password.");
       return;
     }
 
-    if (activeTab === "multi" && payload.length === 0) {
-      notify.warning("Vui lòng nhap it nhat mot account hop le.");
-      return;
+    if (activeTab === "multi") {
+      if (payload.invalidLines.length > 0) {
+        notify.warning(
+          `Dòng ${payload.invalidLines.join(", ")} không đúng định dạng email:password.`
+        );
+        return;
+      }
+
+      if (payload.accounts.length === 0) {
+        notify.warning("Vui lòng nhập ít nhất một account.");
+        return;
+      }
     }
 
     setIsSaving(true);
 
     try {
-      await onSave?.(payload);
+      await onSave?.(activeTab === "single" ? [payload] : payload.accounts);
       onClose?.();
     } catch {
       return;
@@ -198,7 +283,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
             Thêm account sản phẩm
           </h2>
           <p className="mt-1 text-sm text-slate-500">
-            Nhap tung account hoac dan danh sách theo tung dong.
+            Thêm từng account hoặc dán danh sách, mỗi dòng theo định dạng email:password.
           </p>
         </div>
 
@@ -233,11 +318,26 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
           {activeTab === "single" ? (
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="sm:col-span-2">
-                <span className={labelClass}>Account data</span>
+                <span className={labelClass}>Dữ liệu account</span>
                 <input
                   type="text"
                   name="accountData"
                   value={form.accountData}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="email@example.com:password"
+                />
+                <span className="mt-1 block text-xs text-slate-500">
+                  Có thể nhập trực tiếp email:password, hoặc điền email/mật khẩu ở 2 ô bên dưới.
+                </span>
+              </label>
+
+              <label>
+                <span className={labelClass}>Email đăng nhập</span>
+                <input
+                  type="text"
+                  name="usernameProductAccount"
+                  value={form.usernameProductAccount}
                   onChange={handleChange}
                   className={inputClass}
                   placeholder="email@example.com"
@@ -245,29 +345,19 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
               </label>
 
               <label>
-                <span className={labelClass}>Tên đăng nhập</span>
-                <input
-                  type="text"
-                  name="usernameProductAccount"
-                  value={form.usernameProductAccount}
-                  onChange={handleChange}
-                  className={inputClass}
-                />
-              </label>
-
-              <label>
-                <span className={labelClass}>Mat khau</span>
+                <span className={labelClass}>Mật khẩu</span>
                 <input
                   type="text"
                   name="passwordProductAccount"
                   value={form.passwordProductAccount}
                   onChange={handleChange}
                   className={inputClass}
+                  placeholder="password"
                 />
               </label>
 
               <label>
-                <span className={labelClass}>Ngay doi mat khau</span>
+                <span className={labelClass}>Ngày đổi mật khẩu</span>
                 <input
                   type="datetime-local"
                   name="dateChangePass"
@@ -278,7 +368,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
               </label>
 
               <label>
-                <span className={labelClass}>Lượt bán con</span>
+                <span className={labelClass}>Lượt bán còn</span>
                 <input
                   type="number"
                   name="sellCount"
@@ -290,7 +380,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
               </label>
 
               <div className="sm:col-span-2">
-                <span className={labelClass}>Thoi gian ban</span>
+                <span className={labelClass}>Thời gian bán</span>
                 <div className="mb-2 flex flex-wrap gap-2">
                   {[1, 2, 3].map((days) => (
                     <Button
@@ -299,13 +389,13 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
                       variant="muted"
                       onClick={() => handleQuickSelect(days)}
                     >
-                      +{days} ngay
+                      +{days} ngày
                     </Button>
                   ))}
                   <input
                     type="number"
                     min="1"
-                    placeholder="Tuy chinh"
+                    placeholder="Tùy chỉnh"
                     value={form.customDays}
                     onChange={(event) => handleQuickSelect(event.target.value)}
                     className="w-28 rounded-md border border-slate-300 px-3 py-1.5 text-sm outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
@@ -337,9 +427,9 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
                   onChange={handleChange}
                   className={inputClass}
                 >
-                  <option value={0}>Chua su dung</option>
-                  <option value={1}>Đã bán</option>
-                  <option value={2}>Het han</option>
+                  <option value={1}>Đang bán</option>
+                  <option value={0}>Chưa sử dụng</option>
+                  <option value={2}>Hết hạn</option>
                 </select>
               </label>
             </div>
@@ -347,20 +437,22 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
             <div className="space-y-4">
               <label>
                 <span className={labelClass}>
-                  Danh sách account, moi dong: accountData,username,password
+                  Danh sách account, mỗi dòng đúng định dạng email:password
                 </span>
                 <textarea
                   value={multiInput}
                   onChange={(event) => setMultiInput(event.target.value)}
                   rows={8}
-                  placeholder={"abc1@gmail.com,abc1,pass123\nabc2@gmail.com,abc2,pass456"}
+                  placeholder={
+                    "abc1@gmail.com:pass123\nabc2@gmail.com:pass456"
+                  }
                   className={`${inputClass} font-mono`}
                 />
               </label>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <label>
-                  <span className={labelClass}>Ngay doi mat khau</span>
+                  <span className={labelClass}>Ngày đổi mật khẩu</span>
                   <input
                     type="datetime-local"
                     name="dateChangePass"
@@ -371,7 +463,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
                 </label>
 
                 <label>
-                  <span className={labelClass}>Lượt bán con</span>
+                  <span className={labelClass}>Lượt bán còn</span>
                   <input
                     type="number"
                     name="sellCount"
@@ -384,7 +476,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
               </div>
 
               <div>
-                <span className={labelClass}>Thoi gian ban mac dinh</span>
+                <span className={labelClass}>Thời gian bán mặc định</span>
                 <div className="mb-2 flex flex-wrap gap-2">
                   {[1, 2, 3].map((days) => (
                     <Button
@@ -393,15 +485,17 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
                       variant="muted"
                       onClick={() => handleQuickSelectMulti(days)}
                     >
-                      +{days} ngay
+                      +{days} ngày
                     </Button>
                   ))}
                   <input
                     type="number"
                     min="1"
-                    placeholder="Tuy chinh"
+                    placeholder="Tùy chỉnh"
                     value={multiDefaults.customDays}
-                    onChange={(event) => handleQuickSelectMulti(event.target.value)}
+                    onChange={(event) =>
+                      handleQuickSelectMulti(event.target.value)
+                    }
                     className="w-28 rounded-md border border-slate-300 px-3 py-1.5 text-sm outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                   />
                 </div>
@@ -424,16 +518,16 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
               </div>
 
               <label>
-                <span className={labelClass}>Trạng thái mac dinh</span>
+                <span className={labelClass}>Trạng thái mặc định</span>
                 <select
                   name="status"
                   value={multiDefaults.status}
                   onChange={handleChangeMultiDefaults}
                   className={inputClass}
                 >
-                  <option value={0}>Chua su dung</option>
-                  <option value={1}>Đã bán</option>
-                  <option value={2}>Het han</option>
+                  <option value={1}>Đang bán</option>
+                  <option value={0}>Chưa sử dụng</option>
+                  <option value={2}>Hết hạn</option>
                 </select>
               </label>
             </div>
@@ -442,10 +536,10 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
 
         <div className="flex flex-col-reverse gap-2 border-t border-slate-200 p-4 sm:flex-row sm:justify-end sm:p-5">
           <Button variant="ghost" onClick={onClose} disabled={isSaving}>
-            Huy
+            Hủy
           </Button>
           <Button variant="info" onClick={handleSubmit} isLoading={isSaving}>
-            {activeTab === "single" ? "Lưu account" : "Lưu danh sách"}
+            {activeTab === "single" ? "Thêm account" : "Lưu danh sách"}
           </Button>
         </div>
       </div>

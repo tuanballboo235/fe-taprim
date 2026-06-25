@@ -35,14 +35,14 @@ const AdminProductCreatePage = () => {
     try {
       const response = await createProduct.mutateAsync(data);
       if (response.status !== "Success") {
-        notify.error(response.message || "Lỗi khi tao sản phẩm");
+        notify.error(response.message || "Lỗi khi tạo sản phẩm");
       } else {
         notify.success("Tạo sản phẩm thành công!");
         setForm(initialForm);
         setImage(null);
       }
     } catch (error) {
-      notify.error(getApiErrorMessage(error, "Lỗi khi tao sản phẩm"));
+      notify.error(getApiErrorMessage(error, "Lỗi khi tạo sản phẩm"));
     }
   };
 
@@ -53,7 +53,7 @@ const AdminProductCreatePage = () => {
           Thêm sản phẩm mới
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          Nhap thong tin sản phẩm va hinh anh de hien thi tren cua hang.
+          Nhập thông tin sản phẩm và hình ảnh để hiển thị trên cửa hàng.
         </p>
       </div>
       <ProductForm

@@ -25,13 +25,13 @@ export default function ProductDetailCard({
 
       <div className="grid grid-cols-2 gap-3 text-sm">
         <div className="rounded border border-slate-200 p-3">
-          <div className="text-slate-500">Gia</div>
+          <div className="text-slate-500">Giá</div>
           <div className="font-semibold text-slate-800">
-            {Number(displayPrice || 0).toLocaleString("de-DE")}d
+            {Number(displayPrice || 0).toLocaleString("de-DE")}đ
           </div>
         </div>
         <div className="rounded border border-slate-200 p-3">
-          <div className="text-slate-500">So luong</div>
+          <div className="text-slate-500">Số lượng</div>
           <div className="font-semibold text-slate-800">{quantity}</div>
         </div>
       </div>

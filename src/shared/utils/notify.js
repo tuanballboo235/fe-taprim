@@ -25,10 +25,10 @@ export const notify = {
   warning: (title, options) => fireToast("warning", title, options),
   info: (title, options) => fireToast("info", title, options),
   confirm: async ({
-    title = "Ban chac chan?",
+    title = "Bạn chắc chắn?",
     text,
-    confirmButtonText = "Dong y",
-    cancelButtonText = "Huy",
+    confirmButtonText = "Đồng ý",
+    cancelButtonText = "Hủy",
     icon = "question",
     confirmButtonColor = "#15803d",
     cancelButtonColor = "#64748b",
@@ -47,7 +47,7 @@ export const notify = {
 
     return result.isConfirmed;
   },
-  loading: (title = "Dang xu ly...") =>
+  loading: (title = "Đang xử lý...") =>
     Swal.fire({
       title,
       allowOutsideClick: false,

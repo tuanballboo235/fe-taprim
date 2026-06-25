@@ -16,8 +16,8 @@ const AdminProductListPage = () => {
     return (
       <PageState
         type="error"
-        title="Không thể tai danh sách sản phẩm"
-        description="Vui lòng thu lai sau it phut."
+        title="Không thể tải danh sách sản phẩm"
+        description="Vui lòng thử lại sau ít phút."
       />
     );
   }

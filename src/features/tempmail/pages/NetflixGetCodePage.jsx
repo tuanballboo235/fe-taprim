@@ -17,7 +17,7 @@ const NetflixGetCode = () => {
     event.preventDefault();
 
     if (!transactionCode.trim()) {
-      notify.warning("Vui lòng nhap ma giao dịch.");
+      notify.warning("Vui lòng nhập mã giao dịch.");
       return;
     }
 
@@ -30,14 +30,14 @@ const NetflixGetCode = () => {
 
       if (response.status === "Success") {
         setNetflixTemporaryMail(response.data);
-        notify.success("Da lay ma Netflix.");
+        notify.success("Đã lấy mã Netflix.");
       } else {
-        const message = response.message || "Khong lay duoc du lieu.";
+        const message = response.message || "Không lấy được dữ liệu.";
         setError(message);
         notify.error(message);
       }
     } catch (err) {
-      const message = getApiErrorMessage(err, "Lỗi khi goi API.");
+      const message = getApiErrorMessage(err, "Lỗi khi gọi API.");
       setError(message);
       notify.error(message);
     } finally {
@@ -53,7 +53,7 @@ const NetflixGetCode = () => {
             Lấy mã đăng nhập Netflix Family
           </h1>
           <p className="mt-1 text-sm text-slate-500">
-            Nhập mã giao dịch để tra cứu email code đăng nhập.
+            Nhập mã giao dịch để tra cứu email chứa mã đăng nhập.
           </p>
         </div>
 
@@ -63,7 +63,7 @@ const NetflixGetCode = () => {
         >
           <input
             type="text"
-            placeholder="Nhap ma thanh toan bat dau bang TAPR"
+            placeholder="Nhập mã thanh toán bắt đầu bằng TAPR"
             value={transactionCode}
             onChange={(event) => setTransactionCode(event.target.value)}
             className="min-h-10 min-w-0 flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-green-600 focus:ring-1 focus:ring-green-600"
@@ -75,20 +75,20 @@ const NetflixGetCode = () => {
             leftIcon={<FaSearch />}
             className="sm:w-auto"
           >
-            {loading ? "Đang tải..." : "Lay ma"}
+            {loading ? "Đang tải..." : "Lấy mã"}
           </Button>
         </form>
       </div>
 
       <div className="mt-5">
         {loading && (
-          <PageState type="loading" description="Dang tra cứu email code..." />
+          <PageState type="loading" description="Đang tra cứu email code..." />
         )}
 
         {!loading && error && (
           <PageState
             type="error"
-            title="Không thể lay ma"
+            title="Không thể lấy mã"
             description={error}
           />
         )}
@@ -102,7 +102,7 @@ const NetflixGetCode = () => {
         {!loading && !error && netflixTemporaryMail?.length === 0 && (
           <PageState
             type="empty"
-            title="Khong tim thay ma"
+            title="Không tìm thấy mã"
             description="Chưa có mã đăng nhập nào cho giao dịch này."
           />
         )}

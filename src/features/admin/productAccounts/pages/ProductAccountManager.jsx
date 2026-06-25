@@ -42,7 +42,7 @@ const ProductAccountManager = () => {
         setProducts([]);
         setSelectedProduct(null);
         notify.error(
-          getApiErrorMessage(error, "Không thể tai danh sách goi sản phẩm.")
+          getApiErrorMessage(error, "Không thể tải danh sách gói sản phẩm.")
         );
       } finally {
         if (isActive) {
@@ -74,7 +74,7 @@ const ProductAccountManager = () => {
       setProductAccounts(items);
     } catch (error) {
       setProductAccounts([]);
-      notify.error(getApiErrorMessage(error, "Không thể tai danh sách account."));
+      notify.error(getApiErrorMessage(error, "Không thể tải danh sách account."));
     } finally {
       setIsLoading(false);
     }
@@ -85,7 +85,7 @@ const ProductAccountManager = () => {
   }, [fetchAccounts]);
 
   const handleEditAccount = async (accountPayload) => {
-    if (accountPayload?.id) {
+    if (accountPayload?.productAccountId || accountPayload?.id) {
       notify.info("Chưa có API cập nhật account cho thao tác sửa.");
       return;
     }
@@ -105,11 +105,7 @@ const ProductAccountManager = () => {
     }
 
     try {
-      await Promise.all(
-        payloads.map((payload) =>
-          addProductAccountToProduct(selectedProduct.productOptionId, payload)
-        )
-      );
+      await addProductAccountToProduct(selectedProduct.productOptionId, payloads);
 
       notify.success(
         payloads.length > 1
@@ -136,23 +132,25 @@ const ProductAccountManager = () => {
     if (!confirmed) return;
 
     setProductAccounts((current) =>
-      current.filter((account) => account.id !== accountId)
+      current.filter(
+        (account) => (account.productAccountId ?? account.id) !== accountId
+      )
     );
     notify.success("Đã xóa khỏi danh sách hiển thị.");
   };
 
   if (isBootLoading) {
-    return <PageState type="loading" description="Đang tải thong tin sản phẩm..." />;
+    return <PageState type="loading" description="Đang tải thông tin sản phẩm..." />;
   }
 
   return (
     <div className="space-y-4">
       <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <h1 className="text-xl font-semibold text-slate-900">
-          Quan ly account sản phẩm
+          Quản lý account sản phẩm
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          {productInfo || "Chon mot goi sản phẩm de xem account dang co."}
+          {productInfo || "Chọn một gói sản phẩm để xem account đang có."}
         </p>
       </div>
 

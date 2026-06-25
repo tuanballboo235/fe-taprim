@@ -1,5 +1,5 @@
 // Khai báo hằng số cho link Fanpage
-export const FANPAGE_URL = "https://www.facebook.com/tap.rim/";
+export const FANPAGE_URL = "https://www.facebook.com/taprim.shop";
 
 // Có thể thêm các link khác nếu cần
 export const WEBSITE_URL = "https://your-website.com";

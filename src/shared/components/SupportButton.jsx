@@ -4,7 +4,7 @@ import { ChevronDown, Facebook, MessageCircle } from "lucide-react";
 export default function SupportButton({
   zaloUrl = "https://zalo.me/0344665098",
   fanpageUrl = "https://facebook.com/taprim.shop",
-  label = "Ho tro",
+  label = "Hỗ trợ",
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);

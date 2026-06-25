@@ -60,7 +60,7 @@ export function AuthProvider({ children }) {
       const accessToken = data?.accessToken ?? data?.token;
 
       if (!accessToken) {
-        throw new Error("May chu khong tra ve access token.");
+        throw new Error("Máy chủ không trả về access token.");
       }
 
       const user = data?.user ?? getUserFromToken(accessToken);

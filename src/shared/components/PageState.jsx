@@ -10,16 +10,16 @@ const PageState = ({
 }) => {
   const defaults = {
     loading: {
-      title: "Đang tải du lieu",
-      description: "Vui lòng doi trong giay lat.",
+      title: "Đang tải dữ liệu",
+      description: "Vui lòng đợi trong giây lát.",
     },
     error: {
-      title: "Không thể tai du lieu",
-      description: "Vui lòng thu lai hoac kiem tra ket noi.",
+      title: "Không thể tải dữ liệu",
+      description: "Vui lòng thử lại hoặc kiểm tra kết nối.",
     },
     empty: {
-      title: "Chưa có du lieu",
-      description: "Noi dung se hien thi tai day khi co du lieu moi.",
+      title: "Chưa có dữ liệu",
+      description: "Nội dung sẽ hiển thị tại đây khi có dữ liệu mới.",
     },
   };
 

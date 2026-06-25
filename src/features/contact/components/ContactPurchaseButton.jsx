@@ -3,7 +3,7 @@ import { FaChevronDown } from "react-icons/fa";
 import Button from "@/shared/components/Button";
 
 export default function ContactPurchaseButton({
-  label = "Liên hệ mua hang",
+  label = "Liên hệ mua hàng",
   items = [
     { text: "Chat Zalo", href: "https://zalo.me/0344665098" },
     { text: "Fanpage Facebook", href: "https://facebook.com/taprim.shop" },

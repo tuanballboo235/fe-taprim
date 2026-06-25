@@ -16,7 +16,7 @@ const EmailRow = ({ email, onClick }) => {
         <p className="truncate text-xs text-slate-500">{from || "-"}</p>
       </td>
       <td className="px-4 py-3 text-blue-700">
-        <p className="truncate">{subject || "Khong co tieu de"}</p>
+        <p className="truncate">{subject || "Không có tiêu đề"}</p>
       </td>
       <td className="whitespace-nowrap px-4 py-3 text-slate-500">
         {timeAgo}

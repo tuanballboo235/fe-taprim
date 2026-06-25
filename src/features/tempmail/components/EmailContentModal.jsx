@@ -12,16 +12,16 @@ const EmailContentModal = ({ email, onClose }) => {
       >
         <div className="border-b border-slate-200 p-4 pr-12 sm:p-5 sm:pr-14">
           <h2 className="text-lg font-semibold text-slate-900 sm:text-xl">
-            {email.subject || "Khong co tieu de"}
+            {email.subject || "Không có tiêu đề"}
           </h2>
-          <p className="mt-1 text-sm text-slate-500">Tu: {email.from || "-"}</p>
+          <p className="mt-1 text-sm text-slate-500">Từ: {email.from || "-"}</p>
         </div>
 
         <button
           type="button"
           className="absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xl font-semibold text-slate-500 transition hover:bg-red-50 hover:text-red-600"
           onClick={onClose}
-          aria-label="Dong"
+          aria-label="Đóng"
         >
           x
         </button>

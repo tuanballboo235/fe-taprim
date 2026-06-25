@@ -15,7 +15,7 @@ export default function OrderLookup() {
     const transactionCode = transactionInput.trim();
 
     if (!transactionCode) {
-      notify.warning("Vui lòng nhap ma giao dịch.");
+      notify.warning("Vui lòng nhập mã giao dịch.");
       return;
     }
 
@@ -24,16 +24,16 @@ export default function OrderLookup() {
       const data = await getOrderByTransactionCode(transactionCode);
 
       if (!data.data || !data.data.paymentTransactionCode) {
-        notify.warning("Khong tim thay đơn hàng voi ma giao dịch nay.");
+        notify.warning("Không tìm thấy đơn hàng với mã giao dịch này.");
         setOrderData(null);
         return;
       }
 
       setOrderData(data);
-      notify.success("Da tim thay đơn hàng.");
+      notify.success("Đã tìm thấy đơn hàng.");
     } catch (error) {
       notify.error(
-        getApiErrorMessage(error, "Co loi xay ra khi tra cứu đơn hàng.")
+        getApiErrorMessage(error, "Có lỗi xảy ra khi tra cứu đơn hàng.")
       );
     } finally {
       setLoading(false);
@@ -48,7 +48,7 @@ export default function OrderLookup() {
             Tra cứu đơn hàng
           </h1>
           <p className="mt-2 text-sm text-slate-500">
-            Nhap ma giao dịch de xem thong tin đơn hàng va tài khoản da mua.
+            Nhập mã giao dịch để xem thông tin đơn hàng và tài khoản đã mua.
           </p>
         </div>
 
@@ -56,7 +56,7 @@ export default function OrderLookup() {
           <div className="flex flex-col gap-3 sm:flex-row">
             <input
               type="text"
-              placeholder="Nhap ma giao dịch, vi du TAPR123456"
+              placeholder="Nhập mã giao dịch, ví dụ TAPR123456"
               value={transactionInput}
               onChange={(e) => setTransactionInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -68,7 +68,7 @@ export default function OrderLookup() {
               leftIcon={<FaSearch />}
               className="sm:min-w-36"
             >
-              {loading ? "Dang tra cứu..." : "Tra cứu"}
+              {loading ? "Đang tra cứu..." : "Tra cứu"}
             </Button>
           </div>
         </div>

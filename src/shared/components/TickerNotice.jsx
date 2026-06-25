@@ -115,7 +115,7 @@ export default function TickerNotice({
             onClick={() => setOpen(false)}
             aria-label="Đóng thông báo"
             className="pointer-events-auto absolute right-1.5 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-md border border-amber-300/70 bg-white/90 font-bold text-amber-700 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-amber-300/70"
-            title="Dong"
+            title="Đóng"
           >
             x
           </button>

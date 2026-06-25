@@ -24,7 +24,7 @@ const NetflixUpdateHouseMail = () => {
           setNetflixTemporaryMail(data);
         }
       } catch (err) {
-        const message = getApiErrorMessage(err, "Lỗi khi goi API.");
+        const message = getApiErrorMessage(err, "Lỗi khi gọi API.");
 
         if (isActive) {
           setError(message);
@@ -53,16 +53,16 @@ const NetflixUpdateHouseMail = () => {
           Cập nhật hộ gia đình Netflix Family
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          Danh sách email update family duoc lay tu he thong tam thoi.
+          Danh sách email cập nhật gia đình được lấy từ hệ thống tạm thời.
         </p>
       </div>
 
       {loading && (
-        <PageState type="loading" description="Đang tải du lieu email..." />
+        <PageState type="loading" description="Đang tải dữ liệu email..." />
       )}
 
       {!loading && error && (
-        <PageState type="error" title="Không thể tai email" description={error} />
+        <PageState type="error" title="Không thể tải email" description={error} />
       )}
 
       {!loading && !error && emails.length > 0 && (
@@ -75,7 +75,7 @@ const NetflixUpdateHouseMail = () => {
         <PageState
           type="empty"
           title="Chưa có email"
-          description="Danh sách email se hien thi tai day khi co du lieu."
+          description="Danh sách email sẽ hiển thị tại đây khi có dữ liệu."
         />
       )}
     </section>

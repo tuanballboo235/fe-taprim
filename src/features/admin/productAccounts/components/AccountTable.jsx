@@ -5,9 +5,9 @@ import Button from "@/shared/components/Button";
 import PageState from "@/shared/components/PageState";
 
 const statusText = {
-  0: "Chua su dung",
-  1: "Đã bán",
-  2: "Het han",
+  0: "Chưa sử dụng",
+  1: "Đang bán",
+  2: "Hết hạn",
 };
 
 const formatDate = (dateString) => {
@@ -23,6 +23,8 @@ const formatDate = (dateString) => {
   return `${day}-${month}-${year}`;
 };
 
+const getAccountId = (account) => account?.productAccountId ?? account?.id;
+
 const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [viewFilter, setViewFilter] = useState("valid");
@@ -32,7 +34,7 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
 
     return {
       validAccounts: safe.filter((account) => account?.canSell === true),
-      invalidAccounts: safe.filter((account) => account?.canSell === false),
+      invalidAccounts: safe.filter((account) => account?.canSell !== true),
     };
   }, [accounts]);
 
@@ -45,10 +47,7 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
   if (isLoading) {
     return (
       <div className="min-w-0 flex-1">
-        <PageState
-          type="loading"
-          description="Đang tải danh sách tài khoản..."
-        />
+        <PageState type="loading" description="Đang tải danh sách account..." />
       </div>
     );
   }
@@ -59,10 +58,10 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-slate-900">
-              Danh sách tài khoản
+              Danh sách account
             </h2>
             <p className="mt-1 text-sm text-slate-500">
-              Lọc nhanh theo khả năng bán và quản lý account của gói đã chọn.
+              Lọc nhanh account đang bán và account chưa hợp lệ của gói đã chọn.
             </p>
           </div>
 
@@ -77,7 +76,7 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
                     : "text-slate-600 hover:text-slate-900"
                 }`}
               >
-                Hop le ({validAccounts.length})
+                Hợp lệ ({validAccounts.length})
               </button>
               <button
                 type="button"
@@ -109,8 +108,8 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
             type="empty"
             title={
               viewFilter === "valid"
-                ? "Chưa có tài khoản hop le"
-                : "Khong co tài khoản khong hop le"
+                ? "Chưa có account hợp lệ"
+                : "Không có account không hợp lệ"
             }
             description="Dữ liệu sẽ xuất hiện sau khi thêm account vào gói này."
           />
@@ -124,27 +123,26 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
                   <th className="px-4 py-3 font-semibold">Trạng thái</th>
                   <th className="px-4 py-3 font-semibold">Khoảng bán</th>
                   <th className="px-4 py-3 font-semibold">Ngày thêm</th>
-                  <th className="px-4 py-3 text-right font-semibold">
-                    Thao tác
-                  </th>
+                  <th className="px-4 py-3 text-right font-semibold">Thao tác</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {rowsToShow.map((account, index) => {
+                  const accountId = getAccountId(account);
                   const canSell = account?.canSell === true;
 
                   return (
                     <tr
-                      key={account.id ?? account.accountData ?? index}
+                      key={accountId ?? account.accountData ?? index}
                       className="hover:bg-slate-50"
                     >
                       <td className="px-4 py-3">
                         <div className="max-w-sm truncate font-medium text-slate-900">
                           {account.accountData || "-"}
                         </div>
-                        {account.password && (
+                        {account.passwordProductAccount && (
                           <div className="mt-1 text-xs text-slate-500">
-                            Password: {account.password}
+                            Mật khẩu: {account.passwordProductAccount}
                           </div>
                         )}
                       </td>
@@ -163,8 +161,7 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-slate-600">
-                        {formatDate(account.sellFrom)} -{" "}
-                        {formatDate(account.sellTo)}
+                        {formatDate(account.sellFrom)} - {formatDate(account.sellTo)}
                       </td>
                       <td className="px-4 py-3 text-slate-600">
                         {formatDate(account.createAt)}
@@ -177,13 +174,13 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
                             leftIcon={<FaEdit />}
                             onClick={() => onEdit?.(account)}
                           >
-                            Sua
+                            Sửa
                           </Button>
                           <Button
                             size="sm"
                             variant="danger"
                             leftIcon={<FaTrashAlt />}
-                            onClick={() => onDelete?.(account.id)}
+                            onClick={() => onDelete?.(accountId)}
                           >
                             Xóa
                           </Button>

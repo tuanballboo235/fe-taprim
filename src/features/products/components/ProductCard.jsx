@@ -16,7 +16,7 @@ const ModalFrame = ({ children, onClose, maxWidth = "max-w-2xl" }) => (
         type="button"
         onClick={onClose}
         className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-lg font-bold text-slate-500 transition hover:text-red-600"
-        aria-label="Dong"
+        aria-label="Đóng"
       >
         x
       </button>
@@ -94,7 +94,7 @@ function ProductCard({
               {title}
             </h3>
             <p className="mt-1 text-sm text-slate-500">
-              So luong:{" "}
+              Số lượng:{" "}
               <span
                 className={`font-semibold ${
                   isOutOfStock ? "text-red-600" : "text-slate-900"
@@ -144,7 +144,7 @@ function ProductCard({
               disabled={isOutOfStock}
               onClick={handlePaymentRequest}
             >
-              Thanh toan
+              Thanh toán
             </Button>
           </div>
         </div>

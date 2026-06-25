@@ -1,5 +1,5 @@
 const GENERIC_ERROR_MESSAGE =
-  "Da co loi xay ra. Vui lòng liên hệ admin hoac thu lai sau.";
+  "Đã có lỗi xảy ra. Vui lòng liên hệ admin hoặc thử lại sau.";
 
 const TECHNICAL_ERROR_PATTERNS = [
   /System\./i,

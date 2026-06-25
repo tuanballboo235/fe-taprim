@@ -9,7 +9,7 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 const getErrorMessage = (error) => {
   return getApiErrorMessage(
     error,
-    "Đăng nhập không thành công. Vui lòng thử lại.",
+    "Đăng nhập không thành công. Vui lòng thử lại."
   );
 };
 
@@ -106,7 +106,7 @@ export default function LoginPage() {
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium text-slate-700">Mat khau</span>
+            <span className="text-sm font-medium text-slate-700">Mật khẩu</span>
             <span className="mt-2 flex items-center gap-2 rounded border border-slate-300 bg-white px-3 py-2 focus-within:border-green-600 focus-within:ring-1 focus-within:ring-green-600">
               <FaLock className="shrink-0 text-slate-400" />
               <input

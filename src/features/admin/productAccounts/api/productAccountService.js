@@ -11,18 +11,19 @@ export const getProductAccountByTransactionCode = async (transactionCode) => {
 };
 
 export const addProductAccountToProduct = async (productOptionId, data) => {
+  const accounts = Array.isArray(data) ? data : [data];
   const response = await api.post(
     `/ProductAccount/add-product-account/${productOptionId}`,
-    {
-      accountData: data.accountData,
-      usernameProductAccount: data.usernameProductAccount,
-      passwordProductAccount: data.passwordProductAccount,
-      dateChangePass: data.dateChangePass,
-      sellCount: parseInt(data.sellCount, 10),
-      sellFrom: data.sellDateFrom,
-      sellTo: data.sellDateTo,
-      status: parseInt(data.status, 10),
-    }
+    accounts.map((account) => ({
+      accountData: account.accountData,
+      usernameProductAccount: account.usernameProductAccount,
+      passwordProductAccount: account.passwordProductAccount,
+      dateChangePass: account.dateChangePass || null,
+      sellCount: Number.parseInt(account.sellCount, 10),
+      sellDateFrom: account.sellDateFrom || null,
+      sellDateTo: account.sellDateTo || null,
+      status: Number.parseInt(account.status, 10),
+    }))
   );
   return response.data;
 };

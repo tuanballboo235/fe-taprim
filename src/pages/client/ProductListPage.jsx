@@ -10,7 +10,7 @@ const ProductListPage = () => {
 
   useEffect(() => {
     if (isError) {
-      notify.error("Không thể tai danh sách sản phẩm");
+      notify.error("Không thể tải danh sách sản phẩm");
     }
   }, [isError]);
 
@@ -27,8 +27,8 @@ const ProductListPage = () => {
       <div className="mx-auto max-w-7xl px-4 py-8">
         <PageState
           type="error"
-          title="Không thể tai sản phẩm"
-          description="Vui lòng thu lai sau it phut."
+          title="Không thể tải sản phẩm"
+          description="Vui lòng thử lại sau ít phút."
         />
       </div>
     );

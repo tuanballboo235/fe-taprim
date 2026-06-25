@@ -8,9 +8,9 @@ const EmailTable = ({ emails, onEmailClick }) => {
       <table className="w-full min-w-[720px] table-fixed text-left text-sm">
         <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
           <tr className="border-b border-slate-200">
-            <th className="px-4 py-3 font-semibold">Nguoi gui</th>
-            <th className="px-4 py-3 font-semibold">Tieu de</th>
-            <th className="px-4 py-3 font-semibold">Thoi gian</th>
+            <th className="px-4 py-3 font-semibold">Người gửi</th>
+            <th className="px-4 py-3 font-semibold">Tiêu đề</th>
+            <th className="px-4 py-3 font-semibold">Thời gian</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
@@ -25,7 +25,7 @@ const EmailTable = ({ emails, onEmailClick }) => {
           ) : (
             <tr>
               <td colSpan="3" className="px-4 py-8 text-center text-slate-500">
-                Khong co email nao de hien thi.
+                Không có email nào để hiển thị.
               </td>
             </tr>
           )}

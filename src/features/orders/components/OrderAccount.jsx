@@ -12,7 +12,7 @@ export default function OrderAccount({ order }) {
     try {
       await navigator.clipboard.writeText(order.productAccountData || "");
       setCopied(true);
-      notify.success("Da copy account.");
+      notify.success("Đã copy account.");
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
       notify.error("Không thể copy account.");
@@ -32,14 +32,14 @@ export default function OrderAccount({ order }) {
 
       <div className="mt-5 space-y-4 text-sm">
         <div>
-          <p className="font-semibold text-slate-600">Ma giao dịch</p>
+          <p className="font-semibold text-slate-600">Mã giao dịch</p>
           <p className="mt-1 break-words text-slate-900">
             {order.paymentTransactionCode || "-"}
           </p>
         </div>
 
         <div>
-          <p className="font-semibold text-slate-600">Ten sản phẩm</p>
+          <p className="font-semibold text-slate-600">Tên sản phẩm</p>
           <p className="mt-1 text-slate-900">{order.productName || "-"}</p>
         </div>
 
@@ -51,7 +51,7 @@ export default function OrderAccount({ order }) {
                 {order.productAccountData || "-"}
               </span>
               <Button size="sm" variant="info" onClick={handleCopy}>
-                {copied ? "Da copy" : "Copy"}
+                {copied ? "Đã copy" : "Copy"}
               </Button>
             </div>
           ) : (
@@ -61,7 +61,7 @@ export default function OrderAccount({ order }) {
               className="mt-2"
               onClick={() => setShowAccount(true)}
             >
-              Hien account
+              Hiện account
             </Button>
           )}
         </div>
