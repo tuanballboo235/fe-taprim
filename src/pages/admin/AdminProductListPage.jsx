@@ -9,15 +9,15 @@ const AdminProductListPage = () => {
   const serviceData = sections.filter((section) => section.categoryId === 2);
 
   if (isLoading) {
-    return <PageState type="loading" description="Dang tai san pham..." />;
+    return <PageState type="loading" description="Đang tải sản phẩm..." />;
   }
 
   if (isError) {
     return (
       <PageState
         type="error"
-        title="Khong the tai danh sach san pham"
-        description="Vui long thu lai sau it phut."
+        title="Không thể tai danh sách sản phẩm"
+        description="Vui lòng thu lai sau it phut."
       />
     );
   }
@@ -26,20 +26,20 @@ const AdminProductListPage = () => {
     <section className="space-y-8">
       <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
         <h1 className="text-xl font-semibold text-slate-900">
-          Danh sach san pham
+          Danh sách sản phẩm
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          Quan ly san pham va dieu huong toi khu tai khoan san pham.
+          Quản lý sản phẩm và điều hướng tới khu tài khoản sản phẩm.
         </p>
       </div>
 
       <div>
-        <h2 className="mb-4 text-lg font-semibold text-slate-900">San pham</h2>
+        <h2 className="mb-4 text-lg font-semibold text-slate-900">Sản phẩm</h2>
         <ProductTable data={productData} />
       </div>
 
       <div>
-        <h2 className="mb-4 text-lg font-semibold text-slate-900">Dich vu</h2>
+        <h2 className="mb-4 text-lg font-semibold text-slate-900">Dịch vụ</h2>
         <ProductTable data={serviceData} />
       </div>
     </section>

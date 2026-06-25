@@ -2,7 +2,7 @@ export default function ProductPrice({
   minPrice,
   maxPrice,
   price,
-  fallback = "Lien he",
+  fallback = "Liên hệ",
   className = "",
 }) {
   const formatPrice = (value) =>

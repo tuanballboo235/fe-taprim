@@ -1,197 +1,201 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import Button from "@/shared/components/Button";
+import notify from "@/shared/utils/notify";
 import PaymentModal from "@/features/payments/components/PaymentModal";
 import OrderAccount from "@/features/orders/components/OrderAccount";
 import ContactCard from "@/features/contact/components/ContactCard";
 import ProductDetailCard from "@/features/products/components/ProductDetailCard";
+import ProductPrice from "@/features/products/components/ProductPrice";
+
+const ModalFrame = ({ children, onClose, maxWidth = "max-w-2xl" }) => (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-3">
+    <div
+      className={`relative max-h-[90vh] w-full overflow-y-auto rounded-lg bg-white p-4 shadow-xl sm:p-6 ${maxWidth}`}
+    >
+      <button
+        type="button"
+        onClick={onClose}
+        className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-lg font-bold text-slate-500 transition hover:text-red-600"
+        aria-label="Dong"
+      >
+        x
+      </button>
+      {children}
+    </div>
+  </div>
+);
+
 function ProductCard({
   productId,
+  productOptionId,
   image,
   title,
   price,
   salePrice,
   isSale = false,
-  quantity,
+  quantity = 0,
+  customerEmail = "",
   onOrder,
 }) {
   const hasDiscount = salePrice !== undefined && salePrice < price;
-  const isOutOfStock = quantity === 0;
+  const displayPrice = hasDiscount ? salePrice : price;
+  const isOutOfStock = quantity <= 0;
 
   const [showPayment, setShowPayment] = useState(false);
   const [orderResult, setOrderResult] = useState(null);
   const [showContact, setShowContact] = useState(false);
-  const [showProductCarDetails, setShowProductCarDetails] = useState(false);
+  const [showProductDetails, setShowProductDetails] = useState(false);
+
+  const handlePaymentRequest = () => {
+    if (isOutOfStock) {
+      notify.warning("Sản phẩm đã hết hàng.");
+      return;
+    }
+
+    if (!customerEmail) {
+      notify.warning("Vui lòng vào trang chi tiết để nhập email mua hàng.");
+      return;
+    }
+
+    setShowPayment(true);
+  };
+
   const handleSuccess = (order) => {
     setOrderResult(order);
     setShowPayment(false);
-    setShowProductCarDetails(false);
+    setShowProductDetails(false);
     setShowContact(false);
   };
 
   return (
     <>
-      <div className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden">
-        <div className="relative">
+      <article className="group flex min-h-full flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:border-green-500 hover:shadow-md">
+        <div className="relative aspect-[4/3] bg-slate-50">
           <img
             src={image}
             alt={title}
-            className="w-full h-[220px] object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
           />
           {isSale && (
-            <span className="absolute top-3 left-3 bg-purple-600 text-white text-xs font-medium px-2 py-1 rounded shadow-sm">
+            <span className="absolute left-3 top-3 rounded-full bg-red-600 px-2.5 py-1 text-xs font-semibold text-white shadow">
               SALE
             </span>
           )}
           {isOutOfStock && (
-            <span className="absolute top-3 right-3 bg-zinc-400 text-white text-xs px-2 py-1 rounded shadow-sm">
-              Hết hàng
+            <span className="absolute right-3 top-3 rounded-full bg-slate-500 px-2.5 py-1 text-xs font-semibold text-white shadow">
+              Hết hàng{" "}
             </span>
           )}
         </div>
 
-        <div className="p-4 flex flex-col justify-between flex-1 gap-3">
-          <div className="flex justify-between items-start gap-4">
-            <div className="flex flex-col flex-1">
-              <h3 className="text-base font-medium text-slate-800 hover:text-blue-600 transition line-clamp-2">
-                {title}
-              </h3>
-              <p className="text-sm text-gray-500 mt-1">
-                Số lượng:{" "}
-                <span
-                  className={`font-semibold ${
-                    isOutOfStock ? "text-red-600" : "text-slate-800"
-                  }`}
-                >
-                  {quantity}
-                </span>
-              </p>
-            </div>
+        <div className="flex flex-1 flex-col gap-4 p-4">
+          <div>
+            <h3 className="line-clamp-2 text-base font-semibold text-slate-900">
+              {title}
+            </h3>
+            <p className="mt-1 text-sm text-slate-500">
+              So luong:{" "}
+              <span
+                className={`font-semibold ${
+                  isOutOfStock ? "text-red-600" : "text-slate-900"
+                }`}
+              >
+                {quantity}
+              </span>
+            </p>
+          </div>
 
-            <div className="text-right min-w-[100px]">
-              {hasDiscount ? (
-                <>
-                  <p className="text-xs text-slate-400 line-through"></p>
-                  <p className="text-lg font-semibold text-purple-600"></p>
-                </>
-              ) : (
-                <p className="text-lg font-semibold text-slate-800"></p>
+          <div className="mt-auto flex items-end justify-between gap-3">
+            <div>
+              {hasDiscount && (
+                <ProductPrice
+                  price={price}
+                  className="text-xs text-slate-400 line-through"
+                />
               )}
+              <ProductPrice
+                price={displayPrice}
+                className="text-lg font-bold text-green-700"
+              />
             </div>
           </div>
 
-          <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <button
-              onClick={() => setShowProductCarDetails(true)}
-              className="text-sm px-4 py-2 rounded-md font-medium bg-indigo-100 hover:bg-indigo-200 text-slate-800 transition"
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setShowProductDetails(true)}
             >
               Chi tiết
-            </button>
-
-            <button
+            </Button>
+            <Button
+              size="sm"
+              variant="secondary"
               onClick={() => {
                 setShowContact(true);
                 onOrder?.();
               }}
-              className="text-sm px-4 py-2 rounded-md bg-yellow-400 hover:bg-yellow-500 text-black font-medium transition"
             >
-              Liên hệ
-            </button>
-
-            <button
-              onClick={() => setShowPayment(true)}
+              Liên hệ{" "}
+            </Button>
+            <Button
+              size="sm"
+              variant="primary"
               disabled={isOutOfStock}
-              className={`text-sm px-4 py-2 rounded-md font-medium transition ${
-                isOutOfStock
-                  ? "bg-zinc-200 text-zinc-400 cursor-not-allowed"
-                  : "bg-cyan-600 hover:bg-cyan-700 text-white"
-              }`}
+              onClick={handlePaymentRequest}
             >
-              Thanh toán
-            </button>
+              Thanh toan
+            </Button>
           </div>
         </div>
-      </div>
-
-      {isOutOfStock && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 px-2 py-1 rounded bg-black text-white text-xs opacity-0 group-hover:opacity-100 transition pointer-events-none z-10 whitespace-nowrap">
-          Sản phẩm đã hết
-        </div>
-      )}
+      </article>
 
       {orderResult && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="relative bg-white p-6 rounded-xl max-w-lg w-full shadow-xl">
-            <OrderAccount order={orderResult} />
-            <button
-              onClick={() => setOrderResult(null)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
-            >
-              ×
-            </button>
-          </div>
-        </div>
+        <ModalFrame onClose={() => setOrderResult(null)} maxWidth="max-w-lg">
+          <OrderAccount order={orderResult} />
+        </ModalFrame>
       )}
 
       {showPayment && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="relative bg-white p-6 rounded-xl max-w-2xl w-full shadow-xl">
-            <button
-              onClick={() => setShowPayment(false)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
-            >
-              ×
-            </button>
-            <PaymentModal
-              onClose={() => setShowPayment(false)}
-              onSuccess={handleSuccess}
-              productId={productId}
-              productName={title}
-              amount={price}
-              fee={500}
-              total={(hasDiscount ? salePrice : price) + 500}
-              quantity={quantity}
-            />
-          </div>
-        </div>
+        <ModalFrame onClose={() => setShowPayment(false)}>
+          <PaymentModal
+            onClose={() => setShowPayment(false)}
+            onSuccess={handleSuccess}
+            productOptionId={productOptionId ?? productId}
+            productName={title}
+            amount={displayPrice}
+            fee={500}
+            total={displayPrice + 500}
+            customerEmail={customerEmail}
+          />
+        </ModalFrame>
       )}
 
       {showContact && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="relative bg-white p-6 rounded-xl max-w-md w-full shadow-xl">
-            <button
-              onClick={() => setShowContact(false)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
-            >
-              ×
-            </button>
-            <ContactCard
-              facebookUrl="https://www.facebook.com/taprim.vn"
-              zaloUrl="https://zalo.me/taprim"
-              phoneNumber="0934 567 890"
-              fbGroupUrl="https://www.facebook.com/groups/taprim.vn"
-            />
-          </div>
-        </div>
+        <ModalFrame onClose={() => setShowContact(false)} maxWidth="max-w-md">
+          <ContactCard
+            facebookUrl="https://www.facebook.com/taprim.vn"
+            zaloUrl="https://zalo.me/taprim"
+            phoneNumber="0934 567 890"
+            fbGroupUrl="https://www.facebook.com/groups/taprim.vn"
+          />
+        </ModalFrame>
       )}
 
-      {showProductCarDetails && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="relative bg-white p-6 rounded-xl max-w-4xl w-full shadow-xl">
-            <button
-              onClick={() => setShowProductCarDetails(false)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
-            >
-              ×
-            </button>
-            <ProductDetailCard
-              title={title}
-              description="Mô tả chi tiết sản phẩm sẽ được cập nhật sau."
-              price={price}
-              salePrice={salePrice}
-              quantity={quantity}
-              isSale={isSale}
-            />
-          </div>
-        </div>
+      {showProductDetails && (
+        <ModalFrame
+          onClose={() => setShowProductDetails(false)}
+          maxWidth="max-w-4xl"
+        >
+          <ProductDetailCard
+            title={title}
+            description="Mô tả chi tiết sản phẩm sẽ được cập nhật sau."
+            price={price}
+            salePrice={salePrice}
+            quantity={quantity}
+            isSale={isSale}
+          />
+        </ModalFrame>
       )}
     </>
   );

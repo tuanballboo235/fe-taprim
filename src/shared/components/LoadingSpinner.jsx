@@ -1,4 +1,4 @@
-const LoadingSpinner = ({ text = "Dang tai...", size = "md" }) => {
+const LoadingSpinner = ({ text = "Đang tải...", size = "md" }) => {
   const sizeClass = {
     sm: "h-4 w-4",
     md: "h-6 w-6",

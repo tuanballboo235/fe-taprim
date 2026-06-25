@@ -35,14 +35,14 @@ const AdminProductCreatePage = () => {
     try {
       const response = await createProduct.mutateAsync(data);
       if (response.status !== "Success") {
-        notify.error(response.message || "Loi khi tao san pham");
+        notify.error(response.message || "Lỗi khi tao sản phẩm");
       } else {
-        notify.success("Tao san pham thanh cong!");
+        notify.success("Tạo sản phẩm thành công!");
         setForm(initialForm);
         setImage(null);
       }
     } catch (error) {
-      notify.error(getApiErrorMessage(error, "Loi khi tao san pham"));
+      notify.error(getApiErrorMessage(error, "Lỗi khi tao sản phẩm"));
     }
   };
 
@@ -50,10 +50,10 @@ const AdminProductCreatePage = () => {
     <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
       <div className="mb-5">
         <h1 className="text-xl font-semibold text-slate-900">
-          Them san pham moi
+          Thêm sản phẩm mới
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          Nhap thong tin san pham va hinh anh de hien thi tren cua hang.
+          Nhap thong tin sản phẩm va hinh anh de hien thi tren cua hang.
         </p>
       </div>
       <ProductForm

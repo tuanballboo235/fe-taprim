@@ -8,19 +8,19 @@ export function Footer() {
         <div>
           <h2 className="text-xl font-bold text-white">TAPRIM Shop</h2>
           <p className="mt-3 text-sm leading-6 text-slate-400">
-            Cung cap tai khoan hoc tap, giai tri va cac dich vu so voi quy
-            trinh mua hang gon gang.
+            Cung cấp tài khoản học tập, giải trí và các dịch vụ số với quy
+            trình mua hàng gọn gàng.
           </p>
         </div>
 
         <div>
           <h2 className="mb-3 text-base font-semibold text-white">
-            Lien ket nhanh
+            Liên kết nhanh
           </h2>
           <ul className="space-y-2 text-sm">
             <li>
               <Link to="/product" className="transition hover:text-green-400">
-                San pham
+                Sản phẩm
               </Link>
             </li>
             <li>
@@ -28,7 +28,7 @@ export function Footer() {
                 to="/order-lookup"
                 className="transition hover:text-green-400"
               >
-                Tra cuu don
+                Tra cứu đơn
               </Link>
             </li>
             <li>
@@ -51,7 +51,7 @@ export function Footer() {
         </div>
 
         <div>
-          <h2 className="mb-3 text-base font-semibold text-white">Lien he</h2>
+          <h2 className="mb-3 text-base font-semibold text-white">Liên hệ</h2>
           <p className="text-sm text-slate-400">Email: taprimshop@gmail.com</p>
           <p className="mt-2 text-sm text-slate-400">Zalo: 0344665098</p>
 

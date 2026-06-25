@@ -1,25 +1,25 @@
-import React from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import { getAssetUrl } from '@/shared/utils/apiEndpoint';
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { getAssetUrl } from "@/shared/utils/apiEndpoint";
 
 const Carousel = ({ images = [], autoSlide = false, autoSlideInterval = 3000 }) => {
-  if (!images || images.length === 0) return null;
+  if (!images?.length) return null;
 
   const swiperModules = [Navigation, Pagination];
   if (autoSlide) swiperModules.push(Autoplay);
 
   return (
-    <div className="relative w-full rounded-xl overflow-hidden shadow-xl group">
+    <div className="group relative w-full overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
       <Swiper
         modules={swiperModules}
         loop={images.length > 1}
         navigation={{
-          nextEl: '.custom-next',
-          prevEl: '.custom-prev',
+          nextEl: ".custom-next",
+          prevEl: ".custom-prev",
         }}
         pagination={{ clickable: true }}
         autoplay={
@@ -27,31 +27,34 @@ const Carousel = ({ images = [], autoSlide = false, autoSlideInterval = 3000 }) 
             ? { delay: autoSlideInterval, disableOnInteraction: false }
             : false
         }
-        className="w-full h-full"
+        className="h-full w-full"
       >
         {images.map((img, index) => (
-          <SwiperSlide key={index}>
+          <SwiperSlide key={`${img}-${index}`}>
             <img
               src={getAssetUrl(img)}
-              alt={`slide-${index}`}
-              className="w-full h-64 sm:h-80 md:h-[420px] object-cover"
+              alt={`Slide ${index + 1}`}
+              className="h-64 w-full object-cover sm:h-80 md:h-[420px]"
             />
           </SwiperSlide>
         ))}
       </Swiper>
 
-      {/* Navigation buttons */}
       {images.length > 1 && (
         <>
           <button
-            className="custom-prev absolute top-1/2 left-4 transform -translate-y-1/2 bg-black/40 text-white p-3 rounded-full hover:bg-black/70 z-10 transition hidden group-hover:block"
+            type="button"
+            className="custom-prev absolute left-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-slate-900/60 text-white transition hover:bg-slate-900 group-hover:flex"
+            aria-label="Anh truoc"
           >
-            ‹
+            <ChevronLeft className="h-5 w-5" />
           </button>
           <button
-            className="custom-next absolute top-1/2 right-4 transform -translate-y-1/2 bg-black/40 text-white p-3 rounded-full hover:bg-black/70 z-10 transition hidden group-hover:block"
+            type="button"
+            className="custom-next absolute right-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-slate-900/60 text-white transition hover:bg-slate-900 group-hover:flex"
+            aria-label="Anh tiep theo"
           >
-            ›
+            <ChevronRight className="h-5 w-5" />
           </button>
         </>
       )}

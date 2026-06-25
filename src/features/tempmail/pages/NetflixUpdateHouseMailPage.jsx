@@ -24,7 +24,7 @@ const NetflixUpdateHouseMail = () => {
           setNetflixTemporaryMail(data);
         }
       } catch (err) {
-        const message = getApiErrorMessage(err, "Loi khi goi API.");
+        const message = getApiErrorMessage(err, "Lỗi khi goi API.");
 
         if (isActive) {
           setError(message);
@@ -50,19 +50,19 @@ const NetflixUpdateHouseMail = () => {
     <section className="mx-auto max-w-6xl px-4 py-6 sm:py-8">
       <div className="mb-5 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
         <h1 className="text-xl font-semibold text-slate-900 sm:text-2xl">
-          Cap nhat ho gia dinh Netflix Family
+          Cập nhật hộ gia đình Netflix Family
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          Danh sach email update family duoc lay tu he thong tam thoi.
+          Danh sách email update family duoc lay tu he thong tam thoi.
         </p>
       </div>
 
       {loading && (
-        <PageState type="loading" description="Dang tai du lieu email..." />
+        <PageState type="loading" description="Đang tải du lieu email..." />
       )}
 
       {!loading && error && (
-        <PageState type="error" title="Khong the tai email" description={error} />
+        <PageState type="error" title="Không thể tai email" description={error} />
       )}
 
       {!loading && !error && emails.length > 0 && (
@@ -74,8 +74,8 @@ const NetflixUpdateHouseMail = () => {
       {!loading && !error && emails.length === 0 && (
         <PageState
           type="empty"
-          title="Chua co email"
-          description="Danh sach email se hien thi tai day khi co du lieu."
+          title="Chưa có email"
+          description="Danh sách email se hien thi tai day khi co du lieu."
         />
       )}
     </section>

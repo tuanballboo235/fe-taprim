@@ -10,15 +10,15 @@ const PageState = ({
 }) => {
   const defaults = {
     loading: {
-      title: "Dang tai du lieu",
-      description: "Vui long doi trong giay lat.",
+      title: "Đang tải du lieu",
+      description: "Vui lòng doi trong giay lat.",
     },
     error: {
-      title: "Khong the tai du lieu",
-      description: "Vui long thu lai hoac kiem tra ket noi.",
+      title: "Không thể tai du lieu",
+      description: "Vui lòng thu lai hoac kiem tra ket noi.",
     },
     empty: {
-      title: "Chua co du lieu",
+      title: "Chưa có du lieu",
       description: "Noi dung se hien thi tai day khi co du lieu moi.",
     },
   };

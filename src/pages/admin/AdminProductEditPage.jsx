@@ -5,9 +5,9 @@ const AdminProductEditPage = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-xl font-semibold mb-2">Chinh sua san pham</h1>
+      <h1 className="text-xl font-semibold mb-2">Chỉnh sửa sản phẩm</h1>
       <p className="text-sm text-gray-500">
-        Man hinh chinh sua san pham #{productId} se duoc noi voi API update.
+        Man hinh chinh sua sản phẩm #{productId} se duoc noi voi API update.
       </p>
     </div>
   );

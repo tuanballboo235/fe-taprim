@@ -17,7 +17,7 @@ const NetflixGetCode = () => {
     event.preventDefault();
 
     if (!transactionCode.trim()) {
-      notify.warning("Vui long nhap ma giao dich.");
+      notify.warning("Vui lòng nhap ma giao dịch.");
       return;
     }
 
@@ -37,7 +37,7 @@ const NetflixGetCode = () => {
         notify.error(message);
       }
     } catch (err) {
-      const message = getApiErrorMessage(err, "Loi khi goi API.");
+      const message = getApiErrorMessage(err, "Lỗi khi goi API.");
       setError(message);
       notify.error(message);
     } finally {
@@ -50,10 +50,10 @@ const NetflixGetCode = () => {
       <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
         <div className="mb-5">
           <h1 className="text-xl font-semibold text-slate-900 sm:text-2xl">
-            Lay ma dang nhap Netflix Family
+            Lấy mã đăng nhập Netflix Family
           </h1>
           <p className="mt-1 text-sm text-slate-500">
-            Nhap ma giao dich de tra cuu email code dang nhap.
+            Nhập mã giao dịch để tra cứu email code đăng nhập.
           </p>
         </div>
 
@@ -75,20 +75,20 @@ const NetflixGetCode = () => {
             leftIcon={<FaSearch />}
             className="sm:w-auto"
           >
-            {loading ? "Dang tai..." : "Lay ma"}
+            {loading ? "Đang tải..." : "Lay ma"}
           </Button>
         </form>
       </div>
 
       <div className="mt-5">
         {loading && (
-          <PageState type="loading" description="Dang tra cuu email code..." />
+          <PageState type="loading" description="Dang tra cứu email code..." />
         )}
 
         {!loading && error && (
           <PageState
             type="error"
-            title="Khong the lay ma"
+            title="Không thể lay ma"
             description={error}
           />
         )}
@@ -103,7 +103,7 @@ const NetflixGetCode = () => {
           <PageState
             type="empty"
             title="Khong tim thay ma"
-            description="Chua co ma dang nhap nao cho giao dich nay."
+            description="Chưa có mã đăng nhập nào cho giao dịch này."
           />
         )}
       </div>

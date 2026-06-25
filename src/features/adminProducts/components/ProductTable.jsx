@@ -9,7 +9,7 @@ const ProductTable = ({ data = [] }) => {
     (category.products ?? []).map((product) => ({
       ...product,
       categoryName: category.name ?? category.categoryName ?? "",
-    }))
+    })),
   );
 
   return (
@@ -17,15 +17,17 @@ const ProductTable = ({ data = [] }) => {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[760px] text-left text-sm">
           <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-          <tr>
-            <th className="px-4 py-3 font-semibold">San pham</th>
-            <th className="px-4 py-3 font-semibold">Danh muc</th>
-            <th className="px-4 py-3 font-semibold">Don gia</th>
-            <th className="px-4 py-3 font-semibold">Kho</th>
-            <th className="px-4 py-3 font-semibold">Trang thai</th>
-            <th className="px-4 py-3 text-right font-semibold">Thao tac</th>
-          </tr>
-        </thead>
+            <tr>
+              <th className="px-4 py-3 font-semibold">Sản phẩm</th>
+              <th className="px-4 py-3 font-semibold">Danh mục</th>
+              <th className="px-4 py-3 font-semibold">Đơn giá</th>
+              <th className="px-4 py-3 font-semibold">Kho</th>
+              <th className="px-4 py-3 font-semibold">Trạng thái</th>
+              <th className="px-4 py-3 text-right font-semibold">
+                Thao tác<caption></caption>
+              </th>
+            </tr>
+          </thead>
           <tbody className="divide-y divide-slate-100">
             {rows.length > 0 ? (
               rows.map((item, index) => (
@@ -34,13 +36,13 @@ const ProductTable = ({ data = [] }) => {
                     {item.name}
                   </td>
                   <td className="px-4 py-3 text-slate-500">
-                    {item.categoryName || "Chua phan loai"}
+                    {item.categoryName || "Chưa phân loại"}
                   </td>
                   <td className="px-4 py-3">
                     <ProductPrice
                       minPrice={item.minPrice}
                       maxPrice={item.maxPrice}
-                      fallback="Khong co gia"
+                      fallback="Không có giá"
                     />
                   </td>
                   <td className="px-4 py-3">
@@ -51,7 +53,7 @@ const ProductTable = ({ data = [] }) => {
                           : "bg-red-50 text-red-700"
                       }`}
                     >
-                      {item.stockAccount > 0 ? item.stockAccount : "Het hang"}
+                      {item.stockAccount > 0 ? item.stockAccount : "Hết hàng"}
                     </span>
                   </td>
                   <td className="px-4 py-3">
@@ -62,7 +64,7 @@ const ProductTable = ({ data = [] }) => {
                           : "bg-slate-100 text-slate-600"
                       }`}
                     >
-                      {item.status === 1 ? "Hoat dong" : "An"}
+                      {item.status === 1 ? "Hoạt động" : "Ẩn"}
                     </span>
                   </td>
                   <td className="px-4 py-3">
@@ -72,34 +74,41 @@ const ProductTable = ({ data = [] }) => {
                         variant="ghost"
                         leftIcon={<FaEdit />}
                         className="px-3"
-                      title="Chinh sua"
-                      onClick={() => navigate(`/admin-products/${item.id}/edit`)}
-                    >
-                        Sua
+                        title="Chỉnh sửa"
+                        onClick={() =>
+                          navigate(`/admin-products/${item.id}/edit`)
+                        }
+                      >
+                        Sửa
                       </Button>
                       <Button
                         size="sm"
                         variant="info"
                         leftIcon={<FaPlus />}
                         className="px-3"
-                      title="Them tai khoan"
-                      onClick={() => navigate(`/admin-product-account/${item.id}`)}
-                    >
+                        title="Thêm tài khoản"
+                        onClick={() =>
+                          navigate(`/admin-product-account/${item.id}`)
+                        }
+                      >
                         Account
                       </Button>
                     </div>
                   </td>
                 </tr>
               ))
-          ) : (
-            <tr>
-                <td colSpan="6" className="px-4 py-10 text-center text-slate-500">
-                Khong co du lieu
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            ) : (
+              <tr>
+                <td
+                  colSpan="6"
+                  className="px-4 py-10 text-center text-slate-500"
+                >
+                  Không có dữ liệu
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import PageState from "@/shared/components/PageState";
 
 const statusText = {
   0: "Chua su dung",
-  1: "Da ban",
+  1: "Đã bán",
   2: "Het han",
 };
 
@@ -45,7 +45,10 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
   if (isLoading) {
     return (
       <div className="min-w-0 flex-1">
-        <PageState type="loading" description="Dang tai danh sach tai khoan..." />
+        <PageState
+          type="loading"
+          description="Đang tải danh sách tài khoản..."
+        />
       </div>
     );
   }
@@ -56,10 +59,10 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-slate-900">
-              Danh sach tai khoan
+              Danh sách tài khoản
             </h2>
             <p className="mt-1 text-sm text-slate-500">
-              Loc nhanh theo kha nang ban va quan ly account cua goi da chon.
+              Lọc nhanh theo khả năng bán và quản lý account của gói đã chọn.
             </p>
           </div>
 
@@ -85,7 +88,7 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
                     : "text-slate-600 hover:text-slate-900"
                 }`}
               >
-                Khong hop le ({invalidAccounts.length})
+                Không hợp lệ ({invalidAccounts.length})
               </button>
             </div>
 
@@ -94,7 +97,7 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
               leftIcon={<FaUserPlus />}
               onClick={() => setModalOpen(true)}
             >
-              Them account
+              Thêm account
             </Button>
           </div>
         </div>
@@ -106,10 +109,10 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
             type="empty"
             title={
               viewFilter === "valid"
-                ? "Chua co tai khoan hop le"
-                : "Khong co tai khoan khong hop le"
+                ? "Chưa có tài khoản hop le"
+                : "Khong co tài khoản khong hop le"
             }
-            description="Du lieu se xuat hien sau khi them account vao goi nay."
+            description="Dữ liệu sẽ xuất hiện sau khi thêm account vào gói này."
           />
         ) : (
           <div className="overflow-x-auto">
@@ -117,11 +120,13 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
               <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                 <tr>
                   <th className="px-4 py-3 font-semibold">Account</th>
-                  <th className="px-4 py-3 font-semibold">Luot ban</th>
-                  <th className="px-4 py-3 font-semibold">Trang thai</th>
-                  <th className="px-4 py-3 font-semibold">Khoang ban</th>
-                  <th className="px-4 py-3 font-semibold">Ngay them</th>
-                  <th className="px-4 py-3 text-right font-semibold">Thao tac</th>
+                  <th className="px-4 py-3 font-semibold">Lượt bán</th>
+                  <th className="px-4 py-3 font-semibold">Trạng thái</th>
+                  <th className="px-4 py-3 font-semibold">Khoảng bán</th>
+                  <th className="px-4 py-3 font-semibold">Ngày thêm</th>
+                  <th className="px-4 py-3 text-right font-semibold">
+                    Thao tác
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -158,7 +163,8 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-slate-600">
-                        {formatDate(account.sellFrom)} - {formatDate(account.sellTo)}
+                        {formatDate(account.sellFrom)} -{" "}
+                        {formatDate(account.sellTo)}
                       </td>
                       <td className="px-4 py-3 text-slate-600">
                         {formatDate(account.createAt)}
@@ -179,7 +185,7 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
                             leftIcon={<FaTrashAlt />}
                             onClick={() => onDelete?.(account.id)}
                           >
-                            Xoa
+                            Xóa
                           </Button>
                         </div>
                       </td>

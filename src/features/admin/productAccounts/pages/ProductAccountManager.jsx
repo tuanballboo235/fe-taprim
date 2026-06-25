@@ -42,7 +42,7 @@ const ProductAccountManager = () => {
         setProducts([]);
         setSelectedProduct(null);
         notify.error(
-          getApiErrorMessage(error, "Khong the tai danh sach goi san pham.")
+          getApiErrorMessage(error, "Không thể tai danh sách goi sản phẩm.")
         );
       } finally {
         if (isActive) {
@@ -74,7 +74,7 @@ const ProductAccountManager = () => {
       setProductAccounts(items);
     } catch (error) {
       setProductAccounts([]);
-      notify.error(getApiErrorMessage(error, "Khong the tai danh sach account."));
+      notify.error(getApiErrorMessage(error, "Không thể tai danh sách account."));
     } finally {
       setIsLoading(false);
     }
@@ -86,12 +86,12 @@ const ProductAccountManager = () => {
 
   const handleEditAccount = async (accountPayload) => {
     if (accountPayload?.id) {
-      notify.info("Chua co API cap nhat account cho thao tac sua.");
+      notify.info("Chưa có API cập nhật account cho thao tác sửa.");
       return;
     }
 
     if (!selectedProduct?.productOptionId) {
-      notify.warning("Vui long chon goi san pham truoc khi them account.");
+      notify.warning("Vui lòng chọn gói sản phẩm trước khi thêm account.");
       return;
     }
 
@@ -100,7 +100,7 @@ const ProductAccountManager = () => {
       : [accountPayload];
 
     if (payloads.length === 0) {
-      notify.warning("Chua co account nao de luu.");
+      notify.warning("Chưa có account nào để lưu.");
       return;
     }
 
@@ -113,12 +113,12 @@ const ProductAccountManager = () => {
 
       notify.success(
         payloads.length > 1
-          ? `Da them ${payloads.length} account.`
-          : "Da them account."
+          ? `Đã thêm ${payloads.length} account.`
+          : "Đã thêm account."
       );
       await fetchAccounts();
     } catch (error) {
-      notify.error(getApiErrorMessage(error, "Khong the them account."));
+      notify.error(getApiErrorMessage(error, "Không thể thêm account."));
       throw error;
     }
   };
@@ -127,9 +127,9 @@ const ProductAccountManager = () => {
     if (!accountId) return;
 
     const confirmed = await notify.confirm({
-      title: "Xoa account khoi danh sach?",
-      text: "Hien chua co API xoa account, thao tac nay chi cap nhat danh sach dang hien thi.",
-      confirmButtonText: "Xoa",
+      title: "Xóa account khỏi danh sách?",
+      text: "Hiện chưa có API xóa account, thao tác này chỉ cập nhật danh sách đang hiển thị.",
+      confirmButtonText: "Xóa",
       icon: "warning",
     });
 
@@ -138,21 +138,21 @@ const ProductAccountManager = () => {
     setProductAccounts((current) =>
       current.filter((account) => account.id !== accountId)
     );
-    notify.success("Da xoa khoi danh sach hien thi.");
+    notify.success("Đã xóa khỏi danh sách hiển thị.");
   };
 
   if (isBootLoading) {
-    return <PageState type="loading" description="Dang tai thong tin san pham..." />;
+    return <PageState type="loading" description="Đang tải thong tin sản phẩm..." />;
   }
 
   return (
     <div className="space-y-4">
       <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <h1 className="text-xl font-semibold text-slate-900">
-          Quan ly account san pham
+          Quan ly account sản phẩm
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          {productInfo || "Chon mot goi san pham de xem account dang co."}
+          {productInfo || "Chon mot goi sản phẩm de xem account dang co."}
         </p>
       </div>
 

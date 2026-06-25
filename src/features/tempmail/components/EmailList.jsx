@@ -9,7 +9,7 @@ const EmailList = ({ emails }) => {
   const [selectedEmail, setSelectedEmail] = useState(null);
 
   const handleEmailClick = async (id) => {
-    notify.loading("Dang tai noi dung email...");
+    notify.loading("Đang tải noi dung email...");
 
     try {
       const response = await getEmailContentByEmailId(id);
@@ -17,7 +17,7 @@ const EmailList = ({ emails }) => {
       notify.close();
     } catch (error) {
       notify.close();
-      notify.error(getApiErrorMessage(error, "Khong the tai noi dung email."));
+      notify.error(getApiErrorMessage(error, "Không thể tai noi dung email."));
     }
   };
 

@@ -9,7 +9,7 @@ const ProductAccountForm = ({ form, onChange, onSubmit, isSubmitting = false }) 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <label className="block">
           <span className="mb-1 block text-sm font-medium text-slate-700">
-            Thong tin tai khoan
+            Thong tin tài khoản
           </span>
           <input
             type="text"
@@ -22,7 +22,7 @@ const ProductAccountForm = ({ form, onChange, onSubmit, isSubmitting = false }) 
 
         <label className="block">
           <span className="mb-1 block text-sm font-medium text-slate-700">
-            Ten dang nhap
+            Tên đăng nhập
           </span>
           <input
             type="text"
@@ -74,7 +74,7 @@ const ProductAccountForm = ({ form, onChange, onSubmit, isSubmitting = false }) 
 
         <label className="block">
           <span className="mb-1 block text-sm font-medium text-slate-700">
-            Trang thai
+            Trạng thái
           </span>
           <select
             name="status"
@@ -82,8 +82,8 @@ const ProductAccountForm = ({ form, onChange, onSubmit, isSubmitting = false }) 
             onChange={onChange}
             className={fieldClass}
           >
-            <option value="0">Chua ban</option>
-            <option value="1">Da ban</option>
+            <option value="0">Chưa bán</option>
+            <option value="1">Đã bán</option>
           </select>
         </label>
 
@@ -116,7 +116,7 @@ const ProductAccountForm = ({ form, onChange, onSubmit, isSubmitting = false }) 
 
       <div className="flex justify-end">
         <Button type="submit" variant="info" isLoading={isSubmitting}>
-          {isSubmitting ? "Dang them..." : "Them tai khoan"}
+          {isSubmitting ? "Đang thêm..." : "Thêm tài khoản"}
         </Button>
       </div>
     </form>

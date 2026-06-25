@@ -22,7 +22,7 @@ import notify from "@/shared/utils/notify";
 
 const categories = [
   {
-    name: "Tai khoan",
+    name: "Tài khoản",
     path: "/tai-khoan",
     icon: <FaUser />,
     children: [
@@ -35,7 +35,7 @@ const categories = [
     ],
   },
   {
-    name: "Phan mem",
+    name: "Phần mềm",
     path: "/phan-mem",
     icon: <FaTools />,
     children: [
@@ -44,13 +44,13 @@ const categories = [
     ],
   },
   {
-    name: "Dich vu khac",
+    name: "Dịch vụ khác",
     path: "/dich-vu",
     icon: <FaBoxOpen />,
     children: [],
   },
   {
-    name: "Tra cuu don",
+    name: "Tra cứu đơn",
     path: "/order-lookup",
     icon: <FaLeaf />,
     children: [],
@@ -58,7 +58,7 @@ const categories = [
 ];
 
 const staticNav = [
-  { name: "San pham", path: "/product", icon: <FaBoxOpen /> },
+  { name: "Sản phẩm", path: "/product", icon: <FaBoxOpen /> },
   {
     name: "Mail Update Netflix",
     path: "/netflix-mail",
@@ -82,7 +82,7 @@ const Header = () => {
   const handleLogout = () => {
     logout();
     closeMobileMenu();
-    notify.success("Da dang xuat.");
+    notify.success("Đã đăng xuất.");
     navigate("/login", { replace: true });
   };
 
@@ -104,7 +104,7 @@ const Header = () => {
         className="inline-flex items-center justify-center gap-2 rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white transition hover:bg-green-800"
       >
         <FaSignOutAlt />
-        Dang xuat
+        Đăng xuất
       </button>
     </>
   ) : (
@@ -114,7 +114,7 @@ const Header = () => {
       onClick={closeMobileMenu}
     >
       <FaSignInAlt />
-      Dang nhap
+      Đăng nhập
     </Link>
   );
 
@@ -133,13 +133,13 @@ const Header = () => {
           <div className="flex overflow-hidden rounded-md border border-slate-300 bg-white shadow-sm">
             <input
               type="text"
-              placeholder="Tim san pham..."
+              placeholder="Tìm sản phẩm..."
               className="min-w-0 flex-1 px-4 py-2 text-slate-700 outline-none"
             />
             <button
               type="button"
               className="inline-flex items-center justify-center bg-green-700 px-4 text-white transition hover:bg-green-800"
-              title="Tim kiem"
+              title="Tìm kiếm"
             >
               <FaSearch />
             </button>
@@ -152,7 +152,7 @@ const Header = () => {
             className="inline-flex items-center gap-2 rounded-md px-3 py-2 font-semibold text-green-800 transition hover:bg-green-50"
           >
             <FaShoppingCart />
-            Gio hang
+            Giỏ hàng
           </Link>
           {authActions}
         </div>
@@ -161,7 +161,7 @@ const Header = () => {
           type="button"
           className="ml-auto inline-flex h-10 w-10 items-center justify-center rounded-md border border-slate-200 text-green-700 md:hidden"
           onClick={() => setMobileOpen((current) => !current)}
-          title={mobileOpen ? "Dong menu" : "Mo menu"}
+          title={mobileOpen ? "Đóng menu" : "Mở menu"}
         >
           {mobileOpen ? <FaTimes /> : <FaBars />}
         </button>
@@ -211,13 +211,13 @@ const Header = () => {
           <div className="flex overflow-hidden rounded-md border border-slate-300">
             <input
               type="text"
-              placeholder="Tim kiem..."
+              placeholder="Tìm kiếm..."
               className="min-w-0 flex-1 px-3 py-2 text-sm outline-none"
             />
             <button
               type="button"
               className="bg-green-700 px-3 text-white"
-              title="Tim kiem"
+              title="Tìm kiếm"
             >
               <FaSearch />
             </button>
@@ -271,7 +271,7 @@ const Header = () => {
               onClick={closeMobileMenu}
             >
               <FaShoppingCart />
-              Gio hang
+              Giỏ hàng
             </Link>
             {authActions}
           </div>

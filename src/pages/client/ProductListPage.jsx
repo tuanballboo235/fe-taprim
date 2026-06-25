@@ -10,14 +10,14 @@ const ProductListPage = () => {
 
   useEffect(() => {
     if (isError) {
-      notify.error("Khong the tai danh sach san pham");
+      notify.error("Không thể tai danh sách sản phẩm");
     }
   }, [isError]);
 
   if (isLoading) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-8">
-        <PageState type="loading" description="Dang tai danh sach san pham..." />
+        <PageState type="loading" description="Đang tải danh sách sản phẩm..." />
       </div>
     );
   }
@@ -27,8 +27,8 @@ const ProductListPage = () => {
       <div className="mx-auto max-w-7xl px-4 py-8">
         <PageState
           type="error"
-          title="Khong the tai san pham"
-          description="Vui long thu lai sau it phut."
+          title="Không thể tai sản phẩm"
+          description="Vui lòng thu lai sau it phut."
         />
       </div>
     );
@@ -39,8 +39,8 @@ const ProductListPage = () => {
       <div className="mx-auto max-w-7xl px-4 py-8">
         <PageState
           type="empty"
-          title="Chua co san pham"
-          description="Danh sach san pham se duoc cap nhat som."
+          title="Chưa có sản phẩm"
+          description="Danh sách sản phẩm sẽ được cập nhật sớm."
         />
       </div>
     );

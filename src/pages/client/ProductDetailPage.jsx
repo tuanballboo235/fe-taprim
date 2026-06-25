@@ -34,7 +34,7 @@ const ProductDetailPage = () => {
   const [showPayment, setShowPayment] = useState(false);
   const [orderResult, setOrderResult] = useState(null);
 
-  const options = product?.productOptions ?? [];
+  const options = useMemo(() => product?.productOptions ?? [], [product]);
   const selectedOption = useMemo(() => {
     return (
       options.find((option) => option.productOptionId === selectedOptionId) ??
@@ -51,7 +51,7 @@ const ProductDetailPage = () => {
 
   useEffect(() => {
     if (isError) {
-      notify.error("Khong the tai thong tin san pham.");
+      notify.error("Không thể tải thông tin sản phẩm.");
       navigate("/product", { replace: true });
     }
   }, [isError, navigate]);
@@ -72,7 +72,7 @@ const ProductDetailPage = () => {
     if (!product) return;
 
     if (product.status === 0 || product.canSell === false) {
-      notify.error("San pham nay hien khong kha dung.");
+      notify.error("Sản phẩm này hiện không khả dụng.");
       navigate("/product", { replace: true });
     }
   }, [product, navigate]);
@@ -82,7 +82,7 @@ const ProductDetailPage = () => {
       try {
         await clearOrderAndPaymentTempByTransactionCode(transactionCode);
       } catch {
-        notify.warning("Khong the don don hang tam.");
+        notify.warning("Không thể dọn đơn hàng tạm.");
       }
     }
 
@@ -97,7 +97,7 @@ const ProductDetailPage = () => {
       try {
         await decreaseCouponUsage(order.couponCode);
       } catch {
-        notify.warning("Thanh toan thanh cong nhung chua cap nhat luot coupon.");
+        notify.warning("Thanh toán thành công nhưng chưa cập nhật lượt coupon.");
       }
     }
   };
@@ -105,18 +105,18 @@ const ProductDetailPage = () => {
   const handleBuyNow = () => {
     if (selectedSellCount <= 0) {
       notify.warning(
-        "San pham da het hang. Vui long chon goi khac hoac lien he ho tro."
+        "Sản phẩm đã hết hàng. Vui lòng chọn gói khác hoặc liên hệ hỗ trợ."
       );
       return;
     }
 
     if (!email.trim()) {
-      notify.warning("Vui long nhap email truoc khi mua hang.");
+      notify.warning("Vui lòng nhập email trước khi mua hàng.");
       return;
     }
 
     if (!validateEmail(email.trim())) {
-      notify.error("Email khong hop le, vui long kiem tra lai.");
+      notify.error("Email không hợp lệ, vui lòng kiểm tra lại.");
       return;
     }
 
@@ -126,7 +126,7 @@ const ProductDetailPage = () => {
   if (isLoading || !product) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-8">
-        <PageState type="loading" description="Dang tai thong tin san pham..." />
+        <PageState type="loading" description="Đang tải thông tin sản phẩm..." />
       </div>
     );
   }
@@ -151,7 +151,7 @@ const ProductDetailPage = () => {
         <div className="min-w-0 space-y-6">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-green-700">
-              San pham
+              Sản phẩm
             </p>
             <h1 className="mt-1 text-2xl font-semibold leading-snug text-slate-900">
               {product.productName}
@@ -169,12 +169,12 @@ const ProductDetailPage = () => {
               <strong
                 className={hasAnySellLeft ? "text-green-700" : "text-red-600"}
               >
-                {selectedSellCount > 0 ? selectedSellCount : "Het hang"}
+                {selectedSellCount > 0 ? selectedSellCount : "Hết hàng"}
               </strong>
             </p>
             <p className="flex items-center gap-2 text-slate-700">
               <TagIcon className="h-4 w-4 text-slate-500" />
-              <span>The loai:</span>
+              <span>Thể loại:</span>
               <strong>{product.categoryName}</strong>
             </p>
           </div>
@@ -185,7 +185,7 @@ const ProductDetailPage = () => {
 
           <div>
             <p className="mb-3 text-sm font-semibold text-slate-800">
-              Chon thoi han
+              Chọn thời hạn
             </p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {options.map((option) => {
@@ -212,7 +212,7 @@ const ProductDetailPage = () => {
                       <ProductPrice price={option.price ?? 0} />
                       {isDisabled && (
                         <span className="ml-2 text-xs text-red-600">
-                          Het hang
+                          Hết hàng
                         </span>
                       )}
                     </span>
@@ -224,17 +224,17 @@ const ProductDetailPage = () => {
 
           <label className="block">
             <span className="mb-2 block text-sm font-semibold text-slate-800">
-              Email khach hang <span className="text-red-600">*</span>
+              Email khách hàng <span className="text-red-600">*</span>
             </span>
             <input
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              placeholder="Nhap email khach hang..."
+              placeholder="Nhập email khách hàng..."
               className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
             />
             <span className="mt-1 block text-xs text-slate-500">
-              Thong tin don hang va bao hanh se duoc gui ve email nay.
+              Thông tin đơn hàng và bảo hành sẽ được gửi về email này.
             </span>
           </label>
 
@@ -243,7 +243,7 @@ const ProductDetailPage = () => {
               Mua ngay
             </Button>
             <ContactPurchaseButton
-              label="Lien he mua hang"
+              label="Liên hệ mua hàng"
               items={[
                 { text: "Chat Zalo", href: "https://zalo.me/0344665098" },
                 { text: "Fanpage Facebook", href: FANPAGE_URL },
@@ -254,7 +254,7 @@ const ProductDetailPage = () => {
 
         {product.description && (
           <div className="rounded-lg border border-orange-200 bg-orange-50 p-4 text-sm text-slate-800 lg:col-span-2">
-            <p className="mb-2 font-semibold text-orange-700">Luu y</p>
+            <p className="mb-2 font-semibold text-orange-700">Lưu ý</p>
             <pre className="whitespace-pre-wrap leading-relaxed">
               {product.description}
             </pre>

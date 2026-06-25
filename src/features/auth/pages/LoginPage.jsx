@@ -9,7 +9,7 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 const getErrorMessage = (error) => {
   return getApiErrorMessage(
     error,
-    "Dang nhap khong thanh cong. Vui long thu lai."
+    "Đăng nhập không thành công. Vui lòng thử lại.",
   );
 };
 
@@ -28,7 +28,9 @@ export default function LoginPage() {
   const redirectTo = useMemo(() => {
     const params = new URLSearchParams(location.search);
     const target = params.get("redirect") || "/admin";
-    return target.startsWith("/") && !target.startsWith("//") ? target : "/admin";
+    return target.startsWith("/") && !target.startsWith("//")
+      ? target
+      : "/admin";
   }, [location.search]);
 
   useEffect(() => {
@@ -53,7 +55,7 @@ export default function LoginPage() {
         username: form.username.trim(),
         password: form.password,
       });
-      notify.success("Dang nhap thanh cong.");
+      notify.success("Đăng nhập thành công.");
       navigate(redirectTo, { replace: true });
     } catch (err) {
       const message = getErrorMessage(err);
@@ -76,15 +78,19 @@ export default function LoginPage() {
         </Link>
 
         <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-slate-900">Dang nhap quan tri</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">
+            Đăng nhập quản trị
+          </h1>
           <p className="mt-2 text-sm text-slate-500">
-            Su dung tai khoan duoc cap de truy cap khu quan tri.
+            Sử dụng tài khoản quản trị để truy cập các chức năng quản lý.
           </p>
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <label className="block">
-            <span className="text-sm font-medium text-slate-700">Ten dang nhap</span>
+            <span className="text-sm font-medium text-slate-700">
+              Tên đăng nhập
+            </span>
             <span className="mt-2 flex items-center gap-2 rounded border border-slate-300 bg-white px-3 py-2 focus-within:border-green-600 focus-within:ring-1 focus-within:ring-green-600">
               <FaUser className="shrink-0 text-slate-400" />
               <input
@@ -116,7 +122,7 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => setShowPassword((current) => !current)}
                 className="shrink-0 text-slate-500 hover:text-slate-800"
-                title={showPassword ? "An mat khau" : "Hien mat khau"}
+                title={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -135,7 +141,7 @@ export default function LoginPage() {
             isLoading={isSubmitting}
             leftIcon={<FaSignInAlt />}
           >
-            {isSubmitting ? "Dang dang nhap..." : "Dang nhap"}
+            {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
           </Button>
         </form>
       </section>

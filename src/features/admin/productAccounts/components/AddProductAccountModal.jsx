@@ -167,12 +167,12 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
     const payload = activeTab === "single" ? form : parseMultiInput();
 
     if (activeTab === "single" && !form.accountData.trim()) {
-      notify.warning("Vui long nhap account data.");
+      notify.warning("Vui lòng nhap account data.");
       return;
     }
 
     if (activeTab === "multi" && payload.length === 0) {
-      notify.warning("Vui long nhap it nhat mot account hop le.");
+      notify.warning("Vui lòng nhap it nhat mot account hop le.");
       return;
     }
 
@@ -181,8 +181,8 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
     try {
       await onSave?.(payload);
       onClose?.();
-    } catch (error) {
-      console.error(error);
+    } catch {
+      return;
     } finally {
       setIsSaving(false);
     }
@@ -195,10 +195,10 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
       <div className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-lg bg-white shadow-xl">
         <div className="border-b border-slate-200 p-4 sm:p-5">
           <h2 className="text-lg font-semibold text-slate-900">
-            Them account san pham
+            Thêm account sản phẩm
           </h2>
           <p className="mt-1 text-sm text-slate-500">
-            Nhap tung account hoac dan danh sach theo tung dong.
+            Nhap tung account hoac dan danh sách theo tung dong.
           </p>
         </div>
 
@@ -213,7 +213,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
               }`}
               onClick={() => setActiveTab("single")}
             >
-              Them 1 account
+              Thêm 1 account
             </button>
             <button
               type="button"
@@ -224,7 +224,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
               }`}
               onClick={() => setActiveTab("multi")}
             >
-              Them nhieu account
+              Thêm nhiều account
             </button>
           </div>
         </div>
@@ -245,7 +245,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
               </label>
 
               <label>
-                <span className={labelClass}>Ten dang nhap</span>
+                <span className={labelClass}>Tên đăng nhập</span>
                 <input
                   type="text"
                   name="usernameProductAccount"
@@ -278,7 +278,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
               </label>
 
               <label>
-                <span className={labelClass}>Luot ban con</span>
+                <span className={labelClass}>Lượt bán con</span>
                 <input
                   type="number"
                   name="sellCount"
@@ -330,7 +330,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
               </div>
 
               <label className="sm:col-span-2">
-                <span className={labelClass}>Trang thai</span>
+                <span className={labelClass}>Trạng thái</span>
                 <select
                   name="status"
                   value={form.status}
@@ -338,7 +338,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
                   className={inputClass}
                 >
                   <option value={0}>Chua su dung</option>
-                  <option value={1}>Da ban</option>
+                  <option value={1}>Đã bán</option>
                   <option value={2}>Het han</option>
                 </select>
               </label>
@@ -347,7 +347,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
             <div className="space-y-4">
               <label>
                 <span className={labelClass}>
-                  Danh sach account, moi dong: accountData,username,password
+                  Danh sách account, moi dong: accountData,username,password
                 </span>
                 <textarea
                   value={multiInput}
@@ -371,7 +371,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
                 </label>
 
                 <label>
-                  <span className={labelClass}>Luot ban con</span>
+                  <span className={labelClass}>Lượt bán con</span>
                   <input
                     type="number"
                     name="sellCount"
@@ -424,7 +424,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
               </div>
 
               <label>
-                <span className={labelClass}>Trang thai mac dinh</span>
+                <span className={labelClass}>Trạng thái mac dinh</span>
                 <select
                   name="status"
                   value={multiDefaults.status}
@@ -432,7 +432,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
                   className={inputClass}
                 >
                   <option value={0}>Chua su dung</option>
-                  <option value={1}>Da ban</option>
+                  <option value={1}>Đã bán</option>
                   <option value={2}>Het han</option>
                 </select>
               </label>
@@ -445,7 +445,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
             Huy
           </Button>
           <Button variant="info" onClick={handleSubmit} isLoading={isSaving}>
-            {activeTab === "single" ? "Luu account" : "Luu danh sach"}
+            {activeTab === "single" ? "Lưu account" : "Lưu danh sách"}
           </Button>
         </div>
       </div>

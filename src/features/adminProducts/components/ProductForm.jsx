@@ -13,14 +13,14 @@ const ProductForm = ({
         name="ProductName"
         value={form.ProductName}
         onChange={onChange}
-        placeholder="Ten san pham"
+        placeholder="Ten sản phẩm"
         className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
       />
       <input
         name="ProductCode"
         value={form.ProductCode}
         onChange={onChange}
-        placeholder="Ma san pham"
+        placeholder="Ma sản phẩm"
         className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
       />
       <input
@@ -36,7 +36,7 @@ const ProductForm = ({
         type="number"
         value={form.DurationDay}
         onChange={onChange}
-        placeholder="Thoi han (ngay)"
+        placeholder="Thời hạn (ngày)"
         className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
       />
       <input
@@ -44,7 +44,7 @@ const ProductForm = ({
         type="number"
         value={form.DiscountPercentDisplay}
         onChange={onChange}
-        placeholder="Giam gia (%)"
+        placeholder="Giảm giá (%)"
         className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
       />
       <select
@@ -60,7 +60,7 @@ const ProductForm = ({
         name="CategoryId"
         value={form.CategoryId}
         onChange={onChange}
-        placeholder="Danh muc ID"
+        placeholder="Danh mục ID"
         className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600 md:col-span-2"
       />
     </div>
@@ -75,7 +75,7 @@ const ProductForm = ({
       name="Description"
       value={form.Description}
       onChange={onChange}
-      placeholder="Mo ta chi tiet"
+      placeholder="Mô tả chi tiết"
       className="min-h-32 w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
     />
     <input
@@ -86,7 +86,7 @@ const ProductForm = ({
     />
     <div className="flex justify-end">
       <Button type="submit" variant="info" isLoading={isSubmitting}>
-        {isSubmitting ? "Dang luu..." : "Luu san pham"}
+        {isSubmitting ? "Đang lưu..." : "Lưu sản phẩm"}
       </Button>
     </div>
   </form>

@@ -1,27 +1,28 @@
-import React from 'react'
-import moment from 'moment'
+import moment from "moment";
 
 const EmailRow = ({ email, onClick }) => {
-  const { senderName, from, subject, createdAt } = email
-  const timeAgo = moment(createdAt).fromNow()
+  const { senderName, from, subject, createdAt } = email;
+  const timeAgo = createdAt ? moment(createdAt).fromNow() : "-";
 
   return (
     <tr
-      onClick={() => onClick(email.id)}
-      className="border-b border-gray-200 hover:bg-gray-100 transition cursor-pointer"
+      onClick={() => onClick?.(email.id)}
+      className="cursor-pointer transition hover:bg-slate-50"
     >
-      <td className="py-3 px-4 text-sm font-semibold text-gray-800">
-        <p>{senderName || 'Unknown'}</p>
-        <p className="text-gray-500 text-xs">{from}</p>
+      <td className="px-4 py-3">
+        <p className="truncate font-semibold text-slate-900">
+          {senderName || "Unknown"}
+        </p>
+        <p className="truncate text-xs text-slate-500">{from || "-"}</p>
       </td>
-      <td className="py-3 px-4 text-sm text-blue-600 max-w-[300px] truncate">
-        {subject}
+      <td className="px-4 py-3 text-blue-700">
+        <p className="truncate">{subject || "Khong co tieu de"}</p>
       </td>
-      <td className="py-3 px-4 text-sm text-gray-500 whitespace-nowrap">
+      <td className="whitespace-nowrap px-4 py-3 text-slate-500">
         {timeAgo}
       </td>
     </tr>
-  )
-}
+  );
+};
 
-export default EmailRow
+export default EmailRow;

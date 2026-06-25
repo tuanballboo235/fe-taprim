@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   FaArrowUp,
   FaBars,
@@ -11,61 +11,112 @@ import {
   FaSignOutAlt,
   FaStore,
   FaTags,
+  FaTimes,
   FaUsers,
 } from "react-icons/fa";
 import { MdOutlineSell } from "react-icons/md";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import notify from "@/shared/utils/notify";
 
 const menuSections = [
   {
     title: "SALE",
-    items: [{ label: "Sales", icon: <MdOutlineSell />, key: "sales", path: "/admin/sales" }],
+    items: [
+      { label: "Sales", icon: <MdOutlineSell />, key: "sales", path: "/admin/sales" },
+    ],
   },
   {
     title: "SHOP",
     items: [
-      { label: "Quản lý gian hàng", icon: <FaStore />, key: "admin-product-list", path: "/admin-product-list" },
-      { label: "Đơn hàng sản phẩm", icon: <FaBoxOpen />, key: "product-orders", path: "/product" },
-      { label: "Đơn hàng dịch vụ", icon: <FaServicestack />, key: "service-orders", path: "/admin/service-orders" },
-      { label: "Đặt trước", icon: <FaRegClock />, key: "booking", path: "/admin/booking" },
-      { label: "Khiếu nại", icon: <FaBug />, key: "complaints", path: "/admin/complaints" },
-      { label: "Quản lý Reseller", icon: <FaUsers />, key: "resellers", path: "/admin/resellers" },
-      { label: "Đánh giá", icon: <FaComment />, key: "reviews", path: "/admin/reviews" },
-      { label: "Mã giảm giá", icon: <FaTags />, key: "discounts", path: "/admin/discounts" },
-      { label: "Gian hàng Top 1", icon: <FaArrowUp />, key: "top1", path: "/admin/top1" },
+      {
+        label: "Quản lý gian hàng",
+        icon: <FaStore />,
+        key: "admin-product-list",
+        path: "/admin-product-list",
+      },
+      {
+        label: "Đơn hàng sản phẩm",
+        icon: <FaBoxOpen />,
+        key: "product-orders",
+        path: "/product",
+      },
+      {
+        label: "Đơn hàng dịch vụ",
+        icon: <FaServicestack />,
+        key: "service-orders",
+        path: "/admin/service-orders",
+      },
+      {
+        label: "Đặt trước",
+        icon: <FaRegClock />,
+        key: "booking",
+        path: "/admin/booking",
+      },
+      {
+        label: "Khiếu nại",
+        icon: <FaBug />,
+        key: "complaints",
+        path: "/admin/complaints",
+      },
+      {
+        label: "Quản lý reseller",
+        icon: <FaUsers />,
+        key: "resellers",
+        path: "/admin/resellers",
+      },
+      {
+        label: "Đánh giá",
+        icon: <FaComment />,
+        key: "reviews",
+        path: "/admin/reviews",
+      },
+      {
+        label: "Mã giảm giá",
+        icon: <FaTags />,
+        key: "discounts",
+        path: "/admin/discounts",
+      },
+      {
+        label: "Gian hàng Top 1",
+        icon: <FaArrowUp />,
+        key: "top1",
+        path: "/admin/top1",
+      },
     ],
   },
 ];
 
 const Sidebar = () => {
-  const [activeKey, setActiveKey] = useState("admin-product-list");
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { logout, user } = useAuth();
 
+  const closeMenu = () => setIsOpen(false);
+
   const handleNavigate = (item) => {
-    setActiveKey(item.key);
     navigate(item.path);
-    setIsOpen(false);
+    closeMenu();
   };
 
   const handleLogout = () => {
     logout();
-    setIsOpen(false);
+    closeMenu();
+    notify.success("Đã đăng xuất.");
     navigate("/login", { replace: true });
   };
 
   return (
     <>
-      <div className="md:hidden p-4 w-full bg-[#152133] text-white flex items-center justify-between">
-        <div className="flex items-center font-bold text-lg">taprim.com</div>
+      <div className="flex w-full items-center justify-between bg-slate-950 px-4 py-3 text-white md:hidden">
+        <div className="font-semibold">TAPRIM Admin</div>
         <button
           type="button"
           onClick={() => setIsOpen((current) => !current)}
-          className="text-2xl"
-          title="Mở menu"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-white/10 text-xl"
+          title={isOpen ? "Đóng menu" : "Mở menu"}
         >
-          <FaBars />
+          {isOpen ? <FaTimes /> : <FaBars />}
         </button>
       </div>
 
@@ -73,62 +124,69 @@ const Sidebar = () => {
         <button
           type="button"
           aria-label="Đóng menu"
-          onClick={() => setIsOpen(false)}
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={closeMenu}
+          className="fixed inset-0 z-40 bg-slate-950/50 md:hidden"
         />
       )}
 
       <aside
-        className={`fixed top-0 left-0 z-50 flex min-h-screen w-64 flex-col bg-gradient-to-b from-[#152133] to-[#1F2C42] p-4 text-white transition-transform duration-300 ${
+        className={`fixed left-0 top-0 z-50 flex h-screen w-64 flex-col bg-slate-950 p-4 text-white shadow-xl transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } md:static md:translate-x-0`}
+        } md:sticky md:top-0 md:translate-x-0 md:shadow-none`}
       >
-        <div className="flex items-center mb-8">
-          <div className="w-10 h-10 bg-[#6366F1] rounded-lg flex items-center justify-center font-bold text-2xl mr-3">
-            M
+        <div className="mb-6 flex items-center">
+          <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-green-600 text-xl font-bold">
+            T
           </div>
-          <span className="text-xl font-semibold">taprim.com</span>
+          <div>
+            <p className="text-lg font-semibold">TAPRIM</p>
+            <p className="text-xs text-slate-400">Admin panel</p>
+          </div>
         </div>
 
-        <div className="flex-1 space-y-4 overflow-y-auto">
+        <div className="min-h-0 flex-1 space-y-5 overflow-y-auto pr-1">
           {menuSections.map((section) => (
             <div key={section.title}>
-              <p className="text-sm text-gray-400 font-semibold mt-4 mb-2">
+              <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
                 {section.title}
               </p>
-              {section.items.map((item) => {
-                const isActive = activeKey === item.key;
+              <div className="space-y-1">
+                {section.items.map((item) => {
+                  const isActive = location.pathname === item.path;
 
-                return (
-                  <button
-                    type="button"
-                    key={item.key}
-                    onClick={() => handleNavigate(item)}
-                    className={`flex w-full items-center px-4 py-3 rounded text-left text-base transition-colors duration-150 ${
-                      isActive
-                        ? "bg-[#2F3E54] text-white"
-                        : "text-gray-400 hover:bg-[#2F3E54] hover:text-white"
-                    }`}
-                  >
-                    <span className="text-lg mr-4">{item.icon}</span>
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })}
+                  return (
+                    <button
+                      type="button"
+                      key={item.key}
+                      onClick={() => handleNavigate(item)}
+                      className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm font-semibold transition ${
+                        isActive
+                          ? "bg-green-600 text-white"
+                          : "text-slate-300 hover:bg-white/10 hover:text-white"
+                      }`}
+                    >
+                      <span className="text-base">{item.icon}</span>
+                      <span className="truncate">{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           ))}
         </div>
 
         <div className="mt-4 border-t border-white/10 pt-4">
           {user?.username && (
-            <p className="mb-3 truncate text-sm text-gray-300">{user.username}</p>
+            <p className="mb-3 truncate px-3 text-sm text-slate-300">
+              {user.username}
+            </p>
           )}
           <button
             type="button"
             onClick={handleLogout}
-            className="flex w-full items-center px-4 py-3 rounded text-left text-base text-gray-300 transition-colors duration-150 hover:bg-[#2F3E54] hover:text-white"
+            className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm font-semibold text-slate-300 transition hover:bg-white/10 hover:text-white"
           >
-            <FaSignOutAlt className="text-lg mr-4" />
+            <FaSignOutAlt className="text-base" />
             <span>Đăng xuất</span>
           </button>
         </div>

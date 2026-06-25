@@ -22,7 +22,7 @@ const CategorySection = ({ title, description, products = [] }) => {
           )}
         </div>
         <span className="text-sm font-medium text-slate-500">
-          {visibleProducts.length} san pham
+          {visibleProducts.length} sản phẩm
         </span>
       </div>
 
@@ -38,7 +38,9 @@ const CategorySection = ({ title, description, products = [] }) => {
             >
               <div className="relative aspect-[4/3] bg-slate-50">
                 <img
-                  src={product.image ? getAssetUrl(product.image) : imageFallback}
+                  src={
+                    product.image ? getAssetUrl(product.image) : imageFallback
+                  }
                   alt={product.name}
                   loading="lazy"
                   className="h-full w-full object-contain p-4 transition duration-300 group-hover:scale-[1.03]"
@@ -51,7 +53,7 @@ const CategorySection = ({ title, description, products = [] }) => {
                 {isOutOfStock && (
                   <div className="absolute inset-0 flex items-start justify-start bg-white/60 p-3">
                     <span className="rounded-full bg-red-600 px-2.5 py-1 text-xs font-semibold text-white shadow">
-                      Het hang
+                      Hết hàng
                     </span>
                   </div>
                 )}
@@ -66,7 +68,7 @@ const CategorySection = ({ title, description, products = [] }) => {
                   <ProductPrice
                     minPrice={product.minPrice}
                     maxPrice={product.maxPrice}
-                    fallback="Lien he"
+                    fallback="Liên hệ"
                     className="text-sm font-bold text-green-700"
                   />
                   {product.discount && (

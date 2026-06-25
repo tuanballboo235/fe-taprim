@@ -15,7 +15,7 @@ export default function OrderLookup() {
     const transactionCode = transactionInput.trim();
 
     if (!transactionCode) {
-      notify.warning("Vui long nhap ma giao dich.");
+      notify.warning("Vui lòng nhap ma giao dịch.");
       return;
     }
 
@@ -24,16 +24,16 @@ export default function OrderLookup() {
       const data = await getOrderByTransactionCode(transactionCode);
 
       if (!data.data || !data.data.paymentTransactionCode) {
-        notify.warning("Khong tim thay don hang voi ma giao dich nay.");
+        notify.warning("Khong tim thay đơn hàng voi ma giao dịch nay.");
         setOrderData(null);
         return;
       }
 
       setOrderData(data);
-      notify.success("Da tim thay don hang.");
+      notify.success("Da tim thay đơn hàng.");
     } catch (error) {
       notify.error(
-        getApiErrorMessage(error, "Co loi xay ra khi tra cuu don hang.")
+        getApiErrorMessage(error, "Co loi xay ra khi tra cứu đơn hàng.")
       );
     } finally {
       setLoading(false);
@@ -45,10 +45,10 @@ export default function OrderLookup() {
       <div className="mx-auto max-w-4xl">
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
-            Tra cuu don hang
+            Tra cứu đơn hàng
           </h1>
           <p className="mt-2 text-sm text-slate-500">
-            Nhap ma giao dich de xem thong tin don hang va tai khoan da mua.
+            Nhap ma giao dịch de xem thong tin đơn hàng va tài khoản da mua.
           </p>
         </div>
 
@@ -56,7 +56,7 @@ export default function OrderLookup() {
           <div className="flex flex-col gap-3 sm:flex-row">
             <input
               type="text"
-              placeholder="Nhap ma giao dich, vi du TAPR123456"
+              placeholder="Nhap ma giao dịch, vi du TAPR123456"
               value={transactionInput}
               onChange={(e) => setTransactionInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -68,7 +68,7 @@ export default function OrderLookup() {
               leftIcon={<FaSearch />}
               className="sm:min-w-36"
             >
-              {loading ? "Dang tra cuu..." : "Tra cuu"}
+              {loading ? "Dang tra cứu..." : "Tra cứu"}
             </Button>
           </div>
         </div>

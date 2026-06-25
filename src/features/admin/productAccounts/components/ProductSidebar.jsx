@@ -5,7 +5,7 @@ const ProductSidebar = ({ products = [], onSelect, selectedProductId, productInf
     ? products
     : products?.productOptions ?? products?.data?.productOptions ?? [];
 
-  const productName = productInfo || "Danh sach goi";
+  const productName = productInfo || "Danh sách gói";
 
   return (
     <aside className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm lg:w-80 lg:shrink-0">
@@ -18,7 +18,7 @@ const ProductSidebar = ({ products = [], onSelect, selectedProductId, productInf
             {productName}
           </h2>
           <p className="mt-1 text-sm text-slate-500">
-            Chon goi de xem danh sach account.
+            Chọn gói để xem danh sách account.
           </p>
         </div>
       </div>
@@ -26,7 +26,7 @@ const ProductSidebar = ({ products = [], onSelect, selectedProductId, productInf
       <div className="max-h-[420px] space-y-2 overflow-y-auto pr-1 lg:max-h-[calc(100vh-220px)]">
         {options.length === 0 ? (
           <div className="rounded-md border border-dashed border-slate-200 p-4 text-sm text-slate-500">
-            Khong co goi san pham
+            Không có gói sản phẩm
           </div>
         ) : (
           options.map((product, index) => {
@@ -46,7 +46,7 @@ const ProductSidebar = ({ products = [], onSelect, selectedProductId, productInf
               >
                 <div className="flex items-start justify-between gap-3">
                   <span className="min-w-0 flex-1 text-sm font-semibold">
-                    {product.label || product.name || "Goi khong co ten"}
+                    {product.label || product.name || "Gói không có tên"}
                   </span>
                   {typeof product.stockAccount === "number" && (
                     <span
@@ -63,7 +63,7 @@ const ProductSidebar = ({ products = [], onSelect, selectedProductId, productInf
 
                 {typeof product.sellCount === "number" && (
                   <p className="mt-2 text-xs text-slate-500">
-                    Da ban: {product.sellCount}
+                    Đã bán: {product.sellCount}
                   </p>
                 )}
               </button>

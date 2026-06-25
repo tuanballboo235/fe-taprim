@@ -1,22 +1,29 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { FaChevronDown } from "react-icons/fa";
+import Button from "@/shared/components/Button";
 
 export default function ContactPurchaseButton({
-  label = "Liên hệ mua hàng",
+  label = "Liên hệ mua hang",
   items = [
     { text: "Chat Zalo", href: "https://zalo.me/0344665098" },
     { text: "Fanpage Facebook", href: "https://facebook.com/taprim.shop" },
   ],
+  className = "",
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
-  // Click outside + ESC
   useEffect(() => {
-    const onClick = (e) =>
-      ref.current && !ref.current.contains(e.target) && setOpen(false);
-    const onKey = (e) => e.key === "Escape" && setOpen(false);
+    const onClick = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+    const onKey = (event) => event.key === "Escape" && setOpen(false);
+
     document.addEventListener("mousedown", onClick);
     document.addEventListener("keydown", onKey);
+
     return () => {
       document.removeEventListener("mousedown", onClick);
       document.removeEventListener("keydown", onKey);
@@ -24,41 +31,39 @@ export default function ContactPurchaseButton({
   }, []);
 
   return (
-    <div ref={ref} className="relative inline-block text-left w-full sm:w-auto">
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-md font-medium text-sm w-full sm:w-auto transition flex justify-between items-center"
+    <div ref={ref} className={`relative inline-block text-left ${className}`}>
+      <Button
+        variant="secondary"
+        fullWidth
+        rightIcon={
+          <FaChevronDown
+            className={`h-3 w-3 transition-transform ${
+              open ? "rotate-180" : "rotate-0"
+            }`}
+          />
+        }
+        onClick={() => setOpen((current) => !current)}
       >
         {label}
-        <svg
-          viewBox="0 0 20 20"
-          className={`w-4 h-4 ml-2 transition-transform ${
-            open ? "rotate-180" : "rotate-0"
-          }`}
-          fill="currentColor"
-        >
-          <path d="M5.23 7.21a.75.75 0 011.06.02L10 10.17l3.71-2.94a.75.75 0 11.94 1.16l-4.24 3.36a.75.75 0 01-.94 0L5.21 8.39a.75.75 0 01.02-1.18z" />
-        </svg>
-      </button>
+      </Button>
 
       <div
-        className={`absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg p-1 transition-all duration-150 z-50
-        ${
+        className={`absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-md border border-slate-200 bg-white p-1 shadow-lg transition ${
           open
-            ? "opacity-100 scale-100"
-            : "opacity-0 scale-95 pointer-events-none"
+            ? "scale-100 opacity-100"
+            : "pointer-events-none scale-95 opacity-0"
         }`}
       >
-        {items.map((it, i) => (
+        {items.map((item) => (
           <a
-            key={i}
-            href={it.href}
+            key={`${item.href}-${item.text}`}
+            href={item.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="block px-4 py-2 text-sm text-gray-800 rounded-md hover:bg-gray-50"
+            className="block rounded px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
             onClick={() => setOpen(false)}
           >
-            {it.text}
+            {item.text}
           </a>
         ))}
       </div>

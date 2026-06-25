@@ -45,9 +45,9 @@ const ProductAccountPage = () => {
     setImportedAccounts(accounts);
 
     if (accounts.length === 0) {
-      notify.warning("Chua co tai khoan hop le de import.");
+      notify.warning("Chưa có tài khoản hop le de import.");
     } else {
-      notify.success(`Da doc ${accounts.length} tai khoan.`);
+      notify.success(`Da doc ${accounts.length} tài khoản.`);
     }
   };
 
@@ -66,9 +66,9 @@ const ProductAccountPage = () => {
         sellDateTo: form.sellDateTo,
         status: parseInt(form.status, 10),
       });
-      notify.success("Them tai khoan thanh cong.");
+      notify.success("Thêm tài khoản thành công.");
     } catch (error) {
-      notify.error(getApiErrorMessage(error, "Them tai khoan that bai."));
+      notify.error(getApiErrorMessage(error, "Thêm tài khoản thất bại."));
     } finally {
       setIsSubmitting(false);
     }
@@ -78,10 +78,10 @@ const ProductAccountPage = () => {
     <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
       <div className="mb-6">
         <h1 className="text-xl font-semibold text-slate-900">
-          Them tai khoan san pham
+          Thêm tài khoản sản phẩm
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          Nhap tay hoac import nhanh danh sach tai khoan theo dinh dang co san.
+          Nhap tay hoac import nhanh danh sách tài khoản theo dinh dang co san.
         </p>
       </div>
 
@@ -104,7 +104,7 @@ const ProductAccountPage = () => {
         {importedAccounts.length > 0 && (
           <div className="mt-4 rounded-md bg-white p-3">
             <h3 className="mb-2 text-sm font-semibold text-slate-800">
-              Tai khoan da doc
+              Tài khoản da doc
             </h3>
             <ul className="max-h-48 space-y-1 overflow-auto pl-5 text-sm">
               {importedAccounts.map((acc, index) => (
