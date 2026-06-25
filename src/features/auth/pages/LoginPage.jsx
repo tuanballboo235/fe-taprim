@@ -79,10 +79,11 @@ export default function LoginPage() {
 
         <div className="mb-6">
           <h1 className="text-2xl font-semibold text-slate-900">
-            Đăng nhập quản trị
+            Đăng nhập tài khoản
           </h1>
           <p className="mt-2 text-sm text-slate-500">
-            Sử dụng tài khoản quản trị để truy cập các chức năng quản lý.
+            Sử dụng tài khoản TAPRIM để tiếp tục mua hàng, tra cứu đơn hoặc
+            truy cập các chức năng được cấp quyền.
           </p>
         </div>
 
