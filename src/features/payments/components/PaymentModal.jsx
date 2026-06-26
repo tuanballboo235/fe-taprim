@@ -3,10 +3,8 @@ import {
   createQrPayment,
   getPaymentFilter,
 } from "@/features/payments/api/paymentService";
-import { updateOrder } from "@/features/orders/api/orderService";
 import {
   getProductAccountByTransactionCode,
-  getProductAccountFilter,
 } from "@/features/admin/productAccounts/api/productAccountService";
 import { getCouponInfoByCouponCode } from "@/features/coupons/api/couponService";
 import Button from "@/shared/components/Button";
@@ -24,9 +22,11 @@ const PaymentModal = ({
   productName,
   amount,
   fee,
-  total,
+  quantity = 1,
+  stockQuantity = 0,
   onClose,
   onSuccess,
+  onTransactionChange,
   customerEmail,
 }) => {
   const [coupon, setCoupon] = useState("");
@@ -45,16 +45,18 @@ const PaymentModal = ({
   const canPay = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
     (customerEmail || "").trim(),
   );
+  const selectedQuantity = Math.max(1, Number.parseInt(quantity, 10) || 1);
+  const subtotal = amount * selectedQuantity;
 
   const discount = useMemo(() => {
     if (couponData?.isActive && couponData?.discountPercent > 0) {
-      return Math.round(amount * (couponData.discountPercent / 100));
+      return Math.round(subtotal * (couponData.discountPercent / 100));
     }
 
     return 0;
-  }, [amount, couponData]);
+  }, [couponData, subtotal]);
 
-  const finalTotal = Math.max(0, total - discount);
+  const finalTotal = Math.max(0, subtotal + fee - discount);
 
   const clearTimers = () => {
     clearInterval(countdownRef.current);
@@ -98,19 +100,23 @@ const PaymentModal = ({
 
     try {
       setPaymentLoading(true);
-      const check = await getProductAccountFilter({
-        productOptionId,
-        canSell: true,
-      });
+      const availableQuantity = Number(stockQuantity) || 0;
 
-      if (check?.data?.items?.length === 0) {
+      if (availableQuantity < selectedQuantity) {
         notify.warning(
-          "Sản phẩm đã hết hàng. Vui lòng liên hệ fanpage hoặc Zalo để được tư vấn.",
+          availableQuantity <= 0
+            ? "Sản phẩm đã hết hàng. Vui lòng liên hệ fanpage hoặc Zalo để được tư vấn."
+            : `Chỉ còn ${availableQuantity} tài khoản khả dụng, vui lòng giảm số lượng.`,
         );
         return;
       }
 
-      const res = await createQrPayment(productOptionId, finalTotal);
+      const res = await createQrPayment({
+        productOptionId,
+        totalAmount: finalTotal,
+        quantity: selectedQuantity,
+        emailOrder: customerEmail,
+      });
       const { qrCode, transactionCode: trxCode } = res?.data || {};
 
       if (!qrCode || !trxCode) {
@@ -118,11 +124,12 @@ const PaymentModal = ({
         return;
       }
 
+      hasExpiredRef.current = false;
       setQrImage(qrCode);
       setTransactionCode(trxCode);
+      onTransactionChange?.(trxCode);
       setCountdown(DEFAULT_COUNTDOWN);
       setShowPaymentInfo(true);
-      await updateOrder(trxCode, { contactInfo: customerEmail });
     } catch (error) {
       notify.error(
         getApiErrorMessage(error, "Không thể tạo mã QR thanh toán."),
@@ -148,7 +155,7 @@ const PaymentModal = ({
           if (!hasExpiredRef.current) {
             notify.warning("Hết thời hạn thanh toán.");
             hasExpiredRef.current = true;
-            onClose?.();
+            onClose?.(transactionCode, true);
           }
           return 0;
         }
@@ -169,7 +176,8 @@ const PaymentModal = ({
           );
 
           notify.success("Thanh toán thành công.");
-          onClose?.();
+          onTransactionChange?.("");
+          onClose?.(null, false);
           onSuccess?.({
             paymentTransactionCode: transactionCode,
             productName,
@@ -177,6 +185,7 @@ const PaymentModal = ({
             couponCode: couponData?.couponCode || null,
             contactInfo: customerEmail || "",
             totalAmount: finalTotal,
+            quantity: selectedQuantity,
             paidAt: new Date().toISOString(),
             createAt: new Date().toISOString(),
             expiredAt: null,
@@ -187,7 +196,7 @@ const PaymentModal = ({
         notify.error(
           getApiErrorMessage(error, "Lỗi khi kiểm tra trạng thái thanh toán."),
         );
-        onClose?.();
+        onClose?.(transactionCode, true);
       }
     }, CHECK_INTERVAL);
 
@@ -198,7 +207,9 @@ const PaymentModal = ({
     finalTotal,
     onClose,
     onSuccess,
+    onTransactionChange,
     productName,
+    selectedQuantity,
     showPaymentInfo,
     transactionCode,
   ]);
@@ -279,8 +290,16 @@ const PaymentModal = ({
 
         <div className="space-y-3 rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-800">
           <div className="flex justify-between gap-4">
-            <span>Giá sản phẩm</span>
+            <span>Đơn giá</span>
             <strong>{formatCurrency(amount)}</strong>
+          </div>
+          <div className="flex justify-between gap-4">
+            <span>Số lượng</span>
+            <strong>{selectedQuantity}</strong>
+          </div>
+          <div className="flex justify-between gap-4">
+            <span>Tạm tính</span>
+            <strong>{formatCurrency(subtotal)}</strong>
           </div>
           {discount > 0 && (
             <div className="flex justify-between gap-4 text-green-700">

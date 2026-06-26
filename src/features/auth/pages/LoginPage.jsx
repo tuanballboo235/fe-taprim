@@ -9,7 +9,7 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 const getErrorMessage = (error) => {
   return getApiErrorMessage(
     error,
-    "Đăng nhập không thành công. Vui lòng thử lại."
+    "Đăng nhập không thành công. Vui lòng thử lại.",
   );
 };
 
@@ -82,8 +82,7 @@ export default function LoginPage() {
             Đăng nhập tài khoản
           </h1>
           <p className="mt-2 text-sm text-slate-500">
-            Sử dụng tài khoản TAPRIM để tiếp tục mua hàng, tra cứu đơn hoặc
-            truy cập các chức năng được cấp quyền.
+            Đăng nhập để tiếp tục mua hàng, tra cứu đơn.
           </p>
         </div>
 

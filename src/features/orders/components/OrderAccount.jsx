@@ -47,7 +47,7 @@ export default function OrderAccount({ order }) {
           <p className="font-semibold text-slate-600">Account sản phẩm</p>
           {showAccount ? (
             <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-start">
-              <span className="min-w-0 flex-1 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-sm text-slate-900 break-all">
+              <span className="min-w-0 flex-1 whitespace-pre-wrap break-all rounded-md border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-sm text-slate-900">
                 {order.productAccountData || "-"}
               </span>
               <Button size="sm" variant="info" onClick={handleCopy}>

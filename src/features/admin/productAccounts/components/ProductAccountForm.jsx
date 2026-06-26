@@ -22,7 +22,7 @@ const ProductAccountForm = ({ form, onChange, onSubmit, isSubmitting = false }) 
 
         <label className="block">
           <span className="mb-1 block text-sm font-medium text-slate-700">
-            Email đăng nhập
+            Email/User đăng nhập
           </span>
           <input
             type="text"

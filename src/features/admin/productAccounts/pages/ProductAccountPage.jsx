@@ -64,7 +64,7 @@ const ProductAccountPage = () => {
 
     if (invalidLines.length > 0) {
       notify.warning(
-        `Dòng ${invalidLines.join(", ")} không đúng định dạng email:password.`
+        `Dòng ${invalidLines.join(", ")} không đúng định dạng email:password hoặc user:password.`
       );
       return;
     }
@@ -110,7 +110,7 @@ const ProductAccountPage = () => {
           Thêm tài khoản sản phẩm
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          Nhập tay hoặc import nhanh danh sách tài khoản theo định dạng email:password.
+          Nhập tay hoặc import nhanh danh sách tài khoản theo định dạng email:password hoặc user:password.
         </p>
       </div>
 
@@ -123,7 +123,7 @@ const ProductAccountPage = () => {
           onChange={(event) => setImportText(event.target.value)}
           rows={6}
           className="mt-3 w-full rounded-md border border-slate-300 p-3 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
-          placeholder={"user1@example.com:pass1\nuser2@example.com:pass2"}
+          placeholder={"user1@example.com:pass1\nusername2:pass2"}
         />
 
         <Button onClick={handleImport} variant="info" className="mt-3">

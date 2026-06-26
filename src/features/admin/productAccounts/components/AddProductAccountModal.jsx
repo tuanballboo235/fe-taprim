@@ -6,6 +6,26 @@ const inputClass =
   "w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-blue-600 focus:ring-1 focus:ring-blue-600";
 const labelClass = "mb-1 block text-sm font-semibold text-slate-700";
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const usernamePattern = /^[^\s:]+$/;
+
+const credentialTypeConfig = {
+  email: {
+    label: "Email:password",
+    format: "email:password",
+    placeholder: "email@example.com:password",
+    multiPlaceholder: "abc1@gmail.com:pass123\nabc2@gmail.com:pass456",
+    help: "Email phải hợp lệ và mật khẩu không được để trống.",
+    invalidText: "không đúng định dạng email:password hoặc email không hợp lệ",
+  },
+  username: {
+    label: "User:password",
+    format: "user:password",
+    placeholder: "username:password",
+    multiPlaceholder: "user01:pass123\nuser02:pass456",
+    help: "User không được chứa khoảng trắng hoặc dấu hai chấm, mật khẩu không được để trống.",
+    invalidText: "không đúng định dạng user:password",
+  },
+};
 
 const toDateInput = (value) => {
   const date = value ? new Date(value) : new Date();
@@ -59,7 +79,7 @@ const createMultiDefaults = () => {
   };
 };
 
-const parseCredential = (value) => {
+const parseCredential = (value, credentialType = "email") => {
   const trimmed = value.trim();
   const separatorIndex = trimmed.indexOf(":");
 
@@ -67,15 +87,18 @@ const parseCredential = (value) => {
     return null;
   }
 
-  const email = trimmed.slice(0, separatorIndex).trim();
+  const username = trimmed.slice(0, separatorIndex).trim();
   const password = trimmed.slice(separatorIndex + 1).trim();
+  const isEmailCredential = credentialType === "email";
 
-  if (!emailPattern.test(email) || !password) return null;
+  if (!username || !password) return null;
+  if (isEmailCredential && !emailPattern.test(username)) return null;
+  if (!isEmailCredential && !usernamePattern.test(username)) return null;
 
   return {
-    email,
+    username,
     password,
-    accountData: `${email}:${password}`,
+    accountData: `${username}:${password}`,
   };
 };
 
@@ -95,8 +118,10 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
   const [multiInput, setMultiInput] = useState("");
   const [form, setForm] = useState(createSingleForm);
   const [multiDefaults, setMultiDefaults] = useState(createMultiDefaults);
+  const [credentialType, setCredentialType] = useState("email");
   const [isSaving, setIsSaving] = useState(false);
   const isEditing = Boolean(initialData);
+  const credentialConfig = credentialTypeConfig[credentialType];
 
   useEffect(() => {
     if (!isOpen) return;
@@ -118,6 +143,11 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
         status: initialData.status ?? 1,
         customDays: "",
       });
+      setCredentialType(
+        emailPattern.test(initialData.usernameProductAccount ?? "")
+          ? "email"
+          : "username"
+      );
       setActiveTab("single");
       return;
     }
@@ -125,6 +155,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
     setForm(createSingleForm());
     setMultiDefaults(createMultiDefaults());
     setMultiInput("");
+    setCredentialType("email");
     setActiveTab("single");
   }, [initialData, isOpen]);
 
@@ -191,14 +222,14 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
   };
 
   const buildSinglePayload = () => {
-    const account = parseCredential(form.accountData);
+    const account = parseCredential(form.accountData, credentialType);
 
     if (!account) return null;
 
     return buildAccountPayload({
       ...form,
       accountData: account.accountData,
-      usernameProductAccount: account.email,
+      usernameProductAccount: account.username,
       passwordProductAccount: account.password,
     });
   };
@@ -210,7 +241,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
       .map((line, index) => ({ line: line.trim(), lineNumber: index + 1 }))
       .filter(({ line }) => Boolean(line))
       .map(({ line, lineNumber }) => {
-        const credential = parseCredential(line);
+        const credential = parseCredential(line, credentialType);
 
         if (!credential) {
           invalidLines.push(lineNumber);
@@ -220,7 +251,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
         return buildAccountPayload(
           {
             accountData: credential.accountData,
-            usernameProductAccount: credential.email,
+            usernameProductAccount: credential.username,
             passwordProductAccount: credential.password,
           },
           multiDefaults
@@ -236,14 +267,16 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
       activeTab === "single" ? buildSinglePayload() : parseMultiInput();
 
     if (activeTab === "single" && !payload) {
-      notify.warning("Vui lòng nhập đúng định dạng email:password với email hợp lệ.");
+      notify.warning(
+        `Vui lòng nhập đúng định dạng ${credentialTypeConfig[credentialType].format}.`
+      );
       return;
     }
 
     if (activeTab === "multi") {
       if (payload.invalidLines.length > 0) {
         notify.warning(
-          `Dòng ${payload.invalidLines.join(", ")} không đúng định dạng email:password hoặc email không hợp lệ.`
+          `Dòng ${payload.invalidLines.join(", ")} ${credentialTypeConfig[credentialType].invalidText}.`
         );
         return;
       }
@@ -278,7 +311,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
           <p className="mt-1 text-sm text-slate-500">
             {isEditing
               ? "Chỉnh sửa dữ liệu account, thời gian bán, lượt bán còn và trạng thái."
-              : "Thêm từng account hoặc dán danh sách, mỗi dòng theo định dạng email:password."}
+              : "Thêm từng account hoặc dán danh sách theo định dạng email:password hoặc user:password."}
           </p>
         </div>
 
@@ -312,6 +345,26 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
         )}
 
         <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-5">
+          <div className="mb-4 rounded-md border border-slate-200 bg-slate-50 p-3">
+            <span className={labelClass}>Kiểu tài khoản</span>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {Object.entries(credentialTypeConfig).map(([type, config]) => (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => setCredentialType(type)}
+                  className={`rounded-md border px-3 py-2 text-left text-sm font-semibold transition ${
+                    credentialType === type
+                      ? "border-blue-600 bg-blue-50 text-blue-700"
+                      : "border-slate-300 bg-white text-slate-600 hover:border-blue-300"
+                  }`}
+                >
+                  {config.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {activeTab === "single" ? (
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="sm:col-span-2">
@@ -322,10 +375,11 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
                   value={form.accountData}
                   onChange={handleChange}
                   className={inputClass}
-                  placeholder="email@example.com:password"
+                  placeholder={credentialConfig.placeholder}
                 />
                 <span className="mt-1 block text-xs text-slate-500">
-                  Nhập đúng định dạng email:password. Email phải hợp lệ và mật khẩu không được để trống.
+                  Nhập đúng định dạng {credentialConfig.format}.{" "}
+                  {credentialConfig.help}
                 </span>
               </label>
 
@@ -410,15 +464,14 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
             <div className="space-y-4">
               <label>
                 <span className={labelClass}>
-                  Danh sách account, mỗi dòng đúng định dạng email:password
+                  Danh sách account, mỗi dòng đúng định dạng{" "}
+                  {credentialConfig.format}
                 </span>
                 <textarea
                   value={multiInput}
                   onChange={(event) => setMultiInput(event.target.value)}
                   rows={8}
-                  placeholder={
-                    "abc1@gmail.com:pass123\nabc2@gmail.com:pass456"
-                  }
+                  placeholder={credentialConfig.multiPlaceholder}
                   className={`${inputClass} font-mono`}
                 />
               </label>

@@ -43,6 +43,7 @@ export default function OrderDetails({ order }) {
   const rows = [
     ["Mã giao dịch", order.paymentTransactionCode],
     ["Tên sản phẩm", `${order.productName} ${order.productOptionLabel}`],
+    ["Số lượng", order.quantity],
     ["Email nhận hàng", order.contactInfo],
     ["Thời gian thanh toán", formatDateTime(order.paidAt)],
     ["Ngày tạo đơn", formatDateTime(order.createAt)],
@@ -86,7 +87,7 @@ export default function OrderDetails({ order }) {
         {showAccount ? (
           <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-start">
             <div className="min-w-0 flex-1 rounded-md border border-slate-200 bg-white px-3 py-2 font-mono text-sm text-slate-900 shadow-sm">
-              <span className="break-all">
+              <span className="whitespace-pre-wrap break-all">
                 {order.productAccountData || "-"}
               </span>
             </div>

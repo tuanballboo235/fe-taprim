@@ -8,8 +8,10 @@ import {
   Clock3,
   Mail,
   MessageCircle,
+  Minus,
   PackageCheck,
   PackageX,
+  Plus,
   ShieldCheck,
   ShoppingCart,
   Tag,
@@ -35,12 +37,20 @@ const validateEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: productResponse, isLoading, isError } = useProductDetail(id);
+  const {
+    data: productResponse,
+    isLoading,
+    isError,
+    refetch: refetchProductDetail,
+  } = useProductDetail(id);
 
   const product = productResponse?.data;
   const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [email, setEmail] = useState("");
+  const [quantity, setQuantity] = useState(1);
   const [showPayment, setShowPayment] = useState(false);
+  const [currentPaymentTransactionCode, setCurrentPaymentTransactionCode] =
+    useState("");
   const [orderResult, setOrderResult] = useState(null);
 
   const options = useMemo(() => product?.productOptions ?? [], [product]);
@@ -56,6 +66,8 @@ const ProductDetailPage = () => {
   const hasAnySellLeft = options.some((option) => (option.sellCount ?? 0) > 0);
   const selectedSellCount = selectedOption?.sellCount ?? 0;
   const selectedPrice = selectedOption?.price ?? 0;
+  const transactionFee = 500;
+  const subtotal = selectedPrice * quantity;
   const selectedImage =
     selectedOption?.productOptionImage ?? product?.productImage;
   const descriptionText = product?.description?.trim();
@@ -80,6 +92,13 @@ const ProductDetailPage = () => {
   }, [product, selectedOptionId]);
 
   useEffect(() => {
+    setQuantity((currentQuantity) => {
+      if (selectedSellCount <= 0) return 1;
+      return Math.min(Math.max(currentQuantity, 1), selectedSellCount);
+    });
+  }, [selectedOptionId, selectedSellCount]);
+
+  useEffect(() => {
     if (!product) return;
 
     if (product.status === 0 || product.canSell === false) {
@@ -88,8 +107,22 @@ const ProductDetailPage = () => {
     }
   }, [product, navigate]);
 
-  const handleClosePayment = async (transactionCode) => {
-    if (transactionCode) {
+  const updateQuantity = (nextQuantity) => {
+    if (selectedSellCount <= 0) {
+      setQuantity(1);
+      return;
+    }
+
+    const parsedQuantity = Number.parseInt(nextQuantity, 10);
+    const safeQuantity = Number.isNaN(parsedQuantity) ? 1 : parsedQuantity;
+    setQuantity(Math.min(Math.max(safeQuantity, 1), selectedSellCount));
+  };
+
+  const handleClosePayment = async (
+    transactionCode = currentPaymentTransactionCode,
+    shouldClearTempOrder = true,
+  ) => {
+    if (shouldClearTempOrder && transactionCode) {
       try {
         await clearOrderAndPaymentTempByTransactionCode(transactionCode);
       } catch {
@@ -97,12 +130,16 @@ const ProductDetailPage = () => {
       }
     }
 
+    setCurrentPaymentTransactionCode("");
     setShowPayment(false);
+    refetchProductDetail();
   };
 
   const handlePaymentSuccess = async (order) => {
     setOrderResult(order);
+    setCurrentPaymentTransactionCode("");
     setShowPayment(false);
+    refetchProductDetail();
 
     if (order.couponCode) {
       try {
@@ -120,6 +157,17 @@ const ProductDetailPage = () => {
       notify.warning(
         "Sản phẩm đã hết hàng. Vui lòng chọn gói khác hoặc liên hệ hỗ trợ.",
       );
+      return;
+    }
+
+    if (quantity < 1) {
+      notify.warning("Số lượng mua tối thiểu là 1 tài khoản.");
+      return;
+    }
+
+    if (quantity > selectedSellCount) {
+      notify.warning(`Chỉ còn ${selectedSellCount} tài khoản khả dụng.`);
+      updateQuantity(selectedSellCount);
       return;
     }
 
@@ -297,6 +345,58 @@ const ProductDetailPage = () => {
               </div>
             </div>
 
+            <div className="rounded-md border border-slate-200 bg-slate-50 p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">
+                    Số lượng tài khoản
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Tối thiểu 1, tối đa theo số lượng còn trong kho.
+                  </p>
+                </div>
+
+                <div className="flex w-full items-center rounded-md border border-slate-300 bg-white sm:w-[170px]">
+                  <button
+                    type="button"
+                    onClick={() => updateQuantity(quantity - 1)}
+                    disabled={selectedSellCount <= 0 || quantity <= 1}
+                    className="flex h-10 w-10 shrink-0 items-center justify-center text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                    aria-label="Giảm số lượng"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </button>
+                  <input
+                    type="number"
+                    min={1}
+                    max={Math.max(selectedSellCount, 1)}
+                    value={quantity}
+                    onChange={(event) => updateQuantity(event.target.value)}
+                    disabled={selectedSellCount <= 0}
+                    className="h-10 min-w-0 flex-1 border-x border-slate-200 bg-white text-center text-sm font-semibold text-slate-900 outline-none disabled:bg-slate-50"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => updateQuantity(quantity + 1)}
+                    disabled={
+                      selectedSellCount <= 0 || quantity >= selectedSellCount
+                    }
+                    className="flex h-10 w-10 shrink-0 items-center justify-center text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                    aria-label="Tăng số lượng"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 pt-3 text-sm">
+                <span className="text-slate-600">Tạm tính</span>
+                <strong className="text-lg text-green-700">
+                  <ProductPrice price={subtotal} />
+                </strong>
+              </div>
+            </div>
+
             <label className="block">
               <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
                 <Mail className="h-4 w-4 text-green-700" />
@@ -353,7 +453,9 @@ const ProductDetailPage = () => {
           <div className="relative w-full max-w-2xl">
             <button
               type="button"
-              onClick={() => handleClosePayment()}
+              onClick={() =>
+                handleClosePayment(currentPaymentTransactionCode, true)
+              }
               className="absolute right-3 top-3 z-10 rounded-full bg-white/90 px-3 py-1 text-xl font-bold text-slate-500 shadow hover:text-red-600"
             >
               x
@@ -362,11 +464,13 @@ const ProductDetailPage = () => {
               productOptionId={selectedOptionId}
               productName={product.productName}
               amount={selectedPrice}
-              fee={500}
+              quantity={quantity}
+              stockQuantity={selectedSellCount}
+              fee={transactionFee}
               customerEmail={email}
-              total={selectedPrice + 500}
               onClose={handleClosePayment}
               onSuccess={handlePaymentSuccess}
+              onTransactionChange={setCurrentPaymentTransactionCode}
             />
           </div>
         </div>
