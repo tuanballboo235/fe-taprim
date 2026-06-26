@@ -28,6 +28,23 @@ export const addProductAccountToProduct = async (productOptionId, data) => {
   return response.data;
 };
 
+export const updateProductAccount = async (productAccountId, account) => {
+  const response = await api.put(
+    `/ProductAccount/update-product-account/${productAccountId}`,
+    {
+      accountData: account.accountData,
+      usernameProductAccount: account.usernameProductAccount,
+      passwordProductAccount: account.passwordProductAccount,
+      dateChangePass: account.dateChangePass || null,
+      sellCount: Number.parseInt(account.sellCount, 10),
+      sellFrom: account.sellDateFrom || account.sellFrom || null,
+      sellTo: account.sellDateTo || account.sellTo || null,
+      status: Number.parseInt(account.status, 10),
+    }
+  );
+  return response.data;
+};
+
 export const getProductAccountFilter = async (object = {}) => {
   const response = await api.get("ProductAccount/get-product-account", {
     params: object,

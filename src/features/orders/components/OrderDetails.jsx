@@ -8,7 +8,14 @@ const formatDateTime = (value) => {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "-";
 
-  return date.toLocaleString("vi-VN");
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
 };
 
 const formatMoney = (value) =>
@@ -35,7 +42,7 @@ export default function OrderDetails({ order }) {
 
   const rows = [
     ["Mã giao dịch", order.paymentTransactionCode],
-    ["Tên sản phẩm", order.productName],
+    ["Tên sản phẩm", `${order.productName} ${order.productOptionLabel}`],
     ["Email nhận hàng", order.contactInfo],
     ["Thời gian thanh toán", formatDateTime(order.paidAt)],
     ["Ngày tạo đơn", formatDateTime(order.createAt)],
@@ -79,7 +86,9 @@ export default function OrderDetails({ order }) {
         {showAccount ? (
           <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-start">
             <div className="min-w-0 flex-1 rounded-md border border-slate-200 bg-white px-3 py-2 font-mono text-sm text-slate-900 shadow-sm">
-              <span className="break-all">{order.productAccountData || "-"}</span>
+              <span className="break-all">
+                {order.productAccountData || "-"}
+              </span>
             </div>
             <Button variant="info" onClick={handleCopy}>
               {copied ? "Đã copy" : "Copy"}
@@ -95,9 +104,8 @@ export default function OrderDetails({ order }) {
           </Button>
         )}
 
-        <p className="mt-3 text-xs text-red-600">
-          Định dạng thường gặp: email:password. Vui lòng đăng nhập đúng định
-          dạng để tránh lỗi.
+        <p className="mt-3 text-sm text-red-600">
+          Định dạng tài khoản email:password. Vui lòng đăng nhập đúng định dạng
         </p>
       </div>
     </section>

@@ -5,6 +5,7 @@ import AccountTable from "@/features/admin/productAccounts/components/AccountTab
 import {
   addProductAccountToProduct,
   getProductAccountFilter,
+  updateProductAccount,
 } from "@/features/admin/productAccounts/api/productAccountService";
 import { getProductDetail } from "@/features/products/api/productApi";
 import PageState from "@/shared/components/PageState";
@@ -85,8 +86,18 @@ const ProductAccountManager = () => {
   }, [fetchAccounts]);
 
   const handleEditAccount = async (accountPayload) => {
-    if (accountPayload?.productAccountId || accountPayload?.id) {
-      notify.info("Chưa có API cập nhật account cho thao tác sửa.");
+    const accountId = accountPayload?.productAccountId ?? accountPayload?.id;
+
+    if (accountId) {
+      try {
+        await updateProductAccount(accountId, accountPayload);
+        notify.success("Đã cập nhật account.");
+        await fetchAccounts();
+      } catch (error) {
+        notify.error(getApiErrorMessage(error, "Không thể cập nhật account."));
+        throw error;
+      }
+
       return;
     }
 

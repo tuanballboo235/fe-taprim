@@ -1,6 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { CubeIcon, TagIcon } from "@heroicons/react/24/solid";
+import {
+  AlertCircle,
+  BadgeCheck,
+  BookOpenText,
+  CheckCircle2,
+  Clock3,
+  Mail,
+  MessageCircle,
+  PackageCheck,
+  PackageX,
+  ShieldCheck,
+  ShoppingCart,
+  Tag,
+} from "lucide-react";
 import { FANPAGE_URL } from "@/shared/constants/Contact";
 import { getAssetUrl } from "@/shared/utils/apiEndpoint";
 import notify from "@/shared/utils/notify";
@@ -22,11 +35,7 @@ const validateEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const {
-    data: productResponse,
-    isLoading,
-    isError,
-  } = useProductDetail(id);
+  const { data: productResponse, isLoading, isError } = useProductDetail(id);
 
   const product = productResponse?.data;
   const [selectedOptionId, setSelectedOptionId] = useState(null);
@@ -47,7 +56,9 @@ const ProductDetailPage = () => {
   const hasAnySellLeft = options.some((option) => (option.sellCount ?? 0) > 0);
   const selectedSellCount = selectedOption?.sellCount ?? 0;
   const selectedPrice = selectedOption?.price ?? 0;
-  const selectedImage = selectedOption?.productOptionImage ?? product?.productImage;
+  const selectedImage =
+    selectedOption?.productOptionImage ?? product?.productImage;
+  const descriptionText = product?.description?.trim();
 
   useEffect(() => {
     if (isError) {
@@ -97,7 +108,9 @@ const ProductDetailPage = () => {
       try {
         await decreaseCouponUsage(order.couponCode);
       } catch {
-        notify.warning("Thanh toán thành công nhưng chưa cập nhật lượt coupon.");
+        notify.warning(
+          "Thanh toán thành công nhưng chưa cập nhật lượt coupon.",
+        );
       }
     }
   };
@@ -105,7 +118,7 @@ const ProductDetailPage = () => {
   const handleBuyNow = () => {
     if (selectedSellCount <= 0) {
       notify.warning(
-        "Sản phẩm đã hết hàng. Vui lòng chọn gói khác hoặc liên hệ hỗ trợ."
+        "Sản phẩm đã hết hàng. Vui lòng chọn gói khác hoặc liên hệ hỗ trợ.",
       );
       return;
     }
@@ -126,140 +139,213 @@ const ProductDetailPage = () => {
   if (isLoading || !product) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-8">
-        <PageState type="loading" description="Đang tải thông tin sản phẩm..." />
+        <PageState
+          type="loading"
+          description="Đang tải thông tin sản phẩm..."
+        />
       </div>
     );
   }
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-6 sm:py-8">
-      <div className="grid gap-6 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:grid-cols-[minmax(0,420px)_1fr] lg:gap-8">
-        <div className="space-y-4">
-          <div className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
-            <img
-              src={getAssetUrl(selectedImage)}
-              alt={product.productName}
-              className="h-72 w-full object-contain p-3"
-              onError={(event) => {
-                event.currentTarget.onerror = null;
-                event.currentTarget.src = fallbackImage;
-              }}
-            />
-          </div>
-        </div>
-
-        <div className="min-w-0 space-y-6">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-green-700">
-              Sản phẩm
-            </p>
-            <h1 className="mt-1 text-2xl font-semibold leading-snug text-slate-900">
-              {product.productName}
-            </h1>
-          </div>
-
-          <div className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm sm:grid-cols-2">
-            <p className="flex items-center gap-2 text-slate-700">
-              <CubeIcon
-                className={`h-4 w-4 ${
-                  hasAnySellLeft ? "text-green-600" : "text-red-500"
-                }`}
+    <section className="bg-slate-50 px-4 py-6 sm:py-8">
+      <div className="mx-auto grid max-w-6xl gap-5 lg:grid-cols-[minmax(0,430px)_1fr] lg:items-start">
+        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+          <div className="border-b border-slate-100 bg-slate-50 p-3">
+            <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-md bg-white">
+              <img
+                src={getAssetUrl(selectedImage)}
+                alt={product.productName}
+                className="h-full w-full object-contain p-4"
+                onError={(event) => {
+                  event.currentTarget.onerror = null;
+                  event.currentTarget.src = fallbackImage;
+                }}
               />
-              <span>Kho:</span>
-              <strong
-                className={hasAnySellLeft ? "text-green-700" : "text-red-600"}
-              >
-                {selectedSellCount > 0 ? selectedSellCount : "Hết hàng"}
-              </strong>
-            </p>
-            <p className="flex items-center gap-2 text-slate-700">
-              <TagIcon className="h-4 w-4 text-slate-500" />
-              <span>Thể loại:</span>
-              <strong>{product.categoryName}</strong>
-            </p>
-          </div>
-
-          <div className="text-2xl font-bold text-green-700">
-            <ProductPrice price={selectedPrice} />
-          </div>
-
-          <div>
-            <p className="mb-3 text-sm font-semibold text-slate-800">
-              Chọn thời hạn
-            </p>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {options.map((option) => {
-                const optionSellLeft = option.sellCount ?? 0;
-                const isDisabled = optionSellLeft === 0;
-                const isSelected = selectedOptionId === option.productOptionId;
-
-                return (
-                  <button
-                    key={option.productOptionId}
-                    type="button"
-                    disabled={isDisabled}
-                    onClick={() => setSelectedOptionId(option.productOptionId)}
-                    className={[
-                      "rounded-md border px-4 py-3 text-left text-sm transition",
-                      isSelected
-                        ? "border-green-700 bg-green-50 text-green-800"
-                        : "border-slate-300 bg-white text-slate-700 hover:border-green-500",
-                      isDisabled ? "cursor-not-allowed opacity-50" : "",
-                    ].join(" ")}
-                  >
-                    <span className="block font-semibold">{option.label}</span>
-                    <span className="mt-1 block">
-                      <ProductPrice price={option.price ?? 0} />
-                      {isDisabled && (
-                        <span className="ml-2 text-xs text-red-600">
-                          Hết hàng
-                        </span>
-                      )}
-                    </span>
-                  </button>
-                );
-              })}
             </div>
           </div>
 
-          <label className="block">
-            <span className="mb-2 block text-sm font-semibold text-slate-800">
-              Email khách hàng <span className="text-red-600">*</span>
-            </span>
-            <input
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              placeholder="Nhập email khách hàng..."
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
-            />
-            <span className="mt-1 block text-xs text-slate-500">
-              Thông tin đơn hàng và bảo hành sẽ được gửi về email này.
-            </span>
-          </label>
-
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button onClick={handleBuyNow} className="flex-1">
-              Mua ngay
-            </Button>
-            <ContactPurchaseButton
-              label="Liên hệ mua hàng"
-              items={[
-                { text: "Chat Zalo", href: "https://zalo.me/0344665098" },
-                { text: "Fanpage Facebook", href: FANPAGE_URL },
-              ]}
-            />
+          <div className="p-4 sm:p-5">
+            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900">
+              <BookOpenText className="h-4 w-4 text-green-700" />
+              Mô tả sản phẩm
+            </div>
+            <div className="whitespace-pre-wrap text-sm leading-6 text-slate-700">
+              {descriptionText || "Chưa có mô tả sản phẩm."}
+            </div>
           </div>
         </div>
 
-        {product.description && (
-          <div className="rounded-lg border border-orange-200 bg-orange-50 p-4 text-sm text-slate-800 lg:col-span-2">
-            <p className="mb-2 font-semibold text-orange-700">Lưu ý</p>
-            <pre className="whitespace-pre-wrap leading-relaxed">
-              {product.description}
-            </pre>
+        <div className="rounded-lg border border-slate-200 bg-white shadow-sm">
+          <div className="border-b border-slate-100 p-4 sm:p-6">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-1 text-xs font-semibold text-green-700">
+                <BadgeCheck className="h-3.5 w-3.5" />
+                Sản phẩm
+              </span>
+              <span
+                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                  hasAnySellLeft
+                    ? "bg-emerald-50 text-emerald-700"
+                    : "bg-red-50 text-red-700"
+                }`}
+              >
+                {hasAnySellLeft ? (
+                  <PackageCheck className="h-3.5 w-3.5" />
+                ) : (
+                  <PackageX className="h-3.5 w-3.5" />
+                )}
+                {hasAnySellLeft ? "Còn hàng" : "Hết hàng"}
+              </span>
+            </div>
+
+            <h1 className="text-2xl font-semibold leading-snug text-slate-950 sm:text-3xl">
+              {product.productName}
+            </h1>
+
+            <div className="mt-5 flex flex-col gap-4 rounded-md border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase text-slate-500">
+                  Giá đang chọn
+                </p>
+                <div className="mt-1 text-3xl font-bold text-green-700">
+                  <ProductPrice price={selectedPrice} />
+                </div>
+              </div>
+
+              <div className="grid gap-2 text-sm text-slate-700">
+                <span className="inline-flex items-center gap-2">
+                  <Tag className="h-4 w-4 text-slate-500" />
+                  <span>Thể loại:</span>
+                  <strong className="text-slate-900">
+                    {product.categoryName || "-"}
+                  </strong>
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <PackageCheck
+                    className={`h-4 w-4 ${
+                      selectedSellCount > 0 ? "text-green-600" : "text-red-500"
+                    }`}
+                  />
+                  <span>Kho :</span>
+                  <strong
+                    className={
+                      selectedSellCount > 0 ? "text-green-700" : "text-red-600"
+                    }
+                  >
+                    {selectedSellCount > 0 ? selectedSellCount : "Hết hàng"}
+                  </strong>
+                </span>
+              </div>
+            </div>
           </div>
-        )}
+
+          <div className="space-y-5 p-4 sm:p-6">
+            <div>
+              <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900">
+                <Clock3 className="h-4 w-4 text-green-700" />
+                Chọn thời hạn
+              </div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {options.map((option) => {
+                  const isDisabled = (option.sellCount ?? 0) === 0;
+                  const isSelected =
+                    selectedOptionId === option.productOptionId;
+
+                  return (
+                    <button
+                      key={option.productOptionId}
+                      type="button"
+                      onClick={() =>
+                        setSelectedOptionId(option.productOptionId)
+                      }
+                      className={[
+                        "flex min-h-[82px] items-center justify-between gap-3 rounded-md border px-4 py-3 text-left text-sm transition",
+                        isSelected
+                          ? "border-green-700 bg-green-50 text-green-900 shadow-sm"
+                          : "border-slate-300 bg-white text-slate-700 hover:border-green-500 hover:bg-green-50/40",
+                        isDisabled ? "opacity-65" : "",
+                      ].join(" ")}
+                    >
+                      <span className="min-w-0">
+                        <span className="block truncate font-semibold">
+                          {option.label}
+                        </span>
+                        <span className="mt-1 block font-bold text-green-700">
+                          <ProductPrice price={option.price ?? 0} />
+                        </span>
+                      </span>
+
+                      <span className="flex shrink-0 items-center">
+                        {isSelected ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-green-700 shadow-sm">
+                            <CheckCircle2 className="h-3.5 w-3.5" />
+                            Đang chọn
+                          </span>
+                        ) : isDisabled ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-xs font-semibold text-red-600">
+                            <AlertCircle className="h-3.5 w-3.5" />
+                            Hết hàng
+                          </span>
+                        ) : (
+                          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white" />
+                        )}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <label className="block">
+              <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
+                <Mail className="h-4 w-4 text-green-700" />
+                Email nhận thông tin đơn hàng
+                <span className="text-red-600">*</span>
+              </span>
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="Nhập email khách hàng..."
+                className="w-full rounded-md border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-green-600 focus:ring-1 focus:ring-green-600"
+              />
+              <span className="mt-2 flex items-center gap-1.5 text-xs text-slate-500">
+                <ShieldCheck className="h-3.5 w-3.5 text-slate-400" />
+                Thông tin đơn hàng và bảo hành sẽ được gửi về email này.
+              </span>
+            </label>
+
+            <div className="flex flex-col gap-3 border-t border-slate-100 pt-5 sm:flex-row">
+              <Button
+                onClick={handleBuyNow}
+                className="flex-1"
+                leftIcon={<ShoppingCart className="h-4 w-4" />}
+              >
+                Mua ngay
+              </Button>
+              <ContactPurchaseButton
+                className="flex-1"
+                label="Liên hệ mua hàng"
+                items={[
+                  { text: "Chat Zalo", href: "https://zalo.me/0344665098" },
+                  { text: "Fanpage Facebook", href: FANPAGE_URL },
+                ]}
+              />
+            </div>
+
+            <div className="grid gap-3 border-t border-slate-100 pt-5 text-sm text-slate-600 sm:grid-cols-2">
+              <div className="flex items-start gap-2">
+                <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-green-700" />
+                <span>Nhận account ngay sau khi thanh toán thành công.</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <MessageCircle className="mt-0.5 h-4 w-4 shrink-0 text-green-700" />
+                <span>Shop hỗ trợ qua Zalo/Fanpage nếu cần kiểm tra đơn.</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {showPayment && (

@@ -5,6 +5,7 @@ import notify from "@/shared/utils/notify";
 const inputClass =
   "w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-blue-600 focus:ring-1 focus:ring-blue-600";
 const labelClass = "mb-1 block text-sm font-semibold text-slate-700";
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const toDateInput = (value) => {
   const date = value ? new Date(value) : new Date();
@@ -36,8 +37,6 @@ const createSingleForm = () => {
 
   return {
     accountData: "",
-    usernameProductAccount: "",
-    passwordProductAccount: "",
     dateChangePass: toDateTimeInput(),
     sellCount: 1,
     sellDateFrom: today,
@@ -71,7 +70,7 @@ const parseCredential = (value) => {
   const email = trimmed.slice(0, separatorIndex).trim();
   const password = trimmed.slice(separatorIndex + 1).trim();
 
-  if (!email || !password) return null;
+  if (!emailPattern.test(email) || !password) return null;
 
   return {
     email,
@@ -97,6 +96,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
   const [form, setForm] = useState(createSingleForm);
   const [multiDefaults, setMultiDefaults] = useState(createMultiDefaults);
   const [isSaving, setIsSaving] = useState(false);
+  const isEditing = Boolean(initialData);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -104,12 +104,13 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
     if (initialData) {
       const from = toDateInput(initialData.sellDateFrom ?? initialData.sellFrom);
       const to = toDateInput(initialData.sellDateTo ?? initialData.sellTo ?? from);
+      const fallbackAccountData =
+        initialData.usernameProductAccount && initialData.passwordProductAccount
+          ? `${initialData.usernameProductAccount}:${initialData.passwordProductAccount}`
+          : "";
 
       setForm({
-        accountData: initialData.accountData ?? "",
-        usernameProductAccount: initialData.usernameProductAccount ?? "",
-        passwordProductAccount:
-          initialData.passwordProductAccount ?? initialData.password ?? "",
+        accountData: initialData.accountData ?? fallbackAccountData,
         dateChangePass: toDateTimeInput(initialData.dateChangePass),
         sellCount: initialData.sellCount ?? 1,
         sellDateFrom: from,
@@ -117,6 +118,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
         status: initialData.status ?? 1,
         customDays: "",
       });
+      setActiveTab("single");
       return;
     }
 
@@ -189,16 +191,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
   };
 
   const buildSinglePayload = () => {
-    const accountFromData = parseCredential(form.accountData);
-    const accountFromFields =
-      form.usernameProductAccount.trim() && form.passwordProductAccount.trim()
-        ? {
-            email: form.usernameProductAccount.trim(),
-            password: form.passwordProductAccount.trim(),
-            accountData: `${form.usernameProductAccount.trim()}:${form.passwordProductAccount.trim()}`,
-          }
-        : null;
-    const account = accountFromData ?? accountFromFields;
+    const account = parseCredential(form.accountData);
 
     if (!account) return null;
 
@@ -243,14 +236,14 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
       activeTab === "single" ? buildSinglePayload() : parseMultiInput();
 
     if (activeTab === "single" && !payload) {
-      notify.warning("Vui lòng nhập đúng định dạng email:password.");
+      notify.warning("Vui lòng nhập đúng định dạng email:password với email hợp lệ.");
       return;
     }
 
     if (activeTab === "multi") {
       if (payload.invalidLines.length > 0) {
         notify.warning(
-          `Dòng ${payload.invalidLines.join(", ")} không đúng định dạng email:password.`
+          `Dòng ${payload.invalidLines.join(", ")} không đúng định dạng email:password hoặc email không hợp lệ.`
         );
         return;
       }
@@ -280,45 +273,49 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
       <div className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-lg bg-white shadow-xl">
         <div className="border-b border-slate-200 p-4 sm:p-5">
           <h2 className="text-lg font-semibold text-slate-900">
-            Thêm account sản phẩm
+            {isEditing ? "Cập nhật account sản phẩm" : "Thêm account sản phẩm"}
           </h2>
           <p className="mt-1 text-sm text-slate-500">
-            Thêm từng account hoặc dán danh sách, mỗi dòng theo định dạng email:password.
+            {isEditing
+              ? "Chỉnh sửa dữ liệu account, thời gian bán, lượt bán còn và trạng thái."
+              : "Thêm từng account hoặc dán danh sách, mỗi dòng theo định dạng email:password."}
           </p>
         </div>
 
-        <div className="border-b border-slate-200 px-4 pt-3 sm:px-5">
-          <div className="flex gap-2">
-            <button
-              type="button"
-              className={`border-b-2 px-3 py-2 text-sm font-semibold transition ${
-                activeTab === "single"
-                  ? "border-blue-600 text-blue-700"
-                  : "border-transparent text-slate-500 hover:text-slate-900"
-              }`}
-              onClick={() => setActiveTab("single")}
-            >
-              Thêm 1 account
-            </button>
-            <button
-              type="button"
-              className={`border-b-2 px-3 py-2 text-sm font-semibold transition ${
-                activeTab === "multi"
-                  ? "border-blue-600 text-blue-700"
-                  : "border-transparent text-slate-500 hover:text-slate-900"
-              }`}
-              onClick={() => setActiveTab("multi")}
-            >
-              Thêm nhiều account
-            </button>
+        {!isEditing && (
+          <div className="border-b border-slate-200 px-4 pt-3 sm:px-5">
+            <div className="flex gap-2">
+              <button
+                type="button"
+                className={`border-b-2 px-3 py-2 text-sm font-semibold transition ${
+                  activeTab === "single"
+                    ? "border-blue-600 text-blue-700"
+                    : "border-transparent text-slate-500 hover:text-slate-900"
+                }`}
+                onClick={() => setActiveTab("single")}
+              >
+                Thêm 1 account
+              </button>
+              <button
+                type="button"
+                className={`border-b-2 px-3 py-2 text-sm font-semibold transition ${
+                  activeTab === "multi"
+                    ? "border-blue-600 text-blue-700"
+                    : "border-transparent text-slate-500 hover:text-slate-900"
+                }`}
+                onClick={() => setActiveTab("multi")}
+              >
+                Thêm nhiều account
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-5">
           {activeTab === "single" ? (
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="sm:col-span-2">
-                <span className={labelClass}>Dữ liệu account</span>
+                <span className={labelClass}>Tài khoản</span>
                 <input
                   type="text"
                   name="accountData"
@@ -328,32 +325,8 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
                   placeholder="email@example.com:password"
                 />
                 <span className="mt-1 block text-xs text-slate-500">
-                  Có thể nhập trực tiếp email:password, hoặc điền email/mật khẩu ở 2 ô bên dưới.
+                  Nhập đúng định dạng email:password. Email phải hợp lệ và mật khẩu không được để trống.
                 </span>
-              </label>
-
-              <label>
-                <span className={labelClass}>Email đăng nhập</span>
-                <input
-                  type="text"
-                  name="usernameProductAccount"
-                  value={form.usernameProductAccount}
-                  onChange={handleChange}
-                  className={inputClass}
-                  placeholder="email@example.com"
-                />
-              </label>
-
-              <label>
-                <span className={labelClass}>Mật khẩu</span>
-                <input
-                  type="text"
-                  name="passwordProductAccount"
-                  value={form.passwordProductAccount}
-                  onChange={handleChange}
-                  className={inputClass}
-                  placeholder="password"
-                />
               </label>
 
               <label>
@@ -539,7 +512,11 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
             Hủy
           </Button>
           <Button variant="info" onClick={handleSubmit} isLoading={isSaving}>
-            {activeTab === "single" ? "Thêm account" : "Lưu danh sách"}
+            {isEditing
+              ? "Cập nhật account"
+              : activeTab === "single"
+                ? "Thêm account"
+                : "Lưu danh sách"}
           </Button>
         </div>
       </div>

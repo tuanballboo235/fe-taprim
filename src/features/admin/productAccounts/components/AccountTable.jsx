@@ -20,13 +20,14 @@ const formatDate = (dateString) => {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
 
-  return `${day}-${month}-${year}`;
+  return `${day}/${month}/${year}`;
 };
 
 const getAccountId = (account) => account?.productAccountId ?? account?.id;
 
 const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingAccount, setEditingAccount] = useState(null);
   const [viewFilter, setViewFilter] = useState("valid");
 
   const { validAccounts, invalidAccounts } = useMemo(() => {
@@ -41,7 +42,32 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
   const rowsToShow = viewFilter === "valid" ? validAccounts : invalidAccounts;
 
   const handleSaveModal = async (newData) => {
-    await onEdit?.(newData);
+    const payloads = Array.isArray(newData) ? newData : [newData];
+
+    if (editingAccount) {
+      await onEdit?.({
+        ...payloads[0],
+        productAccountId: getAccountId(editingAccount),
+      });
+      return;
+    }
+
+    await onEdit?.(payloads);
+  };
+
+  const handleOpenAddModal = () => {
+    setEditingAccount(null);
+    setModalOpen(true);
+  };
+
+  const handleOpenEditModal = (account) => {
+    setEditingAccount(account);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setEditingAccount(null);
   };
 
   if (isLoading) {
@@ -94,7 +120,7 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
             <Button
               variant="info"
               leftIcon={<FaUserPlus />}
-              onClick={() => setModalOpen(true)}
+              onClick={handleOpenAddModal}
             >
               Thêm account
             </Button>
@@ -172,7 +198,7 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
                             size="sm"
                             variant="ghost"
                             leftIcon={<FaEdit />}
-                            onClick={() => onEdit?.(account)}
+                            onClick={() => handleOpenEditModal(account)}
                           >
                             Sửa
                           </Button>
@@ -197,8 +223,9 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
 
       <AddProductAccountModal
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={handleCloseModal}
         onSave={handleSaveModal}
+        initialData={editingAccount}
       />
     </section>
   );
