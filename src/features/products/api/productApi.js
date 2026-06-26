@@ -1,7 +1,9 @@
 import api from "@/shared/api/client";
 
-export const getProducts = async () => {
-  const response = await api.get("product/list-product-by-category");
+export const getProducts = async (keyword = "") => {
+  const response = await api.get("product/list-product-by-category", {
+    params: { keyword },
+  });
   return response.data;
 };
 

@@ -16,7 +16,7 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import notify from "@/shared/utils/notify";
 
@@ -77,7 +77,21 @@ const Header = () => {
   const navigate = useNavigate();
   const { isAuthenticated, isAdmin, logout } = useAuth();
 
+  const [searchParams] = useSearchParams();
+  const initialKeyword = searchParams.get("keyword") || "";
+  const [searchTerm, setSearchTerm] = useState(initialKeyword);
+
   const closeMobileMenu = () => setMobileOpen(false);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/product?keyword=${encodeURIComponent(searchTerm.trim())}`);
+    } else {
+      navigate(`/product`);
+    }
+    closeMobileMenu();
+  };
 
   const handleLogout = () => {
     logout();
@@ -130,20 +144,25 @@ const Header = () => {
         </Link>
 
         <div className="hidden min-w-0 flex-1 lg:block">
-          <div className="flex overflow-hidden rounded-md border border-slate-300 bg-white shadow-sm">
+          <form
+            onSubmit={handleSearch}
+            className="flex overflow-hidden rounded-md border border-slate-300 bg-white shadow-sm"
+          >
             <input
               type="text"
               placeholder="Tìm sản phẩm..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="min-w-0 flex-1 px-4 py-2 text-slate-700 outline-none"
             />
             <button
-              type="button"
+              type="submit"
               className="inline-flex items-center justify-center bg-green-700 px-4 text-white transition hover:bg-green-800"
               title="Tìm kiếm"
             >
               <FaSearch />
             </button>
-          </div>
+          </form>
         </div>
 
         <div className="ml-auto hidden items-center gap-2 md:flex">
@@ -208,20 +227,25 @@ const Header = () => {
 
       {mobileOpen && (
         <nav className="space-y-4 border-t border-slate-100 bg-white px-4 py-4 shadow md:hidden">
-          <div className="flex overflow-hidden rounded-md border border-slate-300">
+          <form
+            onSubmit={handleSearch}
+            className="flex overflow-hidden rounded-md border border-slate-300"
+          >
             <input
               type="text"
               placeholder="Tìm kiếm..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="min-w-0 flex-1 px-3 py-2 text-sm outline-none"
             />
             <button
-              type="button"
+              type="submit"
               className="bg-green-700 px-3 text-white"
               title="Tìm kiếm"
             >
               <FaSearch />
             </button>
-          </div>
+          </form>
 
           <div className="grid gap-1">
             {staticNav.map((item) => (

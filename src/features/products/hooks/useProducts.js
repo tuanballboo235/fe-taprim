@@ -1,12 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { getProducts } from "@/features/products/api/productApi";
 
 export const productsQueryKey = ["products"];
 
-export const useProducts = (options = {}) => {
+export const useProducts = (keyword = "", options = {}) => {
   return useQuery({
-    queryKey: productsQueryKey,
-    queryFn: getProducts,
+    queryKey: [...productsQueryKey, keyword],
+    queryFn: () => getProducts(keyword),
+    placeholderData: keepPreviousData,
     ...options,
   });
 };

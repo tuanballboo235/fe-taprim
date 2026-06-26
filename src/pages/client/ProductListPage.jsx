@@ -1,11 +1,15 @@
 import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import CategorySection from "@/features/products/components/CategorySection";
 import { useProducts } from "@/features/products/hooks/useProducts";
 import PageState from "@/shared/components/PageState";
 import notify from "@/shared/utils/notify";
 
 const ProductListPage = () => {
-  const { data, isLoading, isError } = useProducts();
+  const [searchParams] = useSearchParams();
+  const keyword = searchParams.get("keyword") || "";
+
+  const { data, isLoading, isError } = useProducts(keyword);
   const sections = data?.data ?? [];
 
   useEffect(() => {
@@ -34,28 +38,25 @@ const ProductListPage = () => {
     );
   }
 
-  if (sections.length === 0) {
-    return (
-      <div className="mx-auto max-w-7xl px-4 py-8">
-        <PageState
-          type="empty"
-          title="Chưa có sản phẩm"
-          description="Danh sách sản phẩm sẽ được cập nhật sớm."
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
-      {sections.map((section) => (
-        <CategorySection
-          key={section.title}
-          title={section.title}
-          description={section.description}
-          products={section.products}
+      {sections.length === 0 && !isLoading && !isError ? (
+        <PageState
+          type="empty"
+          title="Không tìm thấy sản phẩm"
+          description={`Không có sản phẩm nào phù hợp với từ khóa "${keyword}"`}
         />
-      ))}
+      ) : (
+        sections.map((section) => (
+          <CategorySection
+            key={section.title}
+            title={section.title}
+            description={section.description}
+            products={section.products}
+          />
+        ))
+      )}
     </div>
   );
 };
