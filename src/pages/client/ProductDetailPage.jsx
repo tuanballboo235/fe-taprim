@@ -109,7 +109,7 @@ const ProductDetailPage = () => {
 
   const updateQuantity = (nextQuantity) => {
     if (selectedSellCount <= 0) {
-      setQuantity(1);
+      setQuantity(0);
       return;
     }
 
@@ -345,35 +345,37 @@ const ProductDetailPage = () => {
               </div>
             </div>
 
-            <div className="rounded-md border border-slate-200 bg-slate-50 p-4">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className={`rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all ${selectedSellCount <= 0 ? 'opacity-60 grayscale-[0.5]' : ''}`}>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm font-semibold text-slate-900">
                     Số lượng tài khoản
                   </p>
                   <p className="mt-1 text-xs text-slate-500">
-                    Tối thiểu 1, tối đa theo số lượng còn trong kho.
+                    {selectedSellCount > 0 
+                      ? "Tối thiểu 1, tối đa theo số lượng còn trong kho."
+                      : "Sản phẩm hiện đang hết hàng."}
                   </p>
                 </div>
 
-                <div className="flex w-full items-center rounded-md border border-slate-300 bg-white sm:w-[170px]">
+                <div className="flex w-full items-center justify-between rounded-full border border-slate-200 bg-slate-50 p-1 sm:w-36">
                   <button
                     type="button"
                     onClick={() => updateQuantity(quantity - 1)}
                     disabled={selectedSellCount <= 0 || quantity <= 1}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-slate-600 shadow-sm transition hover:bg-slate-100 hover:text-green-700 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
                     aria-label="Giảm số lượng"
                   >
                     <Minus className="h-4 w-4" />
                   </button>
                   <input
                     type="number"
-                    min={1}
+                    min={selectedSellCount > 0 ? 1 : 0}
                     max={Math.max(selectedSellCount, 1)}
-                    value={quantity}
+                    value={selectedSellCount <= 0 ? 0 : quantity}
                     onChange={(event) => updateQuantity(event.target.value)}
                     disabled={selectedSellCount <= 0}
-                    className="h-10 min-w-0 flex-1 border-x border-slate-200 bg-white text-center text-sm font-semibold text-slate-900 outline-none disabled:bg-slate-50"
+                    className="h-8 min-w-0 flex-1 bg-transparent text-center text-sm font-bold text-slate-900 outline-none disabled:opacity-50 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   />
                   <button
                     type="button"
@@ -381,7 +383,7 @@ const ProductDetailPage = () => {
                     disabled={
                       selectedSellCount <= 0 || quantity >= selectedSellCount
                     }
-                    className="flex h-10 w-10 shrink-0 items-center justify-center text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-slate-600 shadow-sm transition hover:bg-slate-100 hover:text-green-700 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
                     aria-label="Tăng số lượng"
                   >
                     <Plus className="h-4 w-4" />
@@ -389,15 +391,15 @@ const ProductDetailPage = () => {
                 </div>
               </div>
 
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 pt-3 text-sm">
-                <span className="text-slate-600">Tạm tính</span>
-                <strong className="text-lg text-green-700">
-                  <ProductPrice price={subtotal} />
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-4 text-sm">
+                <span className="text-slate-500 font-medium">Tạm tính</span>
+                <strong className="text-xl text-green-700">
+                  <ProductPrice price={selectedSellCount > 0 ? subtotal : 0} />
                 </strong>
               </div>
             </div>
 
-            <label className="block">
+            <label className={`block transition-opacity ${selectedSellCount <= 0 ? 'opacity-50' : ''}`}>
               <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
                 <Mail className="h-4 w-4 text-green-700" />
                 Email nhận thông tin đơn hàng
@@ -407,8 +409,9 @@ const ProductDetailPage = () => {
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
+                disabled={selectedSellCount <= 0}
                 placeholder="Nhập email khách hàng..."
-                className="w-full rounded-md border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-green-600 focus:ring-1 focus:ring-green-600"
+                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-green-600 focus:ring-1 focus:ring-green-600 disabled:cursor-not-allowed disabled:bg-slate-50"
               />
               <span className="mt-2 flex items-center gap-1.5 text-xs text-slate-500">
                 <ShieldCheck className="h-3.5 w-3.5 text-slate-400" />
@@ -419,10 +422,11 @@ const ProductDetailPage = () => {
             <div className="flex flex-col gap-3 border-t border-slate-100 pt-5 sm:flex-row">
               <Button
                 onClick={handleBuyNow}
-                className="flex-1"
+                disabled={selectedSellCount <= 0}
+                className="flex-1 disabled:cursor-not-allowed disabled:opacity-50"
                 leftIcon={<ShoppingCart className="h-4 w-4" />}
               >
-                Mua ngay
+                {selectedSellCount > 0 ? "Mua ngay" : "Hết hàng"}
               </Button>
               <ContactPurchaseButton
                 className="flex-1"

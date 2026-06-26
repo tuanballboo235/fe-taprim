@@ -33,7 +33,7 @@ export default function ContactPurchaseButton({
   return (
     <div ref={ref} className={`relative inline-block text-left ${className}`}>
       <Button
-        variant="secondary"
+        variant="info"
         fullWidth
         rightIcon={
           <FaChevronDown
