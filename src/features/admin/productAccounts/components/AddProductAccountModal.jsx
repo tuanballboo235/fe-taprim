@@ -25,18 +25,29 @@ const credentialTypeConfig = {
     help: "User không được chứa khoảng trắng hoặc dấu hai chấm, mật khẩu không được để trống.",
     invalidText: "không đúng định dạng user:password",
   },
+  linkInvite: {
+    label: "Link invite",
+    format: "Nhập định dạng link mời",
+    placeholder: "https://example.com/invite/abc123",
+    multiPlaceholder:
+      "https://example.com/invite/abc123\nhttps://example.com/invite/def456",
+    help: "Nhập link mời hợp lệ.",
+    invalidText: "không đúng định dạng link mời",
+  },
 };
 
 const toDateInput = (value) => {
   const date = value ? new Date(value) : new Date();
-  if (Number.isNaN(date.getTime())) return new Date().toISOString().split("T")[0];
+  if (Number.isNaN(date.getTime()))
+    return new Date().toISOString().split("T")[0];
 
   return date.toISOString().split("T")[0];
 };
 
 const toDateTimeInput = (value) => {
   const date = value ? new Date(value) : new Date();
-  if (Number.isNaN(date.getTime())) return new Date().toISOString().slice(0, 16);
+  if (Number.isNaN(date.getTime()))
+    return new Date().toISOString().slice(0, 16);
 
   return date.toISOString().slice(0, 16);
 };
@@ -127,8 +138,12 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
     if (!isOpen) return;
 
     if (initialData) {
-      const from = toDateInput(initialData.sellDateFrom ?? initialData.sellFrom);
-      const to = toDateInput(initialData.sellDateTo ?? initialData.sellTo ?? from);
+      const from = toDateInput(
+        initialData.sellDateFrom ?? initialData.sellFrom,
+      );
+      const to = toDateInput(
+        initialData.sellDateTo ?? initialData.sellTo ?? from,
+      );
       const fallbackAccountData =
         initialData.usernameProductAccount && initialData.passwordProductAccount
           ? `${initialData.usernameProductAccount}:${initialData.passwordProductAccount}`
@@ -146,7 +161,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
       setCredentialType(
         emailPattern.test(initialData.usernameProductAccount ?? "")
           ? "email"
-          : "username"
+          : "username",
       );
       setActiveTab("single");
       return;
@@ -254,7 +269,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
             usernameProductAccount: credential.username,
             passwordProductAccount: credential.password,
           },
-          multiDefaults
+          multiDefaults,
         );
       })
       .filter(Boolean);
@@ -268,7 +283,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
 
     if (activeTab === "single" && !payload) {
       notify.warning(
-        `Vui lòng nhập đúng định dạng ${credentialTypeConfig[credentialType].format}.`
+        `Vui lòng nhập đúng định dạng ${credentialTypeConfig[credentialType].format}.`,
       );
       return;
     }
@@ -276,7 +291,7 @@ const AddProductAccountModal = ({ isOpen, onClose, onSave, initialData }) => {
     if (activeTab === "multi") {
       if (payload.invalidLines.length > 0) {
         notify.warning(
-          `Dòng ${payload.invalidLines.join(", ")} ${credentialTypeConfig[credentialType].invalidText}.`
+          `Dòng ${payload.invalidLines.join(", ")} ${credentialTypeConfig[credentialType].invalidText}.`,
         );
         return;
       }
