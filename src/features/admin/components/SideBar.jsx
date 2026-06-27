@@ -22,7 +22,12 @@ const menuSections = [
   {
     title: "SALE",
     items: [
-      { label: "Sales", icon: <MdOutlineSell />, key: "sales", path: "/admin/sales" },
+      {
+        label: "Sales",
+        icon: <MdOutlineSell />,
+        key: "sales",
+        path: "/admin/sales",
+      },
     ],
   },
   {
@@ -38,7 +43,7 @@ const menuSections = [
         label: "Đơn hàng sản phẩm",
         icon: <FaBoxOpen />,
         key: "product-orders",
-        path: "/product",
+        path: "/admin/product-orders",
       },
       {
         label: "Đơn hàng dịch vụ",

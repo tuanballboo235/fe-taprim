@@ -45,6 +45,18 @@ export const updateProductAccount = async (productAccountId, account) => {
   return response.data;
 };
 
+export const deleteProductAccounts = async (productAccountIds) => {
+  const ids = Array.isArray(productAccountIds)
+    ? productAccountIds
+    : [productAccountIds];
+
+  const response = await api.post(
+    "ProductAccount/delete-list-product-account",
+    ids.map((id) => Number(id)).filter((id) => Number.isFinite(id) && id > 0)
+  );
+  return response.data;
+};
+
 export const getProductAccountFilter = async (object = {}) => {
   const response = await api.get("ProductAccount/get-product-account", {
     params: object,

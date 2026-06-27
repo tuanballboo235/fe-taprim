@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+﻿import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import ProductSidebar from "@/features/admin/productAccounts/components/ProductSidebar";
 import AccountTable from "@/features/admin/productAccounts/components/AccountTable";
 import {
   addProductAccountToProduct,
+  deleteProductAccounts,
   getProductAccountFilter,
   updateProductAccount,
 } from "@/features/admin/productAccounts/api/productAccountService";
@@ -20,6 +21,8 @@ const ProductAccountManager = () => {
   const [productInfo, setProductInfo] = useState("");
   const [isBootLoading, setIsBootLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
   useEffect(() => {
     let isActive = true;
@@ -59,6 +62,14 @@ const ProductAccountManager = () => {
     };
   }, [productId]);
 
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm.trim());
+    }, 350);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [searchTerm]);
+
   const fetchAccounts = useCallback(async () => {
     if (!selectedProduct?.productOptionId) {
       setProductAccounts([]);
@@ -70,6 +81,7 @@ const ProductAccountManager = () => {
     try {
       const response = await getProductAccountFilter({
         productOptionId: selectedProduct.productOptionId,
+        username: debouncedSearchTerm || undefined,
       });
       const items = response?.data?.items ?? response?.items ?? [];
       setProductAccounts(items);
@@ -79,7 +91,7 @@ const ProductAccountManager = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedProduct?.productOptionId]);
+  }, [selectedProduct?.productOptionId, debouncedSearchTerm]);
 
   useEffect(() => {
     fetchAccounts();
@@ -129,25 +141,31 @@ const ProductAccountManager = () => {
       throw error;
     }
   };
-
   const handleDeleteAccount = async (accountId) => {
     if (!accountId) return;
 
     const confirmed = await notify.confirm({
-      title: "Xóa account khỏi danh sách?",
-      text: "Hiện chưa có API xóa account, thao tác này chỉ cập nhật danh sách đang hiển thị.",
+      title: "Xóa account?",
+      text: "Account sẽ bị vô hiệu hóa và không còn bán được. Đơn hàng cũ vẫn giữ lịch sử tra cứu.",
       confirmButtonText: "Xóa",
       icon: "warning",
     });
 
     if (!confirmed) return;
 
-    setProductAccounts((current) =>
-      current.filter(
-        (account) => (account.productAccountId ?? account.id) !== accountId
-      )
-    );
-    notify.success("Đã xóa khỏi danh sách hiển thị.");
+    try {
+      const response = await deleteProductAccounts([accountId]);
+      const deletedId = Number(accountId);
+      setProductAccounts((current) =>
+        current.filter(
+          (account) => Number(account?.productAccountId ?? account?.id) !== deletedId
+        )
+      );
+      notify.success(response?.message ?? "Đã xóa account.");
+      await fetchAccounts();
+    } catch (error) {
+      notify.error(getApiErrorMessage(error, "Không thể xóa account."));
+    }
   };
 
   if (isBootLoading) {
@@ -156,7 +174,7 @@ const ProductAccountManager = () => {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="rounded-lg border border-slate-300 bg-white p-4 shadow-md shadow-slate-200/70">
         <h1 className="text-xl font-semibold text-slate-900">
           Quản lý account sản phẩm
         </h1>
@@ -177,6 +195,8 @@ const ProductAccountManager = () => {
           onEdit={handleEditAccount}
           isLoading={isLoading}
           onDelete={handleDeleteAccount}
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
         />
       </div>
     </div>

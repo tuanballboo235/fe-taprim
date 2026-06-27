@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { FaEdit, FaTrashAlt, FaUserPlus } from "react-icons/fa";
+import { FaEdit, FaSearch, FaTrashAlt, FaUserPlus } from "react-icons/fa";
 import AddProductAccountModal from "@/features/admin/productAccounts/components/AddProductAccountModal";
 import Button from "@/shared/components/Button";
 import PageState from "@/shared/components/PageState";
@@ -25,7 +25,14 @@ const formatDate = (dateString) => {
 
 const getAccountId = (account) => account?.productAccountId ?? account?.id;
 
-const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
+const AccountTable = ({
+  accounts = [],
+  onEdit,
+  onDelete,
+  isLoading,
+  searchTerm = "",
+  onSearchChange,
+}) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState(null);
   const [viewFilter, setViewFilter] = useState("valid");
@@ -80,8 +87,8 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
 
   return (
     <section className="min-w-0 flex-1 space-y-4">
-      <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <div className="rounded-lg border border-slate-300 bg-white p-4 shadow-md shadow-slate-200/70">
+        <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-slate-900">
               Danh sách account
@@ -91,8 +98,20 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
             </p>
           </div>
 
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <div className="inline-flex overflow-hidden rounded-md border border-slate-200 bg-slate-50 p-1">
+          <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
+            <label className="relative block min-w-0 sm:w-72">
+              <span className="sr-only">Tìm kiếm account</span>
+              <FaSearch className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+              <input
+                type="search"
+                value={searchTerm}
+                onChange={(event) => onSearchChange?.(event.target.value)}
+                placeholder="Tìm theo email hoặc username..."
+                className="h-10 w-full rounded-md border border-slate-300 bg-white pl-9 pr-3 text-sm outline-none transition focus:border-green-600 focus:ring-1 focus:ring-green-600"
+              />
+            </label>
+
+            <div className="inline-flex overflow-hidden rounded-md border border-slate-300 bg-slate-50 p-1 shadow-sm shadow-slate-200/70">
               <button
                 type="button"
                 onClick={() => setViewFilter("valid")}
@@ -128,7 +147,7 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-lg border border-slate-300 bg-white shadow-md shadow-slate-200/70">
         {rowsToShow.length === 0 ? (
           <PageState
             type="empty"
@@ -137,7 +156,11 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
                 ? "Chưa có account hợp lệ"
                 : "Không có account không hợp lệ"
             }
-            description="Dữ liệu sẽ xuất hiện sau khi thêm account vào gói này."
+            description={
+              searchTerm
+                ? "Không tìm thấy account phù hợp với từ khóa hiện tại."
+                : "Dữ liệu sẽ xuất hiện sau khi thêm account vào gói này."
+            }
           />
         ) : (
           <div className="overflow-x-auto">
@@ -152,7 +175,7 @@ const AccountTable = ({ accounts = [], onEdit, onDelete, isLoading }) => {
                   <th className="px-4 py-3 text-right font-semibold">Thao tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-200">
                 {rowsToShow.map((account, index) => {
                   const accountId = getAccountId(account);
                   const canSell = account?.canSell === true;

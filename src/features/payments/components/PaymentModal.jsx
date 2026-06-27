@@ -3,9 +3,7 @@ import {
   createQrPayment,
   getPaymentFilter,
 } from "@/features/payments/api/paymentService";
-import {
-  getProductAccountByTransactionCode,
-} from "@/features/admin/productAccounts/api/productAccountService";
+import { getProductAccountByTransactionCode } from "@/features/admin/productAccounts/api/productAccountService";
 import { getCouponInfoByCouponCode } from "@/features/coupons/api/couponService";
 import Button from "@/shared/components/Button";
 import { getApiErrorMessage } from "@/shared/utils/apiError";
@@ -16,6 +14,8 @@ const CHECK_INTERVAL = 10000;
 
 const formatCurrency = (value) =>
   `${Number(value || 0).toLocaleString("vi-VN")}đ`;
+
+const unwrapData = (response) => response?.data ?? response?.Data ?? null;
 
 const PaymentModal = ({
   productOptionId,
@@ -34,6 +34,7 @@ const PaymentModal = ({
   const [showPaymentInfo, setShowPaymentInfo] = useState(false);
   const [qrImage, setQrImage] = useState(null);
   const [transactionCode, setTransactionCode] = useState("");
+  const [paymentSummary, setPaymentSummary] = useState(null);
   const [countdown, setCountdown] = useState(DEFAULT_COUNTDOWN);
   const [couponLoading, setCouponLoading] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
@@ -43,10 +44,10 @@ const PaymentModal = ({
   const hasExpiredRef = useRef(false);
 
   const canPay = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-    (customerEmail || "").trim(),
+    (customerEmail || "").trim()
   );
   const selectedQuantity = Math.max(1, Number.parseInt(quantity, 10) || 1);
-  const subtotal = amount * selectedQuantity;
+  const subtotal = Number(amount || 0) * selectedQuantity;
 
   const discount = useMemo(() => {
     if (couponData?.isActive && couponData?.discountPercent > 0) {
@@ -56,7 +57,15 @@ const PaymentModal = ({
     return 0;
   }, [couponData, subtotal]);
 
-  const finalTotal = Math.max(0, subtotal + fee - discount);
+  const finalTotal = Math.max(0, subtotal + Number(fee || 0) - discount);
+  const displayOriginalAmount =
+    paymentSummary?.originalAmount ?? paymentSummary?.OriginalAmount ?? subtotal;
+  const displayTransactionFee =
+    paymentSummary?.transactionFee ?? paymentSummary?.TransactionFee ?? fee;
+  const displayDiscount =
+    paymentSummary?.discountAmount ?? paymentSummary?.DiscountAmount ?? discount;
+  const displayTotal =
+    paymentSummary?.totalAmount ?? paymentSummary?.TotalAmount ?? finalTotal;
 
   const clearTimers = () => {
     clearInterval(countdownRef.current);
@@ -64,24 +73,28 @@ const PaymentModal = ({
   };
 
   const handleApplyCoupon = async () => {
-    const code = coupon.trim();
+    const code = coupon.trim().toUpperCase();
     if (!code || couponLoading) return;
 
     try {
       setCouponLoading(true);
       const res = await getCouponInfoByCouponCode(code);
-      const data = res?.data;
+      const data = unwrapData(res);
 
       if (!data?.isActive || !data?.discountPercent) {
         setCouponData(null);
-        notify.warning("Mã giảm giá không hợp lệ hoặc đã hết hạn.");
+        notify.warning("Mã giảm giá không còn hiệu lực.");
         return;
       }
 
+      setCoupon(code);
       setCouponData(data);
       notify.success("Áp dụng mã giảm giá thành công.");
     } catch (error) {
-      notify.error(getApiErrorMessage(error, "Không thể áp dụng mã giảm giá."));
+      setCouponData(null);
+      notify.error(
+        getApiErrorMessage(error, "Mã giảm giá đã hết hạn hoặc không còn hiệu lực.")
+      );
     } finally {
       setCouponLoading(false);
     }
@@ -90,6 +103,7 @@ const PaymentModal = ({
   const clearCoupon = () => {
     setCoupon("");
     setCouponData(null);
+    setPaymentSummary(null);
   };
 
   const handleProceedPayment = async () => {
@@ -106,7 +120,7 @@ const PaymentModal = ({
         notify.warning(
           availableQuantity <= 0
             ? "Sản phẩm đã hết hàng. Vui lòng liên hệ fanpage hoặc Zalo để được tư vấn."
-            : `Chỉ còn ${availableQuantity} tài khoản khả dụng, vui lòng giảm số lượng.`,
+            : `Chỉ còn ${availableQuantity} tài khoản khả dụng, vui lòng giảm số lượng.`
         );
         return;
       }
@@ -114,10 +128,14 @@ const PaymentModal = ({
       const res = await createQrPayment({
         productOptionId,
         totalAmount: finalTotal,
+        transactionFee: fee,
         quantity: selectedQuantity,
         emailOrder: customerEmail,
+        couponCode: couponData?.couponCode || couponData?.CouponCode || null,
       });
-      const { qrCode, transactionCode: trxCode } = res?.data || {};
+      const data = unwrapData(res);
+      const qrCode = data?.qrCode ?? data?.QrCode;
+      const trxCode = data?.transactionCode ?? data?.TransactionCode;
 
       if (!qrCode || !trxCode) {
         notify.error("Không nhận được mã QR từ hệ thống.");
@@ -127,21 +145,18 @@ const PaymentModal = ({
       hasExpiredRef.current = false;
       setQrImage(qrCode);
       setTransactionCode(trxCode);
+      setPaymentSummary(data);
       onTransactionChange?.(trxCode);
       setCountdown(DEFAULT_COUNTDOWN);
       setShowPaymentInfo(true);
     } catch (error) {
       notify.error(
-        getApiErrorMessage(error, "Không thể tạo mã QR thanh toán."),
+        getApiErrorMessage(error, "Không thể tạo mã QR thanh toán.")
       );
     } finally {
       setPaymentLoading(false);
     }
   };
-
-  useEffect(() => {
-    setCouponData(null);
-  }, [coupon]);
 
   useEffect(() => {
     clearTimers();
@@ -172,7 +187,7 @@ const PaymentModal = ({
         if (data?.status === 1) {
           clearTimers();
           const acc = await getProductAccountByTransactionCode(
-            data.transactionCode,
+            data.transactionCode
           );
 
           notify.success("Thanh toán thành công.");
@@ -182,9 +197,21 @@ const PaymentModal = ({
             paymentTransactionCode: transactionCode,
             productName,
             productAccountData: acc?.data?.accountData,
-            couponCode: couponData?.couponCode || null,
+            couponCode:
+              paymentSummary?.couponCode ??
+              paymentSummary?.CouponCode ??
+              couponData?.couponCode ??
+              null,
+            couponDiscountPersent:
+              paymentSummary?.couponDiscountPercent ??
+              paymentSummary?.CouponDiscountPercent ??
+              couponData?.discountPercent ??
+              null,
             contactInfo: customerEmail || "",
-            totalAmount: finalTotal,
+            originalAmount: displayOriginalAmount,
+            transactionFee: displayTransactionFee,
+            discountAmount: displayDiscount,
+            totalAmount: displayTotal,
             quantity: selectedQuantity,
             paidAt: new Date().toISOString(),
             createAt: new Date().toISOString(),
@@ -194,7 +221,7 @@ const PaymentModal = ({
       } catch (error) {
         clearTimers();
         notify.error(
-          getApiErrorMessage(error, "Lỗi khi kiểm tra trạng thái thanh toán."),
+          getApiErrorMessage(error, "Lỗi khi kiểm tra trạng thái thanh toán.")
         );
         onClose?.(transactionCode, true);
       }
@@ -204,10 +231,14 @@ const PaymentModal = ({
   }, [
     couponData,
     customerEmail,
-    finalTotal,
+    displayDiscount,
+    displayOriginalAmount,
+    displayTotal,
+    displayTransactionFee,
     onClose,
     onSuccess,
     onTransactionChange,
+    paymentSummary,
     productName,
     selectedQuantity,
     showPaymentInfo,
@@ -233,7 +264,7 @@ const PaymentModal = ({
                 {customerEmail || "Chưa có email"}
               </p>
               <p className="text-xs text-slate-500">
-                Hóa đơn và thông tin đơn hàng sẽ gửi về email này{" "}
+                Hóa đơn và thông tin đơn hàng sẽ gửi về email này.
               </p>
             </div>
             <span
@@ -261,29 +292,40 @@ const PaymentModal = ({
               id="coupon"
               type="text"
               value={coupon}
-              onChange={(e) => setCoupon(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
+              onChange={(event) => {
+                setCoupon(event.target.value.toUpperCase());
+                setCouponData(null);
+                setPaymentSummary(null);
+              }}
+              onKeyDown={(event) =>
+                event.key === "Enter" && handleApplyCoupon()
+              }
+              disabled={showPaymentInfo}
               placeholder="Nhập mã, ví dụ SAVE10"
-              className="min-w-0 flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
+              className="min-w-0 flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600 disabled:bg-slate-50"
             />
             {couponData ? (
-              <Button variant="muted" onClick={clearCoupon}>
-                Gỡ mã{" "}
+              <Button
+                variant="muted"
+                onClick={clearCoupon}
+                disabled={showPaymentInfo}
+              >
+                Gỡ mã
               </Button>
             ) : (
               <Button
                 variant="info"
                 onClick={handleApplyCoupon}
-                disabled={!coupon.trim()}
+                disabled={!coupon.trim() || showPaymentInfo}
                 isLoading={couponLoading}
               >
                 {couponLoading ? "Đang áp dụng..." : "Áp dụng"}
               </Button>
             )}
           </div>
-          {discount > 0 && (
+          {displayDiscount > 0 && (
             <p className="mt-2 text-sm font-medium text-green-700">
-              Đã giảm {formatCurrency(discount)}
+              Đã giảm {formatCurrency(displayDiscount)}
             </p>
           )}
         </div>
@@ -298,23 +340,29 @@ const PaymentModal = ({
             <strong>{selectedQuantity}</strong>
           </div>
           <div className="flex justify-between gap-4">
-            <span>Tạm tính</span>
-            <strong>{formatCurrency(subtotal)}</strong>
+            <span>Giá gốc</span>
+            <strong>{formatCurrency(displayOriginalAmount)}</strong>
           </div>
-          {discount > 0 && (
+          {displayDiscount > 0 && (
             <div className="flex justify-between gap-4 text-green-700">
-              <span>Giảm giá ({couponData?.discountPercent}%)</span>
-              <strong>-{formatCurrency(discount)}</strong>
+              <span>
+                Giảm giá (
+                {paymentSummary?.couponDiscountPercent ??
+                  paymentSummary?.CouponDiscountPercent ??
+                  couponData?.discountPercent}
+                %)
+              </span>
+              <strong>-{formatCurrency(displayDiscount)}</strong>
             </div>
           )}
           <div className="flex justify-between gap-4">
             <span>Phí giao dịch</span>
-            <strong>{formatCurrency(fee)}</strong>
+            <strong>{formatCurrency(displayTransactionFee)}</strong>
           </div>
           <div className="flex justify-between gap-4 border-t border-slate-200 pt-3 text-base">
             <span className="font-semibold">Tổng thanh toán</span>
             <strong className="text-green-700">
-              {formatCurrency(finalTotal)}
+              {formatCurrency(displayTotal)}
             </strong>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   AlertCircle,
@@ -25,7 +25,6 @@ import ContactPurchaseButton from "@/features/contact/components/ContactPurchase
 import OrderDetails from "@/features/orders/components/OrderDetails";
 import PaymentModal from "@/features/payments/components/PaymentModal";
 import { clearOrderAndPaymentTempByTransactionCode } from "@/features/payments/api/paymentService";
-import { decreaseCouponUsage } from "@/features/coupons/api/couponService";
 import ProductPrice from "@/features/products/components/ProductPrice";
 import { useProductDetail } from "@/features/products/hooks/useProductDetail";
 
@@ -140,16 +139,6 @@ const ProductDetailPage = () => {
     setCurrentPaymentTransactionCode("");
     setShowPayment(false);
     refetchProductDetail();
-
-    if (order.couponCode) {
-      try {
-        await decreaseCouponUsage(order.couponCode);
-      } catch {
-        notify.warning(
-          "Thanh toán thành công nhưng chưa cập nhật lượt coupon.",
-        );
-      }
-    }
   };
 
   const handleBuyNow = () => {
@@ -252,15 +241,6 @@ const ProductDetailPage = () => {
             </h1>
 
             <div className="mt-5 flex flex-col gap-4 rounded-md border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase text-slate-500">
-                  Giá đang chọn
-                </p>
-                <div className="mt-1 text-3xl font-bold text-green-700">
-                  <ProductPrice price={selectedPrice} />
-                </div>
-              </div>
-
               <div className="grid gap-2 text-sm text-slate-700">
                 <span className="inline-flex items-center gap-2">
                   <Tag className="h-4 w-4 text-slate-500" />
@@ -285,10 +265,20 @@ const ProductDetailPage = () => {
                   </strong>
                 </span>
               </div>
+              <div className="grid gap-2 text-sm text-slate-700">
+                <div className="flex items-start gap-2">
+                  <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-green-700" />
+                  <p>Nhận account ngay sau khi thanh toán thành công.</p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <MessageCircle className="mt-0.5 h-4 w-4 shrink-0 text-green-700" />
+                  <p>Shop hỗ trợ qua Zalo/Fanpage nếu cần kiểm tra đơn.</p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="space-y-5 p-4 sm:p-6">
+          <div className="space-y-4 p-4 sm:p-6">
             <div>
               <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900">
                 <Clock3 className="h-4 w-4 text-green-700" />
@@ -345,16 +335,13 @@ const ProductDetailPage = () => {
               </div>
             </div>
 
-            <div className={`rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all ${selectedSellCount <= 0 ? 'opacity-60 grayscale-[0.5]' : ''}`}>
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div
+              className={`rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all ${selectedSellCount <= 0 ? "opacity-60 grayscale-[0.5]" : ""}`}
+            >
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">
+                  <p className="text-md font-semibold text-slate-900">
                     Số lượng tài khoản
-                  </p>
-                  <p className="mt-1 text-xs text-slate-500">
-                    {selectedSellCount > 0 
-                      ? "Tối thiểu 1, tối đa theo số lượng còn trong kho."
-                      : "Sản phẩm hiện đang hết hàng."}
                   </p>
                 </div>
 
@@ -399,7 +386,9 @@ const ProductDetailPage = () => {
               </div>
             </div>
 
-            <label className={`block transition-opacity ${selectedSellCount <= 0 ? 'opacity-50' : ''}`}>
+            <label
+              className={`block transition-opacity ${selectedSellCount <= 0 ? "opacity-50" : ""}`}
+            >
               <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
                 <Mail className="h-4 w-4 text-green-700" />
                 Email nhận thông tin đơn hàng
@@ -413,9 +402,10 @@ const ProductDetailPage = () => {
                 placeholder="Nhập email khách hàng..."
                 className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-green-600 focus:ring-1 focus:ring-green-600 disabled:cursor-not-allowed disabled:bg-slate-50"
               />
-              <span className="mt-2 flex items-center gap-1.5 text-xs text-slate-500">
-                <ShieldCheck className="h-3.5 w-3.5 text-slate-400" />
-                Thông tin đơn hàng và bảo hành sẽ được gửi về email này.
+              <span className="mt-2 flex items-center gap-1.5 text-sm text-slate-500">
+                <ShieldCheck className="h-3.5 w-3.5 text-lg text-slate-400" />
+                Vui lòng nhập chính xác email để nhận thông tin đơn hàng và bảo
+                hành, tránh gây thất lạc đơn hàng.
               </span>
             </label>
 
@@ -438,16 +428,7 @@ const ProductDetailPage = () => {
               />
             </div>
 
-            <div className="grid gap-3 border-t border-slate-100 pt-5 text-sm text-slate-600 sm:grid-cols-2">
-              <div className="flex items-start gap-2">
-                <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-green-700" />
-                <span>Nhận account ngay sau khi thanh toán thành công.</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <MessageCircle className="mt-0.5 h-4 w-4 shrink-0 text-green-700" />
-                <span>Shop hỗ trợ qua Zalo/Fanpage nếu cần kiểm tra đơn.</span>
-              </div>
-            </div>
+            <div className="grid gap-3 border-t border-slate-100 pt-5 text-sm text-slate-600 sm:grid-cols-2"></div>
           </div>
         </div>
       </div>

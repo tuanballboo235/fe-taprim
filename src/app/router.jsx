@@ -8,9 +8,11 @@ import ProductAccountManager from "@/features/admin/productAccounts/pages/Produc
 import NetflixGetCodePage from "@/features/tempmail/pages/NetflixGetCodePage";
 import NetflixUpdateHouseMailPage from "@/features/tempmail/pages/NetflixUpdateHouseMailPage";
 import OrderLookUpPage from "@/features/orders/pages/OrderLookUpPage";
+import AdminCouponsPage from "@/pages/admin/AdminCouponsPage";
 import AdminProductCreatePage from "@/pages/admin/AdminProductCreatePage";
 import AdminProductEditPage from "@/pages/admin/AdminProductEditPage";
 import AdminProductListPage from "@/pages/admin/AdminProductListPage";
+import AdminProductOrdersPage from "@/pages/admin/AdminProductOrdersPage";
 import DashboardPage from "@/pages/admin/DashboardPage";
 import ProductDetailPage from "@/pages/client/ProductDetailPage";
 import ProductListPage from "@/pages/client/ProductListPage";
@@ -36,6 +38,8 @@ export default function AppRouter() {
             <Route path="/admin" element={<DashboardPage />} />
             <Route path="/admin-create-product" element={<AdminProductCreatePage />} />
             <Route path="/admin-product-list" element={<AdminProductListPage />} />
+            <Route path="/admin/product-orders" element={<AdminProductOrdersPage />} />
+            <Route path="/admin/discounts" element={<AdminCouponsPage />} />
             <Route
               path="/admin-products/:productId/edit"
               element={<AdminProductEditPage />}

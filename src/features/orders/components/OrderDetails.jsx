@@ -2,26 +2,30 @@ import { useState } from "react";
 import Button from "@/shared/components/Button";
 import notify from "@/shared/utils/notify";
 
+const getValue = (source, key) => {
+  const pascalKey = `${key.charAt(0).toUpperCase()}${key.slice(1)}`;
+  return source?.[key] ?? source?.[pascalKey];
+};
+
 const formatDateTime = (value) => {
   if (!value) return "-";
 
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "-";
 
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
-
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-
-  return `${day}/${month}/${year} ${hours}:${minutes}`;
+  return new Intl.DateTimeFormat("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
 };
 
 const formatMoney = (value) =>
-  Number(value || 0).toLocaleString("vi-VN", {
+  `${Number(value || 0).toLocaleString("vi-VN", {
     maximumFractionDigits: 0,
-  }) + "đ";
+  })}đ`;
 
 export default function OrderDetails({ order }) {
   const [showAccount, setShowAccount] = useState(false);
@@ -29,9 +33,20 @@ export default function OrderDetails({ order }) {
 
   if (!order) return null;
 
+  const productAccountData = getValue(order, "productAccountData") || "";
+  const couponCode = getValue(order, "couponCode");
+  const couponDiscountPercent =
+    getValue(order, "couponDiscountPersent") ??
+    getValue(order, "couponDiscountPercent");
+  const originalAmount =
+    getValue(order, "originalAmount") ?? getValue(order, "totalAmount");
+  const transactionFee = getValue(order, "transactionFee") ?? 0;
+  const discountAmount = getValue(order, "discountAmount") ?? 0;
+  const totalAmount = getValue(order, "totalAmount");
+
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(order.productAccountData || "");
+      await navigator.clipboard.writeText(productAccountData);
       setCopied(true);
       notify.success("Đã copy account.");
       window.setTimeout(() => setCopied(false), 2000);
@@ -41,14 +56,28 @@ export default function OrderDetails({ order }) {
   };
 
   const rows = [
-    ["Mã giao dịch", order.paymentTransactionCode],
-    ["Tên sản phẩm", `${order.productName} ${order.productOptionLabel}`],
-    ["Số lượng", order.quantity],
-    ["Email nhận hàng", order.contactInfo],
-    ["Thời gian thanh toán", formatDateTime(order.paidAt)],
-    ["Ngày tạo đơn", formatDateTime(order.createAt)],
-    ["Hết hạn lấy mã", formatDateTime(order.expiredAt)],
-    ["Tổng tiền", formatMoney(order.totalAmount)],
+    ["Mã giao dịch", getValue(order, "paymentTransactionCode")],
+    [
+      "Tên sản phẩm",
+      `${getValue(order, "productName") || ""} ${
+        getValue(order, "productOptionLabel") || ""
+      }`.trim(),
+    ],
+    ["Số lượng", getValue(order, "quantity")],
+    ["Email nhận hàng", getValue(order, "contactInfo")],
+    ["Thời gian thanh toán", formatDateTime(getValue(order, "paidAt"))],
+    ["Ngày tạo đơn", formatDateTime(getValue(order, "createAt"))],
+    ["Hết hạn lấy mã", formatDateTime(getValue(order, "expiredAt"))],
+    ["Giá gốc", formatMoney(originalAmount)],
+    [
+      "Mã giảm giá",
+      couponCode
+        ? `${couponCode}${couponDiscountPercent ? ` (-${couponDiscountPercent}%)` : ""}`
+        : "Không sử dụng",
+    ],
+    ["Số tiền giảm", discountAmount > 0 ? `-${formatMoney(discountAmount)}` : "-"],
+    ["Phí giao dịch", formatMoney(transactionFee)],
+    ["Tổng thanh toán", formatMoney(totalAmount)],
   ];
 
   return (
@@ -88,7 +117,7 @@ export default function OrderDetails({ order }) {
           <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-start">
             <div className="min-w-0 flex-1 rounded-md border border-slate-200 bg-white px-3 py-2 font-mono text-sm text-slate-900 shadow-sm">
               <span className="whitespace-pre-wrap break-all">
-                {order.productAccountData || "-"}
+                {productAccountData || "-"}
               </span>
             </div>
             <Button variant="info" onClick={handleCopy}>
@@ -106,7 +135,7 @@ export default function OrderDetails({ order }) {
         )}
 
         <p className="mt-3 text-sm text-red-600">
-          Định dạng tài khoản email:password. Vui lòng đăng nhập đúng định dạng
+          Định dạng tài khoản email:password. Vui lòng đăng nhập đúng định dạng.
         </p>
       </div>
     </section>

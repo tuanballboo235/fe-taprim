@@ -3,12 +3,13 @@ import { FaEdit, FaPlus } from "react-icons/fa";
 import ProductPrice from "@/features/products/components/ProductPrice";
 import Button from "@/shared/components/Button";
 
-const ProductTable = ({ data = [] }) => {
+const ProductTable = ({ data = [], onEdit }) => {
   const navigate = useNavigate();
   const rows = data.flatMap((category) =>
     (category.products ?? []).map((product) => ({
       ...product,
-      categoryName: category.name ?? category.categoryName ?? "",
+      categoryId: category.categoryId,
+      categoryName: category.title ?? category.name ?? category.categoryName ?? "",
     })),
   );
 
@@ -75,9 +76,7 @@ const ProductTable = ({ data = [] }) => {
                         leftIcon={<FaEdit />}
                         className="px-3"
                         title="Chỉnh sửa"
-                        onClick={() =>
-                          navigate(`/admin-products/${item.id}/edit`)
-                        }
+                        onClick={() => onEdit?.(item)}
                       >
                         Sửa
                       </Button>

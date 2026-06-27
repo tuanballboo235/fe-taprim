@@ -8,7 +8,7 @@ const ProductSidebar = ({ products = [], onSelect, selectedProductId, productInf
   const productName = productInfo || "Danh sách gói";
 
   return (
-    <aside className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm lg:w-80 lg:shrink-0">
+    <aside className="rounded-lg border border-slate-300 bg-white p-4 shadow-md shadow-slate-200/70 lg:w-80 lg:shrink-0">
       <div className="mb-4 flex items-start gap-3">
         <span className="mt-0.5 rounded-md bg-blue-50 p-2 text-blue-600">
           <FaStore />
@@ -25,7 +25,7 @@ const ProductSidebar = ({ products = [], onSelect, selectedProductId, productInf
 
       <div className="max-h-[420px] space-y-2 overflow-y-auto pr-1 lg:max-h-[calc(100vh-220px)]">
         {options.length === 0 ? (
-          <div className="rounded-md border border-dashed border-slate-200 p-4 text-sm text-slate-500">
+          <div className="rounded-md border border-dashed border-slate-300 p-4 text-sm text-slate-500">
             Không có gói sản phẩm
           </div>
         ) : (
@@ -40,8 +40,8 @@ const ProductSidebar = ({ products = [], onSelect, selectedProductId, productInf
                 onClick={() => onSelect?.(product)}
                 className={`w-full rounded-md border p-3 text-left transition ${
                   isSelected
-                    ? "border-blue-500 bg-blue-50 text-blue-800"
-                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                    ? "border-blue-600 bg-blue-50 text-blue-800 shadow-sm shadow-blue-100"
+                    : "border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50"
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">

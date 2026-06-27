@@ -15,6 +15,11 @@ const toFormData = (data = {}) => {
 
 export const getAdminProducts = getProducts;
 
+export const getAdminProductDetail = async (productId) => {
+  const response = await api.post(`product/get-product-details/${productId}`);
+  return response.data;
+};
+
 export const createProduct = async (productData) => {
   const response = await api.post("product/create-product", toFormData(productData));
   return response.data;
@@ -47,6 +52,7 @@ export const hideProduct = (productId) => {
 
 export const adminProductApi = {
   getAdminProducts,
+  getAdminProductDetail,
   createProduct,
   updateProduct,
   deleteProduct,

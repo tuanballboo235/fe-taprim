@@ -187,41 +187,53 @@ const Header = () => {
       </div>
 
       <nav className="hidden border-t border-slate-100 px-4 md:block">
-        <div className="mx-auto flex max-w-7xl flex-wrap justify-center gap-2 py-2 font-medium text-slate-700">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-2 py-2 font-medium text-slate-700">
+          
           {staticNav.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className="inline-flex items-center gap-2 rounded-md px-3 py-2 transition hover:bg-green-50 hover:text-green-700"
-            >
-              {item.icon} {item.name}
-            </Link>
+            <div key={item.path} className="flex items-center gap-2">
+              <Link
+                to={item.path}
+                className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm transition hover:bg-green-50 hover:text-green-700"
+              >
+                {item.icon} {item.name}
+              </Link>
+              {/* Vạch phân cách */}
+              <div className="h-4 w-px bg-slate-300"></div>
+            </div>
           ))}
 
-          {categories.map((cat) => (
-            <div key={cat.name} className="group relative">
-              <Link
-                to={cat.path}
-                className="inline-flex items-center gap-2 rounded-md px-3 py-2 transition hover:bg-green-50 hover:text-green-700"
-              >
-                {cat.icon} {cat.name}
-              </Link>
-              {cat.children.length > 0 && (
-                <div className="invisible absolute left-0 top-full z-50 min-w-[190px] rounded-md border border-slate-200 bg-white py-2 opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100">
-                  {cat.children.map((child) => (
-                    <Link
-                      key={child.path}
-                      to={child.path}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 transition hover:bg-green-50 hover:text-green-700"
-                    >
-                      {child.icon} {child.name}
-                      <FaAngleRight className="ml-auto text-xs" />
-                    </Link>
-                  ))}
-                </div>
+          {categories.map((cat, index) => (
+            <div key={cat.name} className="flex items-center gap-2">
+              <div className="group relative">
+                <Link
+                  to={cat.path}
+                  className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm transition hover:bg-green-50 hover:text-green-700"
+                >
+                  {cat.icon} {cat.name}
+                </Link>
+                {cat.children.length > 0 && (
+                  <div className="invisible absolute left-0 top-full z-50 mt-1 min-w-[190px] rounded-md border border-slate-200 bg-white py-2 opacity-0 shadow-lg transition-all group-hover:visible group-hover:translate-y-1 group-hover:opacity-100">
+                    {cat.children.map((child) => (
+                      <Link
+                        key={child.path}
+                        to={child.path}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 transition hover:bg-green-50 hover:text-green-700"
+                      >
+                        {child.icon} {child.name}
+                        <FaAngleRight className="ml-auto text-xs" />
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              {/* Không hiển thị vạch phân cách ở phần tử cuối cùng của categories */}
+              {index < categories.length - 1 && (
+                <div className="h-4 w-px bg-slate-300"></div>
               )}
             </div>
           ))}
+
         </div>
       </nav>
 
