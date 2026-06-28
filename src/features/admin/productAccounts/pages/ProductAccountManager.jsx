@@ -4,7 +4,6 @@ import ProductSidebar from "@/features/admin/productAccounts/components/ProductS
 import AccountTable from "@/features/admin/productAccounts/components/AccountTable";
 import {
   addProductAccountToProduct,
-  deleteProductAccounts,
   getProductAccountFilter,
   updateProductAccount,
 } from "@/features/admin/productAccounts/api/productAccountService";
@@ -141,32 +140,6 @@ const ProductAccountManager = () => {
       throw error;
     }
   };
-  const handleDeleteAccount = async (accountId) => {
-    if (!accountId) return;
-
-    const confirmed = await notify.confirm({
-      title: "Xóa account?",
-      text: "Account sẽ bị vô hiệu hóa và không còn bán được. Đơn hàng cũ vẫn giữ lịch sử tra cứu.",
-      confirmButtonText: "Xóa",
-      icon: "warning",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      const response = await deleteProductAccounts([accountId]);
-      const deletedId = Number(accountId);
-      setProductAccounts((current) =>
-        current.filter(
-          (account) => Number(account?.productAccountId ?? account?.id) !== deletedId
-        )
-      );
-      notify.success(response?.message ?? "Đã xóa account.");
-      await fetchAccounts();
-    } catch (error) {
-      notify.error(getApiErrorMessage(error, "Không thể xóa account."));
-    }
-  };
 
   if (isBootLoading) {
     return <PageState type="loading" description="Đang tải thông tin sản phẩm..." />;
@@ -194,7 +167,6 @@ const ProductAccountManager = () => {
           accounts={productAccounts}
           onEdit={handleEditAccount}
           isLoading={isLoading}
-          onDelete={handleDeleteAccount}
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
         />

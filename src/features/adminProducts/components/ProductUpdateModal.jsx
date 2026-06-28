@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import Button from "@/shared/components/Button";
+import RichTextEditor from "@/shared/components/RichTextEditor";
 import { getAssetUrl } from "@/shared/utils/apiEndpoint";
+import { sanitizeRichTextHtml } from "@/shared/utils/richText";
 
 const inputClass =
   "w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-green-600 focus:ring-1 focus:ring-green-600";
@@ -23,22 +25,39 @@ const ProductUpdateModal = ({
 }) => {
   const [form, setForm] = useState(() => buildInitialForm(product));
   const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
 
   const currentImage = useMemo(
     () => product?.productImage ?? product?.image,
     [product],
   );
 
+  const displayImage = imagePreview || (currentImage ? getAssetUrl(currentImage) : "");
+
   useEffect(() => {
     if (!isOpen) return;
 
     setForm(buildInitialForm(product));
     setImage(null);
+    setImagePreview("");
   }, [isOpen, product]);
+
+  useEffect(() => {
+    if (!image) return undefined;
+
+    const previewUrl = URL.createObjectURL(image);
+    setImagePreview(previewUrl);
+
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [image]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
+  };
+
+  const handleDescriptionChange = (description) => {
+    setForm((current) => ({ ...current, Description: description }));
   };
 
   const handleFileChange = (event) => {
@@ -52,7 +71,7 @@ const ProductUpdateModal = ({
     formData.append("ProductName", form.ProductName.trim());
     formData.append("CategoryId", form.CategoryId);
     formData.append("Status", form.Status);
-    formData.append("Description", form.Description ?? "");
+    formData.append("Description", sanitizeRichTextHtml(form.Description));
 
     if (image) {
       formData.append("ProductImage", image);
@@ -65,7 +84,7 @@ const ProductUpdateModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-3">
-      <div className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-lg bg-white shadow-xl">
+      <div className="flex max-h-[90vh] w-full max-w-3xl flex-col rounded-lg bg-white shadow-xl">
         <div className="border-b border-slate-200 p-4 sm:p-5">
           <h2 className="text-lg font-semibold text-slate-900">
             Cập nhật sản phẩm
@@ -124,24 +143,22 @@ const ProductUpdateModal = ({
               </select>
             </label>
 
-            <label className="sm:col-span-2">
+            <div className="sm:col-span-2">
               <span className={labelClass}>Mô tả</span>
-              <textarea
-                name="Description"
+              <RichTextEditor
                 value={form.Description}
-                onChange={handleChange}
-                className={`${inputClass} min-h-32`}
+                onChange={handleDescriptionChange}
                 placeholder="Nhập mô tả sản phẩm..."
               />
-            </label>
+            </div>
 
             <div className="sm:col-span-2">
               <span className={labelClass}>Ảnh sản phẩm</span>
-              <div className="grid gap-3 sm:grid-cols-[120px_1fr] sm:items-center">
-                <div className="flex aspect-square items-center justify-center overflow-hidden rounded-md border border-slate-200 bg-slate-50">
-                  {currentImage ? (
+              <div className="grid gap-3 sm:grid-cols-[132px_1fr] sm:items-center">
+                <div className="flex aspect-square items-center justify-center overflow-hidden rounded-md border border-slate-300 bg-slate-50">
+                  {displayImage ? (
                     <img
-                      src={getAssetUrl(currentImage)}
+                      src={displayImage}
                       alt={form.ProductName}
                       className="h-full w-full object-contain p-2"
                     />
@@ -149,12 +166,19 @@ const ProductUpdateModal = ({
                     <span className="text-xs text-slate-400">Chưa có ảnh</span>
                   )}
                 </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="w-full rounded-md border border-dashed border-slate-300 px-3 py-3 text-sm"
-                />
+                <div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="w-full rounded-md border border-dashed border-slate-300 px-3 py-3 text-sm"
+                  />
+                  {image && (
+                    <p className="mt-2 text-xs font-medium text-green-700">
+                      Ảnh mới: {image.name}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </div>

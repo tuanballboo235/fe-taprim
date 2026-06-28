@@ -1,4 +1,4 @@
-import {
+﻿import {
   FaAngleRight,
   FaBars,
   FaBoxOpen,
@@ -75,7 +75,7 @@ const staticNav = [
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
-  const { isAuthenticated, isAdmin, logout } = useAuth();
+  const { isAuthenticated, isAdmin, logout, user } = useAuth();
 
   const [searchParams] = useSearchParams();
   const initialKeyword = searchParams.get("keyword") || "";
@@ -112,6 +112,14 @@ const Header = () => {
           Admin
         </Link>
       )}
+      <Link
+        to="/user"
+        className="inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+        onClick={closeMobileMenu}
+      >
+        <FaUser />
+        {user?.username || "Tài khoản"}
+      </Link>
       <button
         type="button"
         onClick={handleLogout}

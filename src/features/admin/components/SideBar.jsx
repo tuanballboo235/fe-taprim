@@ -46,10 +46,10 @@ const menuSections = [
         path: "/admin/product-orders",
       },
       {
-        label: "Đơn hàng dịch vụ",
+        label: "Quản lý tài khoản",
         icon: <FaServicestack />,
         key: "service-orders",
-        path: "/admin/service-orders",
+        path: "/admin/account-orders",
       },
       {
         label: "Đặt trước",

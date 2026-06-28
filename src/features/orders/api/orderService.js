@@ -1,4 +1,4 @@
-import api from "@/shared/api/client";
+﻿import api from "@/shared/api/client";
 
 export const updateOrder = async (transactionCode, orderData) => {
   const payload = {
@@ -44,5 +44,10 @@ export const getAdminProductOrders = async (filters = {}) => {
   }, {});
 
   const response = await api.get("Order/admin/product-orders", { params });
+  return response.data;
+};
+
+export const getMyProductOrders = async () => {
+  const response = await api.get("Order/my-product-orders");
   return response.data;
 };

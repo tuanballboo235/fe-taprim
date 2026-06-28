@@ -1,7 +1,20 @@
-import { useNavigate } from "react-router-dom";
+﻿import { useNavigate } from "react-router-dom";
 import { FaEdit, FaPlus } from "react-icons/fa";
 import ProductPrice from "@/features/products/components/ProductPrice";
 import Button from "@/shared/components/Button";
+
+const getStockInfo = (item) => {
+  const accountCount = Number(item?.stockAccount ?? 0);
+  const sellCount = Number(item?.sellCount ?? 0);
+  const hasStock = accountCount > 0 || sellCount > 0;
+
+  return {
+    hasStock,
+    label: hasStock
+      ? `${accountCount} tài khoản - ${sellCount} lượt bán`
+      : "Hết hàng",
+  };
+};
 
 const ProductTable = ({ data = [], onEdit }) => {
   const navigate = useNavigate();
@@ -31,7 +44,10 @@ const ProductTable = ({ data = [], onEdit }) => {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {rows.length > 0 ? (
-              rows.map((item, index) => (
+              rows.map((item, index) => {
+                const stockInfo = getStockInfo(item);
+
+                return (
                 <tr key={item.id || index} className="hover:bg-slate-50">
                   <td className="px-4 py-3 font-medium text-slate-900">
                     {item.name}
@@ -49,12 +65,12 @@ const ProductTable = ({ data = [], onEdit }) => {
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-                        item.stockAccount > 0
+                        stockInfo.hasStock
                           ? "bg-emerald-50 text-emerald-700"
                           : "bg-red-50 text-red-700"
                       }`}
                     >
-                      {item.stockAccount > 0 ? item.stockAccount : "Hết hàng"}
+                      {stockInfo.label}
                     </span>
                   </td>
                   <td className="px-4 py-3">
@@ -95,7 +111,8 @@ const ProductTable = ({ data = [], onEdit }) => {
                     </div>
                   </td>
                 </tr>
-              ))
+                );
+              })
             ) : (
               <tr>
                 <td

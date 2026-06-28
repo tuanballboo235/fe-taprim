@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+﻿import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import AdminLayout from "@/app/layouts/AdminLayout";
 import UserLayout from "@/app/layouts/UserLayout";
 import ProtectedRoute from "@/features/auth/components/ProtectedRoute";
@@ -15,6 +15,7 @@ import AdminProductListPage from "@/pages/admin/AdminProductListPage";
 import AdminProductOrdersPage from "@/pages/admin/AdminProductOrdersPage";
 import DashboardPage from "@/pages/admin/DashboardPage";
 import ProductDetailPage from "@/pages/client/ProductDetailPage";
+import UserDashboardPage from "@/pages/client/UserDashboardPage";
 import ProductListPage from "@/pages/client/ProductListPage";
 
 export default function AppRouter() {
@@ -31,6 +32,9 @@ export default function AppRouter() {
           <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route path="/netflix-code" element={<NetflixGetCodePage />} />
           <Route path="/order-lookup" element={<OrderLookUpPage />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/user" element={<UserDashboardPage />} />
+          </Route>
         </Route>
 
         <Route element={<ProtectedRoute requireAdmin />}>

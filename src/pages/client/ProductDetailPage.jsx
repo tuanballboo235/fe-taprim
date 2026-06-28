@@ -21,6 +21,7 @@ import { getAssetUrl } from "@/shared/utils/apiEndpoint";
 import notify from "@/shared/utils/notify";
 import Button from "@/shared/components/Button";
 import PageState from "@/shared/components/PageState";
+import RichTextContent from "@/shared/components/RichTextContent";
 import ContactPurchaseButton from "@/features/contact/components/ContactPurchaseButton";
 import OrderDetails from "@/features/orders/components/OrderDetails";
 import PaymentModal from "@/features/payments/components/PaymentModal";
@@ -32,6 +33,15 @@ const fallbackImage =
   "https://res.cloudinary.com/dzcb8xqjh/image/upload/v1750269205/logo_crop_xlfxai.png";
 
 const validateEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+const formatStockLabel = (stockAccount = 0, sellCount = 0) => {
+  const accountCount = Number(stockAccount) || 0;
+  const sellTurns = Number(sellCount) || 0;
+
+  return sellTurns > 0
+    ? `${accountCount} tài khoản - ${sellTurns} lượt bán`
+    : "Hết hàng";
+};
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -64,11 +74,12 @@ const ProductDetailPage = () => {
 
   const hasAnySellLeft = options.some((option) => (option.sellCount ?? 0) > 0);
   const selectedSellCount = selectedOption?.sellCount ?? 0;
+  const selectedStockAccount = selectedOption?.stockAccount ?? 0;
   const selectedPrice = selectedOption?.price ?? 0;
   const transactionFee = 500;
   const subtotal = selectedPrice * quantity;
   const selectedImage =
-    selectedOption?.productOptionImage ?? product?.productImage;
+    product?.productImage ?? selectedOption?.productOptionImage;
   const descriptionText = product?.description?.trim();
 
   useEffect(() => {
@@ -155,7 +166,7 @@ const ProductDetailPage = () => {
     }
 
     if (quantity > selectedSellCount) {
-      notify.warning(`Chỉ còn ${selectedSellCount} tài khoản khả dụng.`);
+      notify.warning(`Chỉ còn ${selectedSellCount} lượt bán khả dụng.`);
       updateQuantity(selectedSellCount);
       return;
     }
@@ -207,9 +218,11 @@ const ProductDetailPage = () => {
               <BookOpenText className="h-4 w-4 text-green-700" />
               Mô tả sản phẩm
             </div>
-            <div className="whitespace-pre-wrap text-sm leading-6 text-slate-700">
-              {descriptionText || "Chưa có mô tả sản phẩm."}
-            </div>
+            <RichTextContent
+              html={descriptionText}
+              fallback="Chưa có mô tả sản phẩm."
+              className="text-sm leading-6 text-slate-700"
+            />
           </div>
         </div>
 
@@ -261,7 +274,7 @@ const ProductDetailPage = () => {
                       selectedSellCount > 0 ? "text-green-700" : "text-red-600"
                     }
                   >
-                    {selectedSellCount > 0 ? selectedSellCount : "Hết hàng"}
+                    {formatStockLabel(selectedStockAccount, selectedSellCount)}
                   </strong>
                 </span>
               </div>
@@ -341,7 +354,7 @@ const ProductDetailPage = () => {
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-md font-semibold text-slate-900">
-                    Số lượng tài khoản
+                    Số lượt mua
                   </p>
                 </div>
 

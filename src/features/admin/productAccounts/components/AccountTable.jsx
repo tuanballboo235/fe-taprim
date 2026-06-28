@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { FaEdit, FaSearch, FaTrashAlt, FaUserPlus } from "react-icons/fa";
+﻿import { useMemo, useState } from "react";
+import { FaEdit, FaSearch, FaUserPlus } from "react-icons/fa";
 import AddProductAccountModal from "@/features/admin/productAccounts/components/AddProductAccountModal";
 import Button from "@/shared/components/Button";
 import PageState from "@/shared/components/PageState";
@@ -28,7 +28,6 @@ const getAccountId = (account) => account?.productAccountId ?? account?.id;
 const AccountTable = ({
   accounts = [],
   onEdit,
-  onDelete,
   isLoading,
   searchTerm = "",
   onSearchChange,
@@ -224,14 +223,6 @@ const AccountTable = ({
                             onClick={() => handleOpenEditModal(account)}
                           >
                             Sửa
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="danger"
-                            leftIcon={<FaTrashAlt />}
-                            onClick={() => onDelete?.(accountId)}
-                          >
-                            Xóa
                           </Button>
                         </div>
                       </td>

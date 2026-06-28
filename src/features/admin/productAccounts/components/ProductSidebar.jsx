@@ -1,4 +1,4 @@
-import { FaStore } from "react-icons/fa";
+﻿import { FaStore } from "react-icons/fa";
 
 const ProductSidebar = ({ products = [], onSelect, selectedProductId, productInfo }) => {
   const options = Array.isArray(products)
@@ -56,14 +56,14 @@ const ProductSidebar = ({ products = [], onSelect, selectedProductId, productInf
                           : "bg-red-50 text-red-700"
                       }`}
                     >
-                      {product.stockAccount}
+                      {product.stockAccount} tài khoản
                     </span>
                   )}
                 </div>
 
                 {typeof product.sellCount === "number" && (
                   <p className="mt-2 text-xs text-slate-500">
-                    Đã bán: {product.sellCount}
+                    Lượt bán còn: {product.sellCount}
                   </p>
                 )}
               </button>
