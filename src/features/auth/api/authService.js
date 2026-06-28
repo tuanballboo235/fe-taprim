@@ -37,9 +37,10 @@ export const register = async ({ username, email, password, code }) => {
   return response.data?.data ?? response.data;
 };
 
-export const sendVerificationCode = async ({ email }) => {
+export const sendVerificationCode = async ({ email, purpose }) => {
   const response = await api.post(authEndpoint("send-code"), {
     email,
+    purpose,
   });
   return response.data?.data ?? response.data;
 };

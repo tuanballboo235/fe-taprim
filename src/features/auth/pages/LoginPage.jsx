@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FaEye, FaEyeSlash, FaLock, FaSignInAlt, FaUser, FaEnvelope, FaUserPlus, FaKey, FaArrowLeft } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "@/shared/components/Button";
@@ -135,7 +135,7 @@ export default function LoginPage() {
 
     setIsSendingOtp(true);
     try {
-      await sendVerificationCode({ email: email.trim() });
+      await sendVerificationCode({ email: email.trim(), purpose: forMode });
       notify.success("Mã xác minh đã được gửi về email của bạn.");
       if (forMode === "register") {
         setRegisterOtpCountdown(60);
@@ -192,7 +192,7 @@ export default function LoginPage() {
     setError("");
 
     try {
-      await sendVerificationCode({ email: registerForm.email.trim() });
+      await sendVerificationCode({ email: registerForm.email.trim(), purpose: "register" });
       notify.success("Mã xác minh đã được gửi đến email của bạn.");
       setRegisterOtpCountdown(60);
       setMode("verify_registration");
