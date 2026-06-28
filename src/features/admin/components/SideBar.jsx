@@ -1,10 +1,11 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   FaArrowUp,
   FaBars,
   FaBoxOpen,
   FaBug,
+  FaChartPie,
   FaComment,
   FaRegClock,
   FaServicestack,
@@ -20,7 +21,18 @@ import notify from "@/shared/utils/notify";
 
 const menuSections = [
   {
-    title: "SALE",
+    title: "TỔNG QUAN",
+    items: [
+      {
+        label: "Dashboard",
+        icon: <FaChartPie />,
+        key: "dashboard",
+        path: "/admin",
+      },
+    ],
+  },
+  {
+    title: "BÁN HÀNG",
     items: [
       {
         label: "Sales",

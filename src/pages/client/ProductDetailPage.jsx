@@ -34,13 +34,10 @@ const fallbackImage =
 
 const validateEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
-const formatStockLabel = (stockAccount = 0, sellCount = 0) => {
-  const accountCount = Number(stockAccount) || 0;
+const formatStockLabel = (sellCount = 0) => {
   const sellTurns = Number(sellCount) || 0;
 
-  return sellTurns > 0
-    ? `${accountCount} tài khoản - ${sellTurns} lượt bán`
-    : "Hết hàng";
+  return sellTurns > 0 ? `${sellTurns} lượt bán` : "Hết hàng";
 };
 
 const ProductDetailPage = () => {
@@ -74,7 +71,6 @@ const ProductDetailPage = () => {
 
   const hasAnySellLeft = options.some((option) => (option.sellCount ?? 0) > 0);
   const selectedSellCount = selectedOption?.sellCount ?? 0;
-  const selectedStockAccount = selectedOption?.stockAccount ?? 0;
   const selectedPrice = selectedOption?.price ?? 0;
   const transactionFee = 500;
   const subtotal = selectedPrice * quantity;
@@ -274,7 +270,7 @@ const ProductDetailPage = () => {
                       selectedSellCount > 0 ? "text-green-700" : "text-red-600"
                     }
                   >
-                    {formatStockLabel(selectedStockAccount, selectedSellCount)}
+                    {formatStockLabel(selectedSellCount)}
                   </strong>
                 </span>
               </div>
@@ -493,3 +489,5 @@ const ProductDetailPage = () => {
 };
 
 export default ProductDetailPage;
+
+

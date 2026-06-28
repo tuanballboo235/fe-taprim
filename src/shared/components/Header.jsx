@@ -100,25 +100,22 @@ const Header = () => {
     navigate("/login", { replace: true });
   };
 
+  const dashboardPath = isAdmin ? "/admin" : "/user";
+  const dashboardLabel = isAdmin ? "Dashboard" : user?.username || "Tài khoản";
+
   const authActions = isAuthenticated ? (
     <>
-      {isAdmin && (
-        <Link
-          to="/admin"
-          className="inline-flex items-center justify-center gap-2 rounded-md bg-slate-900 px-3 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
-          onClick={closeMobileMenu}
-        >
-          <FaShieldAlt />
-          Admin
-        </Link>
-      )}
       <Link
-        to="/user"
-        className="inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+        to={dashboardPath}
+        className={`inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-semibold transition ${
+          isAdmin
+            ? "bg-slate-900 text-white hover:bg-slate-800"
+            : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+        }`}
         onClick={closeMobileMenu}
       >
-        <FaUser />
-        {user?.username || "Tài khoản"}
+        {isAdmin ? <FaShieldAlt /> : <FaUser />}
+        {dashboardLabel}
       </Link>
       <button
         type="button"
@@ -326,3 +323,4 @@ const Header = () => {
 };
 
 export default Header;
+
